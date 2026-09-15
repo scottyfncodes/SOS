@@ -199,6 +199,24 @@ p{margin:0 0 .75em;}
 .notdo ul{margin:0; padding-left:1.2rem;}
 .notdo li{margin-bottom:.3rem;}
 
+.call-now{
+  border:2px solid var(--severe); background:var(--severe-bg); border-radius:var(--radius-lg);
+  padding:.9rem 1rem; margin:.7rem 0 1rem; text-align:center;
+}
+.call-now .call-btn{
+  display:flex; align-items:center; justify-content:center; gap:.5rem; width:100%; min-height:64px;
+  background:var(--severe); color:#fff; border:0; border-radius:var(--radius); font-family:var(--font-display);
+  font-weight:800; font-size:1.25rem; text-transform:uppercase; letter-spacing:.02em; text-decoration:none; margin-bottom:.5rem;
+}
+.call-now .call-btn:hover{filter:brightness(1.1);}
+.call-now .call-note{color:var(--ink-dim); font-size:.85rem; margin:0;}
+.care-note{
+  display:flex; align-items:center; gap:.5rem; background:var(--moderate-bg); border:1px solid var(--moderate);
+  color:var(--moderate); border-radius:var(--radius); padding:.6rem .9rem; margin:.7rem 0 1rem; font-weight:700; font-size:.92rem;
+}
+.linklike{background:none; border:0; color:var(--gold-soft); text-decoration:underline; padding:0; font:inherit; min-height:auto; min-width:auto;}
+.locate-row{margin-top:.8rem;}
+
 .qbtn-list{display:flex; flex-direction:column; gap:.6rem; margin-top:.8rem;}
 .qbtn{
   min-height:56px; text-align:left; background:var(--ground-raised2); border:1px solid var(--line);
@@ -399,14 +417,25 @@ var CATEGORIES = [
   {id:"specialneeds", name:"Infants, Elderly & Pets", ic:"&#128118;"},
   {id:"connect", name:"Connect & Alerts", ic:"&#128246;"}
 ];
+var CATEGORY_GROUPS = [
+  {label:"Injury &amp; Medical", ids:["firstaid"]},
+  {label:"Survival Skills", ids:["water","shelter","fire","nav","signal"]},
+  {label:"Vehicle", ids:["vehicle"]},
+  {label:"Outdoors", ids:["weather","wildlife"]},
+  {label:"Disaster &amp; Home", ids:["disasters","home","outages","pandemic","unrest"]},
+  {label:"Preparedness &amp; More", ids:["longterm","specialneeds","connect"]}
+];
+function catById(id){ return CATEGORIES.filter(function(c){return c.id===id;})[0]; }
 
 /* ---------------- FIRST AID TRIAGE FLOWS ---------------- */
 function step(t){ return t; }
 var TRIAGE_FLOWS = {
   entry:{
     start:{type:"menu", title:"What's the situation?", items:[
-      {label:"Not breathing / unresponsive", ic:"&#128557;", go:"breathing:start"},
       {label:"Severe bleeding", ic:"&#129656;", go:"bleeding:start"},
+      {label:"Not breathing / unresponsive", ic:"&#128557;", go:"breathing:start"},
+      {label:"Trouble breathing", ic:"&#129729;", go:"breathing_distress:start"},
+      {label:"Chest pain / possible heart attack", ic:"&#129728;", go:"cardiac:start"},
       {label:"Choking", ic:"&#128557;", go:"choking:start"},
       {label:"Burn", ic:"&#128293;", go:"burns:start"},
       {label:"Broken bone / severe sprain", ic:"&#129446;", go:"fracture:start"},
@@ -415,7 +444,13 @@ var TRIAGE_FLOWS = {
       {label:"Dehydration", ic:"&#128167;", go:"dehydration:start"},
       {label:"Snake or animal bite", ic:"&#128013;", go:"snakebite:start"},
       {label:"Shock (pale, cold, rapid pulse)", ic:"&#128148;", go:"shock:start"},
-      {label:"Allergic reaction / anaphylaxis", ic:"&#128163;", go:"allergic:start"}
+      {label:"Severe allergic reaction", ic:"&#128163;", go:"allergic:start"},
+      {label:"Poison / chemical exposure", ic:"&#9760;", go:"poison:start"},
+      {label:"Fire", ic:"&#128293;", go:"fireemergency:start"},
+      {label:"Vehicle emergency", ic:"&#128663;", go:"vehicleemergency:start"},
+      {label:"Water emergency / drowning", ic:"&#127754;", go:"waterincident:start"},
+      {label:"Lost / stranded", ic:"&#129517;", go:"lost:start"},
+      {label:"Other emergency", ic:"&#10067;", go:"other:start"}
     ]}
   },
   breathing:{
@@ -578,6 +613,101 @@ var TRIAGE_FLOWS = {
     severe:{type:"result", severity:"severe", title:"Anaphylaxis: life-threatening emergency",
       steps:["Use an epinephrine auto-injector immediately if available - inject into the outer thigh.","Call/send for emergency help right away.","Lay the person flat with legs raised, unless breathing is difficult, in which case let them sit up.","Be ready to give a second epinephrine dose after 5-15 minutes if there's no improvement.","Begin CPR immediately if they become unresponsive or stop breathing."],
       notdo:["Don't wait to see if it improves before using epinephrine.","Don't have the person stand or walk suddenly - it can cause a fatal drop in blood pressure.","Don't rely on an oral antihistamine alone for a severe reaction - it is not a substitute for epinephrine."]}
+  },
+  cardiac:{
+    start:{type:"q", text:"Is the person unresponsive, or not breathing normally?", options:[
+      {label:"Yes - unresponsive or not breathing", next:"no_breath", flow:"breathing"},
+      {label:"No - awake and breathing, but has chest pain or pressure", next:"conscious"}
+    ]},
+    conscious:{type:"result", severity:"severe", title:"Possible heart attack: treat as an emergency",
+      steps:["Call/send for emergency help immediately - do not wait to see if it passes.","Have the person stop all activity and rest in a calm, comfortable position, usually sitting.","Loosen any tight clothing around the neck and chest.","If they have their own medication prescribed for a heart condition (such as nitroglycerin), help them take it as directed.","Stay with them and monitor closely - be ready to begin CPR if they become unresponsive or stop breathing."],
+      notdo:["Don't let them walk around, drive themselves, or wait to see if it passes - get emergency help moving right away.","Don't give aspirin or any medication unless it's their own prescribed medication or a dispatcher tells you to.","Don't leave them alone."]}
+  },
+  breathing_distress:{
+    start:{type:"q", text:"Are they still breathing at all, even weakly?", options:[
+      {label:"No - not breathing, or only gasping", next:"no_breath", flow:"breathing"},
+      {label:"Yes - breathing but struggling", next:"struggling"}
+    ]},
+    struggling:{type:"result", severity:"severe", title:"Trouble breathing: get help",
+      steps:["Call/send for emergency help, especially if this is sudden, severe, or getting worse.","Help them sit upright, leaning slightly forward - this is easier than lying down.","Loosen tight clothing around the neck and chest.","If they have a prescribed rescue inhaler or medication for a breathing condition, help them use it as directed.","Stay calm and stay with them - anxiety can make breathing difficulty worse.","Watch closely for lips or face turning blue, or increasing confusion - these mean it's getting more severe."],
+      notdo:["Don't have them lie flat.","Don't leave them alone.","Don't wait to call for help if breathing is severely labored or they can barely speak."]}
+  },
+  poison:{
+    start:{type:"menu", title:"How did the exposure happen?", items:[
+      {label:"Swallowed", ic:"&#128132;", go:"poison:swallowed"},
+      {label:"Inhaled fumes or gas", ic:"&#128168;", go:"poison:inhaled"},
+      {label:"On skin or in eyes", ic:"&#128065;", go:"poison:contact"}
+    ]},
+    swallowed:{type:"result", severity:"severe", title:"Swallowed a poison or chemical",
+      steps:["Call Poison Control (US: 1-800-222-1222) or emergency services immediately - have the container or substance name ready if possible.","Follow their instructions exactly - what's safe to do depends entirely on what was swallowed.","If the person becomes unresponsive or stops breathing, call/send for emergency help and begin CPR if needed."],
+      notdo:["Don't induce vomiting unless specifically told to by Poison Control or a medical professional - for some substances it can cause more harm.","Don't give anything to eat or drink unless instructed to."]},
+    inhaled:{type:"result", severity:"severe", title:"Inhaled fumes, smoke, or gas",
+      steps:["Get the person to fresh air immediately - open windows/doors on your way out if it's quick to do.","Call/send for emergency help.","If you smell gas (rotten-egg smell) or suspect carbon monoxide, don't use light switches, lighters, or anything that could spark - leave the area first.","Monitor breathing closely and begin CPR if they stop breathing."],
+      notdo:["Don't re-enter a gas-filled or smoke-filled space to search for anyone without protection and backup - call emergency services instead."]},
+    contact:{type:"result", severity:"moderate", title:"Chemical on skin or in eyes",
+      steps:["Remove any contaminated clothing.","Flush the affected skin or eyes with clean, lukewarm running water for at least 15-20 minutes.","Call Poison Control (US: 1-800-222-1222) or seek medical care, especially for eye exposure or if irritation is severe.","Keep flushing even while waiting for advice or help to arrive."],
+      notdo:["Don't rub the eyes.","Don't apply neutralizing chemicals unless specifically instructed by Poison Control."]}
+  },
+  fireemergency:{
+    start:{type:"menu", title:"What kind of fire?", items:[
+      {label:"Building / structure fire", ic:"&#127968;", go:"fireemergency:structure"},
+      {label:"Someone's clothing is on fire", ic:"&#128128;", go:"fireemergency:clothing"},
+      {label:"Wildfire nearby", ic:"&#127795;", go:"fireemergency:wildfire"}
+    ]},
+    structure:{type:"result", severity:"severe", title:"Structure fire: get out now",
+      steps:["Get everyone out immediately - don't stop to gather belongings.","Stay low under smoke - smoke and toxic gases rise.","Before opening any closed door, feel it with the back of your hand - if it's hot, use another way out.","Close doors behind you as you leave to slow the fire's spread.","Go to your agreed meeting point outside and call/send for emergency help once you're safely out."],
+      notdo:["Don't go back inside for any reason, including pets or belongings.","Don't use an elevator - use the stairs.","Don't open a door that feels hot."]},
+    clothing:{type:"result", severity:"severe", title:"Clothing on fire: Stop, Drop, and Roll",
+      steps:["Stop - don't run, it fans the flames.","Drop to the ground.","Cover your face with your hands if possible.","Roll back and forth to smother the flames.","Once out, cool the burned area with clean water and get emergency medical help - see First Aid &gt; Burn for care."],
+      notdo:["Don't run - it makes flames worse.","Don't use fabric to smother the flames unless it's specifically fire-resistant."]},
+    wildfire:{type:"result", severity:"severe", title:"Wildfire nearby: evacuate early",
+      steps:["Leave as soon as evacuation is ordered or the fire is visibly approaching - don't wait to see how close it gets.","Close windows and doors and shut off gas at the meter before leaving if you have time.","Take main roads and follow official evacuation routes.","If trapped in a vehicle: stay inside, close windows/vents, turn on headlights, get down below window level, and cover yourself with a blanket or jacket.","If trapped on foot: move to a cleared area away from vegetation and, if possible, downhill from the fire."],
+      notdo:["Don't wait to 'see how bad it gets' before leaving.","Don't drive through heavy smoke if visibility is severely reduced - wait it out in a cleared area instead."]}
+  },
+  vehicleemergency:{
+    start:{type:"menu", title:"What's the vehicle situation?", items:[
+      {label:"Crash / collision", ic:"&#128165;", go:"vehicleemergency:crash"},
+      {label:"Broken down on the road", ic:"&#128663;", go:"vehicleemergency:breakdown"},
+      {label:"Stuck (mud, sand, snow)", ic:"&#10052;", go:"vehicleemergency:stuck"},
+      {label:"Sinking / submerged in water", ic:"&#127754;", go:"vehicleemergency:submerged"}
+    ]},
+    crash:{type:"result", severity:"severe", title:"Vehicle crash",
+      steps:["Check yourself and passengers for injuries before moving anyone.","If anyone is seriously injured, don't move them unless staying puts them in immediate danger (fire, traffic) - call/send for emergency help.","If the vehicle is drivable and it's safe, move it to the shoulder; otherwise turn on hazard lights and stay clear of traffic.","Exchange information with other involved drivers if everyone is safe to do so.","Call emergency services - most places require reporting a crash with injury or significant damage."],
+      notdo:["Don't move a seriously injured person unless staying puts them in immediate danger.","Don't stand between vehicles or in traffic lanes to talk or exchange information."]},
+    breakdown:{type:"result", severity:"moderate", title:"Breakdown on the road",
+      steps:["Pull as far off the roadway as possible and turn on hazard lights.","If available, place flares or reflective triangles behind the vehicle.","If it's safer, exit away from traffic to a location off the road; otherwise stay inside with your seatbelt on.","Call for roadside assistance, or emergency help if you're somewhere dangerous (highway shoulder, blind curve, unlit at night)."],
+      notdo:["Don't stand between your vehicle and passing traffic.","Don't attempt repairs on the traffic side of the vehicle."]},
+    stuck:{type:"result", severity:"moderate", title:"Stuck in mud, sand, or snow",
+      steps:["Stop spinning the wheels - it digs you in deeper.","Clear debris, sand, or snow from around the tires.","Use traction aids if available: boards, floor mats, or sand/gravel under the tires.","Gently rock the vehicle forward and back if it's safe to do so.","If stuck in snow and can't free the vehicle, stay with it (see Vehicle Emergencies and Cold exposure/hypothermia) and run the engine briefly each hour for heat, making sure the exhaust pipe is clear of snow."],
+      notdo:["Don't keep spinning the wheels.","Don't leave the vehicle to walk for help in severe weather unless you know help is very close - staying with it is usually safer."]},
+    submerged:{type:"result", severity:"severe", title:"Vehicle sinking or submerged",
+      steps:["Unbuckle your seatbelt immediately.","Open a window or break it right away, before the vehicle fully submerges - power windows and doors can fail once underwater.","Get children or the lightest occupants out first through the window.","Once out, swim to the surface and away from the vehicle, then call/send for emergency help."],
+      notdo:["Don't wait for the vehicle to fill with water before trying to exit - escape early, while windows and doors may still work."]}
+  },
+  lost:{
+    start:{type:"result", severity:"moderate", title:"Lost or stranded: S.T.O.P.",
+      steps:["Stop moving as soon as you realize you're lost - continuing to wander usually makes it harder to be found.","Think - stay calm, take stock of what you have, and avoid panicked decisions.","Observe your surroundings, the time of day, weather, and any landmarks or trail signs nearby.","Plan - if you told someone your route and time, staying put is usually the safest option since it's easier for searchers to find a stationary person.","Signal your location if you can: whistle, mirror, bright clothing, or the Signaling guide's SOS pattern.","If night is falling or weather is worsening, prioritize shelter (see Shelter) before it gets dark."],
+      notdo:["Don't keep moving aimlessly once you know you're lost.","Don't split up a group to search in different directions.","Don't drain a phone battery searching for signal in one spot - move to higher, open ground once, then conserve power."]}
+  },
+  waterincident:{
+    start:{type:"menu", title:"Water emergency", items:[
+      {label:"Someone is struggling in the water now", ic:"&#127754;", go:"waterincident:rescue"},
+      {label:"Someone was just pulled from the water", ic:"&#128167;", go:"waterincident:check"}
+    ]},
+    rescue:{type:"result", severity:"severe", title:"Person in the water: reach or throw, don't go",
+      steps:["Call/send for emergency help immediately.","Reach or throw something that floats - a rope, life ring, cooler, or branch - rather than entering the water yourself.","Only enter the water to help if you're trained in water rescue - a struggling swimmer can pull a rescuer under too.","Once they're out, check if they're breathing normally - if not, begin CPR immediately."],
+      notdo:["Don't swim out for an untrained rescue unless there's truly no other option - two people in danger is worse than one.","Don't waste time removing wet clothing before starting CPR if they're not breathing."]},
+    check:{type:"q", text:"Are they breathing normally now?", options:[
+      {label:"No - not breathing or only gasping", next:"no_breath", flow:"breathing"},
+      {label:"Yes - breathing and responsive", next:"outofwater"}
+    ]},
+    outofwater:{type:"result", severity:"moderate", title:"After a water rescue: keep watching",
+      steps:["Get them warm and dry - treat for hypothermia if they've been in cold water (see Cold exposure/hypothermia).","Keep monitoring their breathing closely for the next 24 hours, even if they seem fine now.","Seek medical care if you notice persistent coughing, trouble breathing, extreme tiredness, or confusion in the hours after - these can be signs of a delayed reaction to water in the lungs."],
+      notdo:["Don't assume someone is fine just because they're conscious and coughed the water out.","If you didn't witness the whole incident, get them checked by a medical professional regardless of how they seem."]}
+  },
+  other:{
+    start:{type:"result", severity:"info", forceCall:true, title:"Not sure what to call it?",
+      steps:["If there's any threat to life, call for emergency help now.","If you can describe what's wrong, try the search bar at the top for a specific symptom or situation.","Otherwise, browse the full First Aid and category guides below for step-by-step guidance."]}
   }
 };
 
@@ -770,7 +900,7 @@ function getLocation(){
   });
 }
 function liveBox(id, loadingMsg){
-  return '<div class="live-result" id="'+id+'"><p class="live-hint">Tap the button above - this needs an internet connection and your device location.</p></div>';
+  return '<div class="live-result" id="'+id+'" aria-live="polite"><p class="live-hint">Tap the button above - this needs an internet connection and your device location.</p></div>';
 }
 function setLive(id, html){ var el=document.getElementById(id); if(el) el.innerHTML = html; }
 function liveError(id, msg){
@@ -924,6 +1054,18 @@ function renderWarning(title, list){
 function renderSteps(steps){
   return '<ol>'+steps.map(function(s){return "<li>"+esc(s)+"</li>";}).join("")+'</ol>';
 }
+function renderCallBox(node){
+  if(node.severity === "severe" || node.forceCall){
+    return '<div class="call-now">'+
+      '<a class="call-btn" href="tel:911">&#9742; Call 911 Now</a>'+
+      '<p class="call-note">US &amp; Canada number shown by default. Outside the US/Canada, '+
+      '<button type="button" class="linklike" data-go="cat:connect">see your local emergency number</button></p></div>';
+  }
+  if(node.severity === "moderate"){
+    return '<p class="care-note">&#128337; Get medical care as soon as you reasonably can.</p>';
+  }
+  return "";
+}
 
 function displayVol(litersLow, litersHigh){ return null; }
 
@@ -959,12 +1101,18 @@ function renderHome(){
   html += '<button class="btn" data-go="quiz">&#10067; Knowledge Check</button>';
   html += '</div></div>';
 
-  html += '<div class="section"><h2>Categories</h2><div class="grid">';
-  CATEGORIES.forEach(function(c){
-    html += '<div class="card">'+favBtn("cat:"+c.id, c.name)+
-      '<button class="card-link" data-go="cat:'+c.id+'"><span class="ic">'+c.ic+'</span><h3>'+c.name+'</h3><p>'+catBlurb(c.id)+'</p></button></div>';
+  html += '<div class="section"><h2>Categories</h2>';
+  CATEGORY_GROUPS.forEach(function(g){
+    html += '<h3>'+g.label+'</h3><div class="grid">';
+    g.ids.forEach(function(id){
+      var c = catById(id);
+      if(!c) return;
+      html += '<div class="card">'+favBtn("cat:"+c.id, c.name)+
+        '<button class="card-link" data-go="cat:'+c.id+'"><span class="ic">'+c.ic+'</span><h3>'+c.name+'</h3><p>'+catBlurb(c.id)+'</p></button></div>';
+    });
+    html += '</div>';
   });
-  html += '</div></div>';
+  html += '</div>';
 
   if(state.favorites.size){
     html += '<div class="section"><h2>&#9733; Favorites</h2>'+renderFavList()+'</div>';
@@ -1033,12 +1181,18 @@ function renderQuickRef(){
 
 function renderBrowse(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#128218; Browse &amp; Learn</h2><p>Calm-context reading, organized by topic.</p><div class="grid">';
-  CATEGORIES.forEach(function(c){
-    html += '<div class="card">'+favBtn("cat:"+c.id, c.name)+
-      '<button class="card-link" data-go="cat:'+c.id+'"><span class="ic">'+c.ic+'</span><h3>'+c.name+'</h3><p>'+catBlurb(c.id)+'</p></button></div>';
+  html += '<div class="section"><h2>&#128218; Browse &amp; Learn</h2><p>Calm-context reading, organized by topic.</p>';
+  CATEGORY_GROUPS.forEach(function(g){
+    html += '<h3>'+g.label+'</h3><div class="grid">';
+    g.ids.forEach(function(id){
+      var c = catById(id);
+      if(!c) return;
+      html += '<div class="card">'+favBtn("cat:"+c.id, c.name)+
+        '<button class="card-link" data-go="cat:'+c.id+'"><span class="ic">'+c.ic+'</span><h3>'+c.name+'</h3><p>'+catBlurb(c.id)+'</p></button></div>';
+    });
+    html += '</div>';
   });
-  html += '</div></div>';
+  html += '</div>';
   return html;
 }
 
@@ -1052,7 +1206,7 @@ function renderFirstAidCat(){
     '<span class="legend-chip"><span class="dot moderate"></span> Moderate - prompt care</span>'+
     '<span class="legend-chip"><span class="dot severe"></span> Severe - emergency</span>'+
   '</div>';
-  html += '<h3>Jump straight to a condition</h3><div class="entry-grid">';
+  html += '<h3>Jump straight to a situation</h3><div class="entry-grid">';
   TRIAGE_FLOWS.entry.start.items.forEach(function(item){
     var flow = item.go.split(":")[0];
     html += '<button class="entry-btn" data-go="triage:'+flow+':start"><span class="ic">'+item.ic+'</span><span>'+esc(item.label)+'</span></button>';
@@ -1089,15 +1243,20 @@ function renderTriage(flowId, nodeId){
     html += '<h2 style="margin-top:.5rem">'+esc(node.text)+'</h2>';
     html += '<div class="qbtn-list">';
     node.options.forEach(function(opt){
-      html += '<button class="qbtn" data-go="triage:'+flowId+':'+opt.next+'"><span>'+esc(opt.label)+'</span><span class="arrow">&rarr;</span></button>';
+      var targetFlow = opt.flow || flowId;
+      html += '<button class="qbtn" data-go="triage:'+targetFlow+':'+opt.next+'"><span>'+esc(opt.label)+'</span><span class="arrow">&rarr;</span></button>';
     });
     html += '</div>';
   } else if(node.type === "result"){
     html += '<div class="result-card '+node.severity+'">';
     html += severityBadge(node.severity)+'<h3>'+esc(node.title)+'</h3>';
+    html += renderCallBox(node);
     html += renderSteps(node.steps);
     html += '</div>';
     html += renderNotDo(node.notdo);
+    if(node.severity === "severe"){
+      html += '<div class="locate-row"><button class="btn small" data-go="cat:connect">&#128205; Find nearest hospital / facility</button></div>';
+    }
     html += '<div class="secondary-row" style="margin-top:1rem">';
     html += '<button class="btn" data-go="triage:'+flowId+':start">&#8635; Start this flow over</button>';
     html += '<button class="btn" data-go="triage:entry:start">&#9776; Choose different situation</button>';
@@ -1707,7 +1866,7 @@ function renderQuiz(){
     q.a.forEach(function(ans, ai){
       html += '<button class="qbtn" data-quiz-answer="'+ai+'"><span>'+esc(ans)+'</span></button>';
     });
-    html += '</div><div id="quiz-feedback"></div>';
+    html += '</div><div id="quiz-feedback" aria-live="polite"></div>';
   }
   html += '</div>';
   return html;
@@ -1743,10 +1902,14 @@ function renderSidebar(){
   html += '<button class="nav-btn '+(r.view==="quickref"?"active":"")+'" data-go="quickref"><span class="ic">&#128203;</span>Quick Reference</button>';
   html += '<button class="nav-btn '+(r.view==="browse"?"active":"")+'" data-go="browse"><span class="ic">&#128218;</span>Browse &amp; Learn</button>';
   html += '<button class="nav-btn '+(r.view==="quiz"?"active":"")+'" data-go="quiz"><span class="ic">&#10067;</span>Knowledge Check</button>';
-  html += '<div class="nav-group-label">Categories</div>';
-  CATEGORIES.forEach(function(c){
-    var active = (r.view==="category" && r.cat===c.id) || (r.view==="triage" && c.id==="firstaid");
-    html += '<button class="nav-btn '+(active?"active":"")+'" data-go="cat:'+c.id+'"><span class="ic">'+c.ic+'</span>'+c.name+'</button>';
+  CATEGORY_GROUPS.forEach(function(g){
+    html += '<div class="nav-group-label">'+g.label+'</div>';
+    g.ids.forEach(function(id){
+      var c = catById(id);
+      if(!c) return;
+      var active = (r.view==="category" && r.cat===c.id) || (r.view==="triage" && c.id==="firstaid");
+      html += '<button class="nav-btn '+(active?"active":"")+'" data-go="cat:'+c.id+'"><span class="ic">'+c.ic+'</span>'+c.name+'</button>';
+    });
   });
   sb.innerHTML = html;
 }
@@ -1965,6 +2128,16 @@ function buildSearchIndex(){
   idx("Connect & Alerts","Emergency numbers by region","911 112 999 000 phone",{view:"category",cat:"connect"});
   idx("Connect & Alerts","Relief organizations","Red Cross FEMA poison control 211",{view:"category",cat:"connect"});
   idx("Signaling","Screen strobe SOS flashlight","flash light visibility signal offline",{view:"category",cat:"signal"});
+  idx("First Aid","Not breathing / unresponsive (CPR)","cpr chest compressions rescue breaths cardiac arrest aed",{view:"triage",flow:"breathing",node:"start"});
+  idx("First Aid","Broken bone / severe sprain","broken arm leg wrist ankle limb fracture splint",{view:"triage",flow:"fracture",node:"start"});
+  idx("First Aid","Chest pain / possible heart attack","cardiac chest pain pressure arm jaw",{view:"triage",flow:"cardiac",node:"start"});
+  idx("First Aid","Trouble breathing","asthma wheezing shortness of breath inhaler",{view:"triage",flow:"breathing_distress",node:"start"});
+  idx("First Aid","Poison / chemical exposure","poison control swallowed ingested overdose chemical",{view:"triage",flow:"poison",node:"start"});
+  idx("First Aid","Fire emergency","structure fire building on fire clothing on fire stop drop roll wildfire",{view:"triage",flow:"fireemergency",node:"start"});
+  idx("Vehicle Emergencies","Vehicle emergency: crash, breakdown, stuck, submerged","car stuck crash breakdown submerged roadside stranded vehicle",{view:"triage",flow:"vehicleemergency",node:"start"});
+  idx("First Aid","Lost or stranded","stop think observe plan search and rescue",{view:"triage",flow:"lost",node:"start"});
+  idx("First Aid","Water emergency / drowning","drowning water rescue reach throw dont go",{view:"triage",flow:"waterincident",node:"start"});
+  idx("Water & Food","Finding and purifying water","no water dehydrated thirsty out of water find water",{view:"category",cat:"water"});
 }
 
 var searchInput = document.getElementById("search-input");
@@ -1972,7 +2145,16 @@ var searchResults = document.getElementById("search-results");
 function renderSearch(q){
   q = q.trim().toLowerCase();
   if(!q){ searchResults.classList.remove("show"); searchResults.innerHTML=""; return; }
-  var matches = SEARCH_INDEX.filter(function(item){ return item.kw.indexOf(q) !== -1; }).slice(0,20);
+  var words = q.split(/\s+/).filter(Boolean);
+  var matches = SEARCH_INDEX.filter(function(item){
+    return words.every(function(w){ return item.kw.indexOf(w) !== -1; });
+  }).map(function(item){
+    var score = 0, titleLower = item.title.toLowerCase();
+    if(titleLower.indexOf(q) !== -1) score += 100;
+    words.forEach(function(w){ if(titleLower.indexOf(w) !== -1) score += 10; });
+    if(item.go && item.go.view === "triage") score += 25;
+    return {item:item, score:score};
+  }).sort(function(a,b){ return b.score - a.score; }).map(function(x){ return x.item; }).slice(0,20);
   if(!matches.length){
     searchResults.innerHTML = '<div class="sr-empty">No results for "'+esc(q)+'"</div>';
   } else {
