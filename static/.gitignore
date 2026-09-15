@@ -1,7 +1,0 @@
-node_modules
-dist
-.DS_Store
-*.tsbuildinfo
-# The self-contained single-file build, inlined from dist/ for the Artifact
-# publish. Generated, not source — same reason dist/ above is ignored.
-static-game.html

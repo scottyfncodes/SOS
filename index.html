@@ -1,0 +1,2045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Offline Survival Guide</title>
+<style>
+:root{
+  /* ground: black / dark olive-drab */
+  --ground:#0c0f09; --ground-raised:#161b10; --ground-raised2:#1f2617;
+  --line:#3a4226; --line-strong:#4d5730;
+  /* ink: tan / khaki */
+  --ink:#e9dfc0; --ink-dim:#b2a67f; --ink-faint:#7c7256;
+  /* gold: sole accent family. bright = loudest (emergency/primary only). soft = everyday interactive. */
+  --gold:#d1a832; --gold-ink:#180f02; --gold-dim:#2c2408; --gold-line:#5c4a17;
+  --gold-soft:#c9a24a;
+  /* severity (distinct from accent gold) */
+  --mild:#84b23f; --mild-bg:#1b2410; --moderate:#c98a2e; --moderate-bg:#2b1d08;
+  --severe:#d1502f; --severe-bg:#2e1309;
+  --focus:#f0c93e;
+  --radius:7px; --radius-lg:10px; --fs:18px;
+  --font-display:"Bahnschrift","Roboto Condensed","Arial Narrow",-apple-system,"Segoe UI",sans-serif;
+  --font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --font-mono:"SF Mono",ui-monospace,"SFMono-Regular","Roboto Mono","Courier New",monospace;
+}
+*{box-sizing:border-box;}
+html{font-size:var(--fs); scroll-padding-top:90px;}
+body{
+  margin:0; background-color:var(--ground); color:var(--ink);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='150' viewBox='0 0 320 150'%3E%3Cg fill='none' stroke='%233a4226' stroke-opacity='0.4' stroke-width='1'%3E%3Cpath d='M-20 18 Q 60 -4 140 18 T 300 18 T 460 18'/%3E%3Cpath d='M-20 55 Q 60 33 140 55 T 300 55 T 460 55'/%3E%3Cpath d='M-20 96 Q 60 74 140 96 T 300 96 T 460 96'/%3E%3Cpath d='M-20 134 Q 60 112 140 134 T 300 134 T 460 134'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:repeat;
+  font-family:var(--font-body);
+  line-height:1.5; -webkit-text-size-adjust:100%;
+}
+button, input, select{font-family:inherit; font-size:1rem; color:inherit;}
+button{cursor:pointer;}
+a{color:var(--gold-soft);}
+h1,h2,h3,h4{line-height:1.2; margin:0 0 .5em; font-family:var(--font-display); text-wrap:balance; letter-spacing:-.01em;}
+p{margin:0 0 .75em;}
+.mono{font-family:var(--font-mono); font-variant-numeric:tabular-nums;}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+:focus-visible{outline:3px solid var(--focus); outline-offset:2px;}
+
+#app-shell{display:flex; min-height:100vh;}
+
+/* HEADER */
+#topbar{
+  position:sticky; top:0; z-index:40; display:flex; align-items:center; gap:.5rem;
+  background:var(--ground-raised); border-bottom:1px solid var(--line);
+  box-shadow:0 2px 0 0 var(--gold-line);
+  padding:.6rem .7rem; flex-wrap:wrap;
+}
+#hamburger{
+  display:none; min-width:48px; min-height:48px; background:var(--ground-raised2);
+  border:1px solid var(--line); border-radius:var(--radius); font-size:1.4rem; color:var(--ink);
+}
+.brand{display:flex; align-items:center; gap:.55rem; font-size:1.05rem; white-space:nowrap;}
+.brand .flag{font-size:1.5rem;}
+.brand .full{display:flex; flex-direction:column; line-height:1.15;}
+.brand-title{font-family:var(--font-display); font-weight:800; letter-spacing:.01em;}
+.brand-tag{font-family:var(--font-mono); font-size:.6rem; text-transform:uppercase; letter-spacing:.14em; color:var(--ink-faint);}
+#search-wrap{position:relative; flex:1 1 240px; min-width:140px;}
+#search-input{
+  width:100%; min-height:48px; border-radius:var(--radius); border:1px solid var(--line);
+  background:var(--ground-raised2); color:var(--ink); padding:.5rem .9rem; font-size:1rem;
+}
+#search-input::placeholder{color:var(--ink-faint);}
+#search-input:focus{outline:3px solid var(--focus); outline-offset:1px;}
+#search-results{
+  position:absolute; top:calc(100% + 4px); left:0; right:0; background:var(--ground-raised2);
+  border:1px solid var(--line); border-radius:var(--radius-lg); max-height:60vh; overflow:auto;
+  z-index:60; box-shadow:0 12px 32px rgba(0,0,0,.6); display:none;
+}
+#search-results.show{display:block;}
+.sr-item{
+  display:block; width:100%; text-align:left; background:none; border:0; border-bottom:1px solid var(--line);
+  padding:.75rem .9rem; min-height:48px;
+}
+.sr-item:last-child{border-bottom:0;}
+.sr-item:hover, .sr-item:focus{background:var(--ground-raised);}
+.sr-cat{color:var(--gold-soft); font-family:var(--font-mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.08em;}
+.sr-title{font-weight:700; color:var(--ink);}
+.sr-empty{padding:.9rem; color:var(--ink-dim);}
+.icon-btn{
+  min-width:48px; min-height:48px; border-radius:var(--radius); background:var(--ground-raised2);
+  border:1px solid var(--line); padding:.4rem .7rem; font-weight:700; font-size:.95rem;
+  font-family:var(--font-mono); color:var(--ink);
+}
+.icon-btn:hover{border-color:var(--gold-soft); color:var(--gold-soft);}
+#emergency-btn{
+  min-height:52px; background:var(--gold); border:0; color:var(--gold-ink); font-weight:800;
+  font-family:var(--font-display); text-transform:uppercase; letter-spacing:.03em;
+  border-radius:var(--radius); padding:.6rem 1.1rem; font-size:1rem;
+  box-shadow:0 0 0 3px var(--gold-dim);
+  display:flex; align-items:center; gap:.4rem; white-space:nowrap;
+}
+#emergency-btn:hover{filter:brightness(1.08);}
+
+/* SIDEBAR */
+#sidebar{
+  width:252px; flex-shrink:0; background:var(--ground-raised); border-right:1px solid var(--line);
+  position:sticky; top:0; align-self:flex-start; height:100vh; overflow-y:auto; padding:.75rem;
+}
+.nav-group-label{
+  color:var(--ink-faint); font-family:var(--font-mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.1em;
+  margin:1.1rem .6rem .35rem; font-weight:700;
+}
+.nav-group-label:first-child{margin-top:.25rem;}
+.nav-btn{
+  display:flex; align-items:center; gap:.6rem; width:100%; min-height:50px;
+  background:none; border:0; border-left:3px solid transparent; color:var(--ink-dim); border-radius:0 var(--radius) var(--radius) 0;
+  padding:.55rem .6rem .55rem .55rem; text-align:left; font-size:.96rem; font-weight:600;
+}
+.nav-btn .ic{font-size:1.1rem; width:1.4em; text-align:center; opacity:.85;}
+.nav-btn:hover{background:var(--ground-raised2); color:var(--ink);}
+.nav-btn.active{background:var(--gold-dim); color:var(--gold-soft); border-left-color:var(--gold-soft); font-weight:700;}
+#sidebar-scrim{display:none;}
+
+/* MAIN */
+#main{flex:1; min-width:0; padding:1rem 1rem 4rem;}
+.container{max-width:880px; margin:0 auto;}
+.hero{
+  background:var(--ground-raised); border:1px solid var(--line); border-top:3px solid var(--line-strong);
+  border-radius:var(--radius-lg); padding:1.4rem 1.2rem; margin-bottom:1rem;
+}
+.hero h1{font-size:1.6rem; text-transform:uppercase; letter-spacing:.01em;}
+.hero p{color:var(--ink-dim);}
+.big-emergency{
+  position:relative; display:flex; align-items:center; justify-content:center; gap:.6rem; width:100%;
+  min-height:88px; background:var(--gold); color:var(--gold-ink); border:0; border-radius:var(--radius-lg);
+  font-family:var(--font-display); text-transform:uppercase; font-size:1.3rem; font-weight:800; letter-spacing:.02em;
+  margin:1rem 0; box-shadow:0 0 0 6px var(--gold-dim); overflow:visible;
+}
+.big-emergency::before{
+  content:""; position:absolute; inset:-6px; border-radius:calc(var(--radius-lg) + 6px);
+  border:2px solid var(--gold); opacity:.55; animation:beacon-pulse 2.2s ease-out infinite;
+}
+@keyframes beacon-pulse{
+  0%{transform:scale(1); opacity:.55;}
+  100%{transform:scale(1.08); opacity:0;}
+}
+.big-emergency small{display:block; font-family:var(--font-mono); text-transform:none; letter-spacing:.02em; font-size:.56em; font-weight:700; opacity:.85;}
+.secondary-row{display:flex; gap:.7rem; flex-wrap:wrap;}
+.btn{
+  min-height:52px; border-radius:var(--radius); border:1px solid var(--line); background:var(--ground-raised2);
+  color:var(--ink); padding:.6rem 1rem; font-weight:700; font-size:1rem; display:inline-flex;
+  align-items:center; gap:.5rem; flex:1 1 auto; justify-content:center;
+}
+.btn:hover{border-color:var(--gold-soft); color:var(--gold-soft);}
+.btn.primary{background:var(--gold-dim); border-color:var(--gold-soft); color:var(--gold-soft);}
+.btn.ghost{background:none;}
+.btn.small{min-height:44px; padding:.45rem .8rem; font-size:.9rem; flex:none;}
+
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:.8rem; margin:1rem 0;}
+.card{
+  background:var(--ground-raised); border:1px solid var(--line); border-top:3px solid var(--line-strong); border-radius:var(--radius);
+  padding:1rem; position:relative; min-height:110px;
+}
+.card-link{display:block; width:100%; text-align:left; background:none; border:0; color:var(--ink); min-height:110px;}
+.card h3{font-size:1.05rem; margin-bottom:.25rem;}
+.card p{color:var(--ink-dim); font-size:.88rem; margin:0;}
+.card .ic{font-size:1.5rem; display:block; margin-bottom:.4rem; opacity:.9;}
+.fav-btn{
+  position:absolute; z-index:2; top:.5rem; right:.5rem; min-width:40px; min-height:40px; background:none;
+  border:0; font-size:1.25rem; color:var(--ink-faint);
+}
+.fav-btn.active{color:var(--moderate);}
+
+.section{
+  background:var(--ground-raised); border:1px solid var(--line); border-top:3px solid var(--line-strong); border-radius:var(--radius);
+  padding:1.1rem; margin-bottom:1rem;
+}
+.section h2{font-size:1.2rem; text-transform:uppercase; letter-spacing:.01em; display:flex; align-items:center; gap:.5rem;}
+.section h3{font-size:1.05rem; margin-top:1rem; font-family:var(--font-body); font-weight:700; text-transform:none;}
+
+.badge{
+  display:inline-flex; align-items:center; padding:.22rem .65rem .22rem .55rem; font-family:var(--font-mono); font-size:.74rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:.06em; clip-path:polygon(8px 0,100% 0,100% 100%,0 100%,0 8px);
+}
+.badge.mild{background:var(--mild-bg); color:var(--mild); box-shadow:inset 0 0 0 1px var(--mild);}
+.badge.moderate{background:var(--moderate-bg); color:var(--moderate); box-shadow:inset 0 0 0 1px var(--moderate);}
+.badge.severe{background:var(--severe-bg); color:var(--severe); box-shadow:inset 0 0 0 1px var(--severe);}
+.badge.info{background:var(--gold-dim); color:var(--gold-soft); box-shadow:inset 0 0 0 1px var(--gold-soft);}
+
+.result-card{border-radius:var(--radius); padding:1rem 1rem 1rem 1.1rem; margin:.7rem 0; background:var(--ground-raised2); border-left:4px solid;}
+.result-card.mild{border-left-color:var(--mild);}
+.result-card.moderate{border-left-color:var(--moderate);}
+.result-card.severe{border-left-color:var(--severe);}
+.result-card.info{border-left-color:var(--gold-soft);}
+.result-card h3{margin-top:.5rem; text-transform:none; font-family:var(--font-body);}
+.result-card ol, .result-card ul{margin:.4rem 0 0; padding-left:1.3rem;}
+.result-card li{margin-bottom:.4rem;}
+
+.notdo{
+  border:1px solid var(--severe); border-left:4px solid var(--severe); background:var(--severe-bg); border-radius:var(--radius);
+  padding:.8rem 1rem; margin-top:.8rem;
+}
+.notdo h4{color:var(--severe); margin:0 0 .4rem; font-family:var(--font-display); text-transform:uppercase; letter-spacing:.03em; font-size:.92rem; display:flex; align-items:center; gap:.4rem;}
+.notdo ul{margin:0; padding-left:1.2rem;}
+.notdo li{margin-bottom:.3rem;}
+
+.qbtn-list{display:flex; flex-direction:column; gap:.6rem; margin-top:.8rem;}
+.qbtn{
+  min-height:56px; text-align:left; background:var(--ground-raised2); border:1px solid var(--line);
+  border-radius:var(--radius); padding:.7rem 1rem; font-weight:700; font-size:1.02rem; color:var(--ink);
+  display:flex; justify-content:space-between; align-items:center; gap:.5rem;
+}
+.qbtn:hover{border-color:var(--gold-soft); background:var(--gold-dim);}
+.qbtn .arrow{color:var(--ink-faint); font-family:var(--font-mono);}
+
+.entry-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:.6rem; margin-top:.8rem;}
+.entry-btn{
+  min-height:64px; background:var(--ground-raised2); border:1px solid var(--line); border-radius:var(--radius);
+  padding:.6rem .9rem; font-weight:700; text-align:left; display:flex; align-items:center; gap:.6rem;
+  position:relative;
+}
+.entry-btn:hover{border-color:var(--gold);}
+.entry-btn .ic{font-size:1.35rem; opacity:.9;}
+
+.breadcrumb{display:flex; gap:.4rem; align-items:center; color:var(--ink-faint); font-family:var(--font-mono); font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:.6rem; flex-wrap:wrap;}
+.breadcrumb button{background:none;border:0;color:var(--gold-soft); font-family:var(--font-mono); font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; padding:.2rem;}
+
+.legend-row{display:flex; gap:.6rem; flex-wrap:wrap; margin:.6rem 0;}
+.legend-chip{display:flex; align-items:center; gap:.4rem; background:var(--ground-raised2); border:1px solid var(--line); border-radius:999px; padding:.3rem .7rem; font-family:var(--font-mono); font-size:.78rem;}
+.jump-row{display:flex; gap:.5rem; flex-wrap:wrap; margin:.9rem 0;}
+.jump-chip{background:var(--ground-raised2); border:1px solid var(--line); border-radius:999px; padding:.5rem .9rem; font-family:var(--font-mono); font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--gold-soft); text-decoration:none; min-height:44px; display:inline-flex; align-items:center;}
+.jump-chip:hover{border-color:var(--gold-soft);}
+.dot{width:.7rem; height:.7rem; border-radius:50%; display:inline-block;}
+.dot.mild{background:var(--mild);} .dot.moderate{background:var(--moderate);} .dot.severe{background:var(--severe);}
+
+/* SVG viewers */
+.svg-viewer{background:var(--ground-raised2); border:1px solid var(--line); border-radius:var(--radius); padding:.8rem; margin:.8rem 0;}
+.svg-stage{width:100%; max-width:420px; margin:0 auto; display:block;}
+.svg-controls{display:flex; justify-content:space-between; align-items:center; margin-top:.6rem; gap:.5rem;}
+.svg-caption{text-align:center; color:var(--ink-dim); font-size:.92rem; min-height:2.6em; margin-top:.4rem;}
+.step-dots{display:flex; gap:.35rem; justify-content:center;}
+.step-dots span{width:.55rem; height:.55rem; border-radius:50%; background:var(--line); display:inline-block;}
+.step-dots span.active{background:var(--gold-soft);}
+
+/* Calculators */
+.calc-row{display:flex; gap:.7rem; flex-wrap:wrap; align-items:flex-end; margin:.6rem 0;}
+.field{display:flex; flex-direction:column; gap:.3rem; flex:1 1 140px;}
+.field label{font-family:var(--font-mono); font-size:.76rem; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-dim); font-weight:700;}
+.field input, .field select{
+  min-height:48px; border-radius:var(--radius); border:1px solid var(--line); background:var(--ground-raised2);
+  color:var(--ink); padding:.5rem .7rem; font-family:var(--font-mono);
+}
+.field input:focus, .field select:focus{outline:3px solid var(--focus);}
+.calc-output{
+  background:var(--ground-raised2); border:1px solid var(--line); border-radius:var(--radius); padding:.9rem; margin-top:.6rem;
+}
+.calc-output .big-num{font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:1.7rem; font-weight:700; color:var(--gold-soft);}
+.calc-output .lbl{color:var(--ink-dim); font-size:.85rem;}
+.out-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:.7rem;}
+
+table.ref-table{width:100%; border-collapse:collapse; margin:.6rem 0;}
+table.ref-table th, table.ref-table td{border-bottom:1px solid var(--line); padding:.5rem .4rem; text-align:left; font-size:.92rem;}
+table.ref-table th{color:var(--ink-faint); font-family:var(--font-mono); text-transform:uppercase; font-size:.68rem; letter-spacing:.06em;}
+
+.qr-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:.7rem;}
+.qr-card{background:var(--ground-raised2); border:1px solid var(--line); border-left:4px solid var(--gold); border-radius:var(--radius); padding:.8rem;}
+.qr-card h4{margin:0 0 .3rem; font-size:.98rem; font-family:var(--font-body); text-transform:none;}
+.qr-card p{margin:0; color:var(--ink-dim); font-size:.88rem;}
+
+footer.appfoot{text-align:center; color:var(--ink-faint); font-family:var(--font-mono); font-size:.72rem; letter-spacing:.02em; padding:1.2rem 0 .4rem;}
+
+/* Live (online) features */
+.badge.live{background:var(--gold-dim); color:var(--gold-soft); box-shadow:inset 0 0 0 1px var(--gold-soft); margin-right:.5rem; vertical-align:middle;}
+.live-result{margin-top:.7rem;}
+.live-hint{color:var(--ink-faint); font-size:.85rem;}
+.live-loading{color:var(--gold-soft); font-family:var(--font-mono); font-size:.9rem; padding:.6rem 0;}
+.live-error{border:1px solid var(--severe); background:var(--severe-bg); color:var(--severe); border-radius:var(--radius); padding:.7rem 1rem; font-size:.92rem;}
+.qbtn-list a.qbtn{text-decoration:none;}
+
+/* Screen strobe (Signaling) */
+#strobe-overlay{
+  display:none; position:fixed; inset:0; z-index:999; background:#fff;
+  align-items:flex-end; justify-content:center; padding-bottom:8vh;
+}
+#strobe-overlay.active{display:flex;}
+#strobe-stop{
+  min-height:64px; min-width:180px; background:#000; color:#fff; border:4px solid #fff;
+  border-radius:var(--radius-lg); font-size:1.2rem; font-weight:900; letter-spacing:.06em;
+  font-family:var(--font-display); box-shadow:0 0 24px rgba(0,0,0,.5);
+}
+.strobe-controls{display:flex; gap:.7rem; flex-wrap:wrap; margin:.8rem 0;}
+
+@media (max-width:840px){
+  #sidebar{
+    position:fixed; left:0; top:0; height:100%; z-index:80; transform:translateX(-105%);
+    transition:transform .2s ease; box-shadow:0 0 40px rgba(0,0,0,.6); width:280px;
+  }
+  #sidebar.open{transform:translateX(0);}
+  #hamburger{display:inline-flex; align-items:center; justify-content:center;}
+  #sidebar-scrim{
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:70;
+  }
+  #sidebar-scrim.show{display:block;}
+  .brand span.full{display:none;}
+}
+@media (min-width:841px){
+  #sidebar-close{display:none;}
+}
+@media (max-width:520px){
+  .big-emergency{font-size:1.05rem;}
+  #topbar{gap:.4rem;}
+  .brand{font-size:.95rem;}
+}
+
+@media print{
+  #topbar, #sidebar, #sidebar-scrim, .no-print{display:none !important;}
+  #main{padding:0;}
+  body{background:#fff; color:#000;}
+  .section, .result-card, .card, .qr-card{border-color:#999 !important; background:#fff !important; color:#000 !important;}
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+}
+</style>
+</head>
+<body>
+<div id="app-shell">
+  <nav id="sidebar" aria-label="Category navigation"></nav>
+  <div id="sidebar-scrim"></div>
+  <div id="strobe-overlay" role="alert" aria-live="assertive">
+    <button id="strobe-stop" aria-label="Stop strobe">&#9632; STOP</button>
+  </div>
+  <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
+    <header id="topbar">
+      <button id="hamburger" aria-label="Open menu" aria-expanded="false">&#9776;</button>
+      <div class="brand"><span class="flag">&#9906;</span><span class="full"><span class="brand-title">Survival Guide</span><span class="brand-tag">Offline Field Reference</span></span></div>
+      <div id="search-wrap">
+        <label class="visually-hidden" for="search-input">Search the guide</label>
+        <input id="search-input" type="search" placeholder="Search e.g. bleeding, water, north..." autocomplete="off">
+        <div id="search-results" role="listbox"></div>
+      </div>
+      <button class="icon-btn" id="fontsize-btn" title="Text size">A&plusmn;</button>
+      <button class="icon-btn" id="units-btn" title="Units">--</button>
+      <button id="emergency-btn" data-go="triage:entry:start">&#9888; Emergency</button>
+    </header>
+    <main id="main" tabindex="-1"></main>
+    <footer class="appfoot no-print">Fully usable offline &middot; the optional Connect &amp; Alerts tools use your location and a live connection only when you tap them &middot; not a substitute for professional medical care or emergency services when available</footer>
+  </div>
+</div>
+<script>
+(function(){
+"use strict";
+
+var state = {
+  route: {view:"home"},
+  history: [],
+  fontSize: 1, // index into FONT_SIZES
+  units: "imperial",
+  favorites: new Set(),
+  checklists: {},
+  quiz: {order: null, idx:0, score:0, answered:0, done:false},
+  live: {weather:null, alerts:null, facilities:null, earthquakes:null, airquality:null},
+  strobeTimer: null, strobeMode: null
+};
+var FONT_SIZES = [16,18,21,25];
+var FONT_LABELS = ["S","M","L","XL"];
+
+function galToL(g){ return g*3.78541; }
+function lToGal(l){ return l/3.78541; }
+function fToC(f){ return (f-32)*5/9; }
+function cToF(c){ return c*9/5+32; }
+function miToKm(m){ return m*1.60934; }
+function kmToMi(k){ return k/1.60934; }
+function round1(n){ return Math.round(n*10)/10; }
+function haversineKm(lat1,lon1,lat2,lon2){
+  var R=6371, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function distLabel(km){
+  var v = state.units==="imperial" ? kmToMi(km) : km;
+  return round1(v)+" "+unitLabelDist();
+}
+
+/* ---------------- CATEGORY DEFINITIONS ---------------- */
+var CATEGORIES = [
+  {id:"firstaid", name:"First Aid", ic:"&#9877;"},
+  {id:"water", name:"Water & Food", ic:"&#128167;"},
+  {id:"shelter", name:"Shelter", ic:"&#9974;"},
+  {id:"fire", name:"Fire", ic:"&#128293;"},
+  {id:"nav", name:"Navigation", ic:"&#129517;"},
+  {id:"signal", name:"Signaling", ic:"&#128225;"},
+  {id:"weather", name:"Weather", ic:"&#9928;"},
+  {id:"wildlife", name:"Wildlife", ic:"&#128062;"},
+  {id:"vehicle", name:"Vehicle Emergencies", ic:"&#128663;"},
+  {id:"longterm", name:"Long-Term Survival", ic:"&#127806;"},
+  {id:"disasters", name:"Natural Disasters", ic:"&#127755;"},
+  {id:"home", name:"Home Survival", ic:"&#127968;"},
+  {id:"pandemic", name:"Pandemic & Illness", ic:"&#128567;"},
+  {id:"unrest", name:"Civil Unrest & Public Safety", ic:"&#128274;"},
+  {id:"outages", name:"Power Outages", ic:"&#128268;"},
+  {id:"specialneeds", name:"Infants, Elderly & Pets", ic:"&#128118;"},
+  {id:"connect", name:"Connect & Alerts", ic:"&#128246;"}
+];
+
+/* ---------------- FIRST AID TRIAGE FLOWS ---------------- */
+function step(t){ return t; }
+var TRIAGE_FLOWS = {
+  entry:{
+    start:{type:"menu", title:"What's the situation?", items:[
+      {label:"Not breathing / unresponsive", ic:"&#128557;", go:"breathing:start"},
+      {label:"Severe bleeding", ic:"&#129656;", go:"bleeding:start"},
+      {label:"Choking", ic:"&#128557;", go:"choking:start"},
+      {label:"Burn", ic:"&#128293;", go:"burns:start"},
+      {label:"Broken bone / severe sprain", ic:"&#129446;", go:"fracture:start"},
+      {label:"Cold exposure / hypothermia", ic:"&#10052;", go:"hypothermia:start"},
+      {label:"Overheating / heat illness", ic:"&#9728;", go:"heat:start"},
+      {label:"Dehydration", ic:"&#128167;", go:"dehydration:start"},
+      {label:"Snake or animal bite", ic:"&#128013;", go:"snakebite:start"},
+      {label:"Shock (pale, cold, rapid pulse)", ic:"&#128148;", go:"shock:start"},
+      {label:"Allergic reaction / anaphylaxis", ic:"&#128163;", go:"allergic:start"}
+    ]}
+  },
+  breathing:{
+    start:{type:"q", text:"Is the person responsive? Tap their shoulder and shout.", options:[
+      {label:"Yes, responsive", next:"responsive"},
+      {label:"No response", next:"check_breathing"}
+    ]},
+    check_breathing:{type:"q", text:"Is the person breathing normally?", options:[
+      {label:"Yes, breathing normally", next:"recovery"},
+      {label:"No, not breathing or gasping", next:"no_breath"}
+    ]},
+    responsive:{type:"result", severity:"moderate", title:"Responsive",
+      steps:["Check for visible injuries and severe bleeding first.","Keep the person still and calm.","Call/send for emergency help if condition is serious or unclear.","Continue to monitor breathing and responsiveness."]},
+    recovery:{type:"result", severity:"moderate", title:"Breathing, unresponsive: recovery position",
+      steps:["Roll the person onto their side.","Tilt the head back slightly to keep the airway open.","Bend the top knee to stabilize the body.","Monitor breathing continuously until help arrives.","Call/send for emergency help."]},
+    no_breath:{type:"result", severity:"severe", title:"Not breathing: begin CPR now",
+      steps:["Call or send someone to call for emergency help immediately.","Begin chest compressions: push hard and fast in the center of the chest, about 2 in (5 cm) deep, 100-120 per minute.","Give 30 compressions, then 2 rescue breaths (tilt head, lift chin, pinch nose).","Repeat 30:2 continuously until the person responds, breathes normally, or help arrives.","Use an AED immediately if one is available - follow its voice prompts."],
+      notdo:["Don't stop compressions for long to search for a pulse.","Don't tilt the head back forcefully if a neck/spinal injury is suspected - use a jaw-thrust instead if trained.","Don't give up - continue CPR until help arrives or the person recovers."]}
+  },
+  bleeding:{
+    start:{type:"q", text:"Is blood spurting, pumping, or pooling rapidly?", options:[
+      {label:"Yes, severe/rapid", next:"severe"},
+      {label:"No, slow or oozing", next:"moderate_q"}
+    ]},
+    moderate_q:{type:"q", text:"Does the bleeding stop with a few minutes of firm direct pressure?", options:[
+      {label:"Yes, it slows/stops", next:"mild"},
+      {label:"No, it keeps bleeding", next:"severe"}
+    ]},
+    mild:{type:"result", severity:"mild", title:"Minor bleeding",
+      steps:["Clean the wound with clean water if available.","Apply direct pressure with a clean cloth until bleeding stops.","Apply antiseptic if available and cover with a clean bandage.","Watch for signs of infection over the following days (redness, swelling, warmth, pus)."]},
+    severe:{type:"result", severity:"severe", title:"Severe bleeding: act fast",
+      steps:["Apply firm, direct pressure on the wound with the cleanest cloth available.","If bleeding soaks through, add more layers on top - do not remove the original dressing.","For a life-threatening limb wound that won't stop, apply a tourniquet 2-3 in (5-8 cm) above the wound (not on a joint). Note the time it was applied.","Keep the person still; elevate the injury above heart level if possible and no fracture is suspected.","Treat for shock (see Shock) and get emergency help immediately."],
+      notdo:["Don't remove an embedded object - pack and bandage around it instead.","Don't loosen or remove a tourniquet once applied.","Don't repeatedly lift the dressing to check the wound - it disrupts clotting."]}
+  },
+  choking:{
+    start:{type:"q", text:"Can the person cough forcefully, speak, or breathe at all?", options:[
+      {label:"Yes, some air movement", next:"mild"},
+      {label:"No, silent and can't breathe", next:"severe"}
+    ]},
+    mild:{type:"result", severity:"mild", title:"Partial airway obstruction",
+      steps:["Encourage the person to keep coughing forcefully - this is the body's best way to clear it.","Stay with them and stay calm.","If it worsens to a silent, complete blockage, move to the severe steps immediately."]},
+    severe:{type:"result", severity:"severe", title:"Complete airway obstruction",
+      steps:["Stand behind the person, lean them forward.","Give 5 firm back blows between the shoulder blades with the heel of your hand.","If unresolved, give 5 abdominal thrusts (Heimlich maneuver): fist above navel, grasp with other hand, thrust sharply inward/upward.","Alternate 5 back blows and 5 abdominal thrusts until the object clears or the person becomes unresponsive.","If they become unresponsive, lower them to the ground and begin CPR - check the mouth for the object before rescue breaths."],
+      notdo:["Don't perform blind finger sweeps of the mouth.","For infants, use back blows and chest thrusts instead of abdominal thrusts.","Don't leave the person alone to go find help unless absolutely necessary."]}
+  },
+  burns:{
+    start:{type:"q", text:"Is the skin charred, white/leathery, or is the burn larger than the person's hand?", options:[
+      {label:"Yes", next:"severe"},
+      {label:"No", next:"blister_q"}
+    ]},
+    blister_q:{type:"q", text:"Are there blisters present?", options:[
+      {label:"Yes, blistering", next:"moderate"},
+      {label:"No, just red/painful skin", next:"mild"}
+    ]},
+    mild:{type:"result", severity:"mild", title:"Minor (first-degree) burn",
+      steps:["Cool under clean running water for 10-20 minutes.","Cover loosely with a clean, non-stick dressing.","Give pain relief if available and appropriate.","Do not apply ice directly."]},
+    moderate:{type:"result", severity:"moderate", title:"Moderate (second-degree) burn",
+      steps:["Cool with clean water for about 20 minutes.","Cover loosely with a clean, non-stick dressing - do not wrap tightly.","Do not pop or drain blisters.","Seek medical care if the burn is on the face, hands, feet, joints, or genitals, or is larger than a few inches."]},
+    severe:{type:"result", severity:"severe", title:"Severe (third-degree) burn: emergency",
+      steps:["Call/send for emergency help immediately.","Do not remove clothing stuck to the burn.","Cover loosely with a clean, dry cloth.","Watch closely for signs of shock and treat if present.","Keep the person warm and still while awaiting evacuation."],
+      notdo:["Don't apply ice, butter, oil, or ointments to any burn.","Don't pop blisters.","Don't peel away clothing that is stuck to burned skin."]}
+  },
+  fracture:{
+    start:{type:"q", text:"Is the bone visibly deformed, poking through the skin, or is the limb completely unusable?", options:[
+      {label:"Yes, obvious/open fracture", next:"severe"},
+      {label:"No", next:"moderate_q"}
+    ]},
+    moderate_q:{type:"q", text:"Is there significant swelling, bruising, or pain when moving it?", options:[
+      {label:"Yes", next:"moderate"},
+      {label:"No, mild tenderness only", next:"mild"}
+    ]},
+    mild:{type:"result", severity:"mild", title:"Possible sprain/strain",
+      steps:["Rest the area - avoid using it.","Ice or cool-cloth for 20 minutes at a time.","Compress lightly with an elastic wrap.","Elevate above heart level when possible.","Monitor - if pain/swelling worsens, treat as moderate."]},
+    moderate:{type:"result", severity:"moderate", title:"Suspected fracture (closed)",
+      steps:["Immobilize the limb in the position it's in using a splint (see Splinting guide).","Apply RICE: Rest, Ice, Compression, Elevation.","Avoid putting weight on the injury.","Seek medical care as soon as possible."]},
+    severe:{type:"result", severity:"severe", title:"Severe or open fracture",
+      steps:["Do not try to straighten or push the bone back in.","Control any bleeding around the wound with gentle direct pressure away from the bone.","Immobilize the limb in the position found - support above and below the injury (see Splinting guide).","Treat for shock and monitor closely.","Get emergency help / evacuate as soon as possible - do not let the person walk on it."],
+      notdo:["Don't try to realign or push a protruding bone back under the skin.","Don't test the injury by having them 'walk it off'.","Don't move the person more than necessary."]}
+  },
+  hypothermia:{
+    start:{type:"q", text:"Is the person shivering but alert, talking normally, and coordinated?", options:[
+      {label:"Yes", next:"mild"},
+      {label:"No", next:"q2"}
+    ]},
+    q2:{type:"q", text:"Are they confused, stumbling, or slurring words - but still shivering?", options:[
+      {label:"Yes", next:"moderate"},
+      {label:"No - shivering has stopped, very unresponsive, or muscles rigid", next:"severe"}
+    ]},
+    mild:{type:"result", severity:"mild", title:"Mild hypothermia",
+      steps:["Move to a warm, dry, sheltered place.","Remove wet clothing and replace with dry, insulating layers.","Give warm, sweet fluids only if fully alert.","Encourage light movement to generate body heat."]},
+    moderate:{type:"result", severity:"moderate", title:"Moderate hypothermia",
+      steps:["Move to shelter urgently and handle the person gently.","Remove wet clothing; insulate fully including the head, using dry layers or a sleeping bag.","Apply warmth to the core first: warm packs or skin-to-skin contact at neck, chest, and groin.","Do not give food or drink unless they are fully alert and able to swallow safely.","Evacuate for medical care as soon as possible."]},
+    severe:{type:"result", severity:"severe", title:"Severe hypothermia: life-threatening",
+      steps:["Handle extremely gently - rough movement can trigger cardiac arrest.","Insulate the whole body, including the head; prevent further heat loss.","Do not actively rewarm rapidly or massage limbs.","Do not give food or fluids.","Check breathing carefully for a full minute - begin CPR only if truly no breathing.","Evacuate for emergency medical care immediately."],
+      notdo:["Don't rub or massage cold extremities.","Don't give alcohol - it worsens heat loss.","Don't immerse in hot water or attempt rapid rewarming for moderate/severe cases.","Don't assume a very cold, still person is dead - hypothermia can mimic death; continue care."]}
+  },
+  heat:{
+    start:{type:"q", text:"Is the skin hot and dry (or barely sweaty) with confusion, seizure, or unconsciousness?", options:[
+      {label:"Yes - heat stroke signs", next:"heatstroke"},
+      {label:"No", next:"q2"}
+    ]},
+    q2:{type:"q", text:"Heavy sweating with cool/clammy skin, dizziness, nausea, or headache?", options:[
+      {label:"Yes", next:"heatexhaustion"},
+      {label:"No, just mild discomfort", next:"mild"}
+    ]},
+    mild:{type:"result", severity:"mild", title:"Mild heat stress", steps:["Move to shade or a cooler area.","Hydrate with water.","Rest and loosen clothing.","Avoid further exertion in the heat."]},
+    heatexhaustion:{type:"result", severity:"moderate", title:"Heat exhaustion",
+      steps:["Move to a cool, shaded area immediately.","Remove excess clothing; cool the skin with wet cloths and fanning.","Sip water or an electrolyte drink if fully alert.","Rest until symptoms fully resolve.","Seek medical care if not improving within 30 minutes."]},
+    heatstroke:{type:"result", severity:"severe", title:"Heat stroke: life-threatening emergency",
+      steps:["Call/send for emergency help immediately.","Cool aggressively: ice packs or cold wet cloths at neck, armpits, and groin; immerse in cool water if possible.","Do not give fluids by mouth if the person is not fully alert.","Monitor breathing and responsiveness closely until help arrives."],
+      notdo:["Don't give fluids to someone who isn't fully alert (choking/aspiration risk).","Don't wait to see if heat stroke signs pass on their own - it can be fatal within minutes.","Don't use ice-water immersion for mild heat stress - reserve aggressive cooling for heat stroke."]}
+  },
+  dehydration:{
+    start:{type:"q", text:"Is the person confused, not urinating, or having a rapid weak pulse/fainting?", options:[
+      {label:"Yes", next:"severe"},
+      {label:"No", next:"q2"}
+    ]},
+    q2:{type:"q", text:"Noticeable thirst, dry mouth, dark yellow urine, or fatigue?", options:[
+      {label:"Yes", next:"moderate"},
+      {label:"No, just mild thirst", next:"mild"}
+    ]},
+    mild:{type:"result", severity:"mild", title:"Mild dehydration", steps:["Drink water steadily, small amounts often.","Rest in the shade.","Monitor urine color - aim for pale yellow."]},
+    moderate:{type:"result", severity:"moderate", title:"Moderate dehydration",
+      steps:["Rehydrate with water plus electrolytes; a pinch of salt and sugar per liter can help if no electrolyte mix is available.","Rest and avoid further exertion.","Continue monitoring - progress to severe steps if symptoms worsen."]},
+    severe:{type:"result", severity:"severe", title:"Severe dehydration: emergency",
+      steps:["This requires medical care - begin evacuation.","If conscious and able to swallow, give oral rehydration solution slowly and steadily, not large amounts at once.","Keep the person cool and still.","Watch closely for worsening confusion or loss of consciousness."],
+      notdo:["Don't gulp large volumes of water quickly - it can cause vomiting.","Don't drink seawater or urine to rehydrate - it worsens dehydration.","Don't ignore dark urine combined with confusion - treat as severe."]}
+  },
+  snakebite:{
+    start:{type:"q", text:"Do you know with certainty the snake was non-venomous?", options:[
+      {label:"Yes, certain", next:"mild"},
+      {label:"No / unsure", next:"assess"}
+    ]},
+    assess:{type:"q", text:"Is there rapidly spreading swelling, severe pain, vomiting, trouble breathing, or drooping eyelids?", options:[
+      {label:"Yes", next:"severe"},
+      {label:"No, mild local pain/swelling only so far", next:"moderate"}
+    ]},
+    mild:{type:"result", severity:"mild", title:"Non-venomous bite", steps:["Clean the wound with water.","Cover with a clean dressing.","Still seek medical evaluation when possible."]},
+    moderate:{type:"result", severity:"moderate", title:"Possible venomous bite", steps:["Keep the person calm and as still as possible - movement spreads venom faster.","Keep the bitten limb below heart level.","Remove rings, watches, or tight clothing near the bite before swelling worsens.","Mark the edge of swelling and the time, and recheck every 15 minutes.","Get to medical care as soon as possible."]},
+    severe:{type:"result", severity:"severe", title:"Severe envenomation: emergency",
+      steps:["Call/send for emergency help immediately.","Keep the person still and calm - carry them if possible rather than letting them walk.","Immobilize the bitten limb below heart level, similar to a fracture splint.","Evacuate urgently - antivenom is time-critical."],
+      notdo:["Don't cut the wound.","Don't try to suck out the venom.","Don't apply a tight tourniquet or ice.","Don't try to catch or kill the snake - a photo from a safe distance is enough for identification."]}
+  },
+  shock:{
+    start:{type:"q", text:"Is the skin pale, cool, and clammy with a rapid weak pulse and confusion?", options:[
+      {label:"Yes", next:"severe"},
+      {label:"No, but there's a recent injury/blood loss/burn", next:"monitor"}
+    ]},
+    monitor:{type:"result", severity:"moderate", title:"Watch for shock", steps:["Keep monitoring closely - shock can develop after injury, blood loss, or burns.","Keep the person calm, warm, and still.","Treat the underlying injury (bleeding, burn, fracture).","Recheck skin color, pulse, and alertness frequently."]},
+    severe:{type:"result", severity:"severe", title:"Shock: emergency",
+      steps:["Call/send for emergency help immediately.","Lay the person down and elevate the legs about 12 in (30 cm), unless a head, spinal, or leg injury is suspected.","Keep them warm with a blanket and treat any obvious cause such as bleeding.","Do not give food or water.","Monitor breathing and responsiveness continuously until help arrives."],
+      notdo:["Don't give food or drink.","Don't leave the person alone.","Don't elevate the legs if a head, spinal, or leg fracture is suspected."]}
+  },
+  allergic:{
+    start:{type:"q", text:"Swelling of the face/throat, trouble breathing or swallowing, or widespread hives with dizziness?", options:[
+      {label:"Yes - severe reaction", next:"severe"},
+      {label:"No, localized itching/hives only", next:"mild"}
+    ]},
+    mild:{type:"result", severity:"mild", title:"Mild allergic reaction", steps:["Give an antihistamine if available and appropriate.","Remove the trigger if known (e.g., stinger, contact source).","Monitor closely for 30-60 minutes for signs of progression to a severe reaction."]},
+    severe:{type:"result", severity:"severe", title:"Anaphylaxis: life-threatening emergency",
+      steps:["Use an epinephrine auto-injector immediately if available - inject into the outer thigh.","Call/send for emergency help right away.","Lay the person flat with legs raised, unless breathing is difficult, in which case let them sit up.","Be ready to give a second epinephrine dose after 5-15 minutes if there's no improvement.","Begin CPR immediately if they become unresponsive or stop breathing."],
+      notdo:["Don't wait to see if it improves before using epinephrine.","Don't have the person stand or walk suddenly - it can cause a fatal drop in blood pressure.","Don't rely on an oral antihistamine alone for a severe reaction - it is not a substitute for epinephrine."]}
+  }
+};
+
+/* ---------------- SVG STEP SEQUENCES ---------------- */
+function svgFrame(inner, vb){ return '<svg class="svg-stage" viewBox="'+(vb||"0 0 300 220")+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">'+inner+'</svg>'; }
+var COL_LINE = "#aab2bf", COL_SKIN="#d9a066", COL_RED="#ff4d4d", COL_WHITE="#f3f5f8", COL_ACC="#3ba7ff", COL_WOOD="#8a5a34", COL_GREEN="#3fbf7f";
+
+var BANDAGE_STEPS = [
+  {cap:"Step 1: Expose the wound and apply a clean dressing directly over it.",
+   svg:svgFrame('<rect x="40" y="70" width="220" height="60" rx="30" fill="'+COL_SKIN+'"/><circle cx="150" cy="100" r="16" fill="'+COL_RED+'"/><rect x="120" y="82" width="60" height="36" rx="6" fill="'+COL_WHITE+'" opacity="0"/>')},
+  {cap:"Step 2: Press the dressing firmly with your palm to apply direct pressure.",
+   svg:svgFrame('<rect x="40" y="70" width="220" height="60" rx="30" fill="'+COL_SKIN+'"/><rect x="115" y="78" width="70" height="44" rx="8" fill="'+COL_WHITE+'"/><circle cx="150" cy="100" r="10" fill="'+COL_RED+'" opacity=".5"/><path d="M150 40 v30 M130 45 l20 -20 l20 20" stroke="'+COL_ACC+'" stroke-width="4" fill="none" stroke-linecap="round"/>')},
+  {cap:"Step 3: Wrap a bandage snugly around the limb, over the dressing, working outward from the wound.",
+   svg:svgFrame('<rect x="40" y="70" width="220" height="60" rx="30" fill="'+COL_SKIN+'"/><rect x="110" y="76" width="80" height="48" rx="8" fill="'+COL_WHITE+'"/><path d="M100 68 q50 -14 100 0 M100 132 q50 14 100 0 M95 90 q55 -10 110 0 M95 110 q55 10 110 0" stroke="'+COL_ACC+'" stroke-width="6" fill="none" stroke-linecap="round"/>')},
+  {cap:"Step 4: Secure the end, check circulation past the bandage, and elevate the injury if possible.",
+   svg:svgFrame('<rect x="40" y="70" width="220" height="60" rx="30" fill="'+COL_SKIN+'"/><rect x="100" y="70" width="100" height="60" rx="10" fill="'+COL_ACC+'" opacity=".85"/><path d="M205 100 h30" stroke="'+COL_WHITE+'" stroke-width="6" stroke-linecap="round"/><path d="M225 92 l10 8 l-10 8" fill="none" stroke="'+COL_WHITE+'" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M150 40 l0 20" stroke="'+COL_GREEN+'" stroke-width="4"/><path d="M140 50 l10 -14 l10 14" fill="none" stroke="'+COL_GREEN+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>')}
+];
+var SPLINT_STEPS = [
+  {cap:"Step 1: Support the injured limb above and below the injury without straightening it.",
+   svg:svgFrame('<rect x="30" y="120" width="240" height="26" rx="13" fill="'+COL_SKIN+'" transform="rotate(-8 150 133)"/><circle cx="150" cy="120" r="10" fill="'+COL_RED+'"/>')},
+  {cap:"Step 2: Place padding along the limb, then lay a rigid support (stick, pole, or board) alongside it.",
+   svg:svgFrame('<rect x="30" y="120" width="240" height="26" rx="13" fill="'+COL_SKIN+'" transform="rotate(-8 150 133)"/><rect x="35" y="150" width="230" height="14" rx="7" fill="'+COL_WOOD+'"/>')},
+  {cap:"Step 3: Tie the splint in place at several points - above the injury, below it, but never directly over it.",
+   svg:svgFrame('<rect x="30" y="120" width="240" height="26" rx="13" fill="'+COL_SKIN+'" transform="rotate(-8 150 133)"/><rect x="35" y="150" width="230" height="14" rx="7" fill="'+COL_WOOD+'"/><rect x="55" y="112" width="10" height="55" fill="'+COL_ACC+'"/><rect x="150" y="112" width="10" height="55" fill="'+COL_ACC+'"/><rect x="235" y="112" width="10" height="55" fill="'+COL_ACC+'"/>')},
+  {cap:"Step 4: Check that fingers/toes stay warm, pink, and can feel touch. Support or sling the limb and keep the person still.",
+   svg:svgFrame('<rect x="30" y="120" width="240" height="26" rx="13" fill="'+COL_SKIN+'" transform="rotate(-8 150 133)"/><rect x="35" y="150" width="230" height="14" rx="7" fill="'+COL_WOOD+'"/><rect x="55" y="112" width="10" height="55" fill="'+COL_ACC+'"/><rect x="150" y="112" width="10" height="55" fill="'+COL_ACC+'"/><rect x="235" y="112" width="10" height="55" fill="'+COL_ACC+'"/><path d="M270 60 q-40 30 -40 70" stroke="'+COL_GREEN+'" stroke-width="5" fill="none" stroke-dasharray="6 6"/>')}
+];
+
+function svgViewer(id, steps, startIdx){
+  return '<div class="svg-viewer" data-viewer="'+id+'" data-idx="'+(startIdx||0)+'">'+
+    '<div class="viewer-stage">'+steps[startIdx||0].svg+'</div>'+
+    '<div class="svg-caption">'+steps[startIdx||0].cap+'</div>'+
+    '<div class="svg-controls">'+
+      '<button class="btn small" data-viewer-prev="'+id+'">&larr; Prev</button>'+
+      '<div class="step-dots">'+steps.map(function(s,i){return '<span class="'+(i===(startIdx||0)?"active":"")+'"></span>';}).join("")+'</div>'+
+      '<button class="btn small" data-viewer-next="'+id+'">Next &rarr;</button>'+
+    '</div></div>';
+}
+var VIEWERS = {bandage:BANDAGE_STEPS, splint:SPLINT_STEPS};
+
+/* Shelter diagrams (static multi-callout) */
+function leanToSvg(){
+  return svgFrame('<line x1="20" y1="190" x2="280" y2="190" stroke="'+COL_LINE+'" stroke-width="3"/>'+
+    '<line x1="60" y1="190" x2="60" y2="70" stroke="'+COL_WOOD+'" stroke-width="8"/>'+
+    '<line x1="60" y1="70" x2="240" y2="190" stroke="'+COL_WOOD+'" stroke-width="8"/>'+
+    '<g stroke="'+COL_GREEN+'" stroke-width="4">'+
+      '<line x1="80" y1="90" x2="220" y2="185"/><line x1="100" y1="95" x2="220" y2="165"/>'+
+      '<line x1="120" y1="100" x2="220" y2="145"/><line x1="140" y1="105" x2="220" y2="125"/>'+
+      '<line x1="160" y1="112" x2="215" y2="112"/>'+
+    '</g>'+
+    '<text x="45" y="60" fill="'+COL_WHITE+'" font-size="14">1</text>'+
+    '<text x="230" y="200" fill="'+COL_WHITE+'" font-size="14">2</text>'+
+    '<text x="150" y="95" fill="'+COL_WHITE+'" font-size="14">3</text>', "0 0 300 210");
+}
+function debrisHutSvg(){
+  return svgFrame('<line x1="20" y1="190" x2="280" y2="190" stroke="'+COL_LINE+'" stroke-width="3"/>'+
+    '<path d="M40 190 L150 90 L260 190 Z" fill="none" stroke="'+COL_WOOD+'" stroke-width="6"/>'+
+    '<g stroke="'+COL_GREEN+'" stroke-width="4">'+
+      '<line x1="60" y1="185" x2="150" y2="100"/><line x1="90" y1="185" x2="150" y2="108"/>'+
+      '<line x1="120" y1="185" x2="150" y2="116"/><line x1="240" y1="185" x2="150" y2="100"/>'+
+      '<line x1="210" y1="185" x2="150" y2="108"/><line x1="180" y1="185" x2="150" y2="116"/>'+
+    '</g>'+
+    '<ellipse cx="150" cy="188" rx="18" ry="10" fill="'+COL_LINE+'" opacity=".5"/>'+
+    '<text x="55" y="170" fill="'+COL_WHITE+'" font-size="14">1</text>'+
+    '<text x="150" y="80" fill="'+COL_WHITE+'" font-size="14">2</text>'+
+    '<text x="130" y="205" fill="'+COL_WHITE+'" font-size="14">3</text>', "0 0 300 210");
+}
+
+/* Navigation diagrams */
+function shadowStickSvg(){
+  return '<svg class="svg-stage" id="shadow-stick-svg" viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">'+
+    '<line x1="10" y1="190" x2="290" y2="190" stroke="'+COL_LINE+'" stroke-width="2"/>'+
+    '<circle cx="150" cy="190" r="4" fill="'+COL_WHITE+'"/>'+
+    '<line x1="150" y1="190" x2="150" y2="60" stroke="'+COL_WOOD+'" stroke-width="7"/>'+
+    '<circle cx="245" cy="40" r="16" fill="#f0c419"/>'+
+    '<g id="shadow-group" style="transform-origin:150px 190px; animation:shadowsweep 6s ease-in-out infinite;">'+
+      '<line x1="150" y1="190" x2="90" y2="192" stroke="#000" stroke-width="6" opacity=".55"/>'+
+    '</g>'+
+    '<circle cx="90" cy="192" r="5" fill="'+COL_ACC+'"/><text x="72" y="212" fill="'+COL_ACC+'" font-size="13">Mark 1 (W)</text>'+
+    '<circle cx="205" cy="192" r="5" fill="'+COL_GREEN+'"/><text x="190" y="212" fill="'+COL_GREEN+'" font-size="13">Mark 2 (E)</text>'+
+    '<line x1="90" y1="192" x2="205" y2="192" stroke="'+COL_WHITE+'" stroke-width="2" stroke-dasharray="4 4"/>'+
+  '</svg>'+
+  '<style>@keyframes shadowsweep{0%{transform:rotate(-18deg) scaleX(1.15);}50%{transform:rotate(18deg) scaleX(0.85);}100%{transform:rotate(-18deg) scaleX(1.15);}}</style>';
+}
+function bigDipperSvg(){
+  var pts = {a:[30,250],b:[70,225],c:[115,205],d:[150,190],e:[160,232],f:[222,238],g:[228,190]};
+  function seg(p1,p2){ return '<line x1="'+p1[0]+'" y1="'+p1[1]+'" x2="'+p2[0]+'" y2="'+p2[1]+'" stroke="'+COL_WHITE+'" stroke-width="2"/>'; }
+  function star(p,big){ return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+(big?6:4.5)+'" fill="#f0c419"/>'; }
+  return svgFrame(
+    seg(pts.a,pts.b)+seg(pts.b,pts.c)+seg(pts.c,pts.d)+seg(pts.d,pts.e)+seg(pts.e,pts.f)+seg(pts.f,pts.g)+seg(pts.g,pts.d)+
+    star(pts.a)+star(pts.b)+star(pts.c)+star(pts.d)+star(pts.e,true)+star(pts.f,true)+star(pts.g,true)+
+    '<line x1="228" y1="190" x2="252" y2="40" stroke="'+COL_ACC+'" stroke-width="2.5" stroke-dasharray="5 5"/>'+
+    '<circle cx="252" cy="40" r="7" fill="'+COL_ACC+'"/>'+
+    '<text x="185" y="185" fill="'+COL_ACC+'" font-size="11">pointer stars</text>'+
+    '<text x="200" y="30" fill="'+COL_ACC+'" font-size="13">Polaris (North)</text>',
+    "0 0 300 260");
+}
+
+/* ---------------- SEARCH INDEX (built after content defs) ---------------- */
+var SEARCH_INDEX = [];
+function idx(cat, title, kw, go){ SEARCH_INDEX.push({cat:cat, title:title, kw:(title+" "+kw).toLowerCase(), go:go}); }
+
+/* ---------------- QUICK REFERENCE ---------------- */
+var QUICK_REF = [
+  {t:"Severe bleeding", d:"Direct firm pressure. If life-threatening on a limb, tourniquet 2-3 in above the wound; note the time."},
+  {t:"SOS signal", d:"3 short, 3 long, 3 short - by whistle, flashlight, or mirror flashes."},
+  {t:"Water purification", d:"8 drops unscented bleach per gallon (clear water), double if cloudy - wait 30 min. Or boil 1 min (3 min above 6,500 ft)."},
+  {t:"Hypothermia stages", d:"Mild: shivering, alert. Moderate: confused, stumbling. Severe: shivering stops, unresponsive - handle very gently."},
+  {t:"Heat stroke", d:"Hot/dry skin + confusion or seizure = emergency. Cool aggressively now, call for help."},
+  {t:"Lightning: 30-30 rule", d:"Shelter if thunder follows lightning in under 30 sec. Wait 30 min after the last thunder before going back out."},
+  {t:"Rule of 3s", d:"3 min without air, 3 hrs without shelter in harsh exposure, 3 days without water, 3 weeks without food."},
+  {t:"Choking", d:"5 back blows, then 5 abdominal thrusts. Alternate until clear or person becomes unresponsive."},
+  {t:"Flood water", d:"Never cross moving water: 6 in can knock you down, 12-24 in can float a vehicle."},
+  {t:"Shadow-stick north", d:"Mark shadow tip, wait 15-20 min, mark again. First-to-second mark line runs roughly west to east; perpendicular = north-south."}
+];
+
+/* ---------------- WATER/FOOD, SHELTER, FIRE, NAV, SIGNAL, WEATHER, WILDLIFE, VEHICLE CONTENT ---------------- */
+var FIRE_METHODS = [
+  {name:"Lighter / matches", difficulty:"Very low", reliability:"High (if dry)"},
+  {name:"Ferro rod / firesteel", difficulty:"Low", reliability:"High, works wet"},
+  {name:"Battery + steel wool", difficulty:"Low", reliability:"High if battery available"},
+  {name:"Magnifying lens / glasses", difficulty:"Low", reliability:"Needs direct sun"},
+  {name:"Flint & steel + char cloth", difficulty:"Medium", reliability:"Medium-high, needs practice"},
+  {name:"Bow drill", difficulty:"High", reliability:"Medium, skill dependent"},
+  {name:"Hand drill", difficulty:"Very high", reliability:"Low, needs dry materials and practice"}
+];
+var GROUND_SIGNALS = [
+  {sym:"V", meaning:"Require assistance"},
+  {sym:"X", meaning:"Require medical assistance"},
+  {sym:"N", meaning:"No / negative"},
+  {sym:"Y", meaning:"Yes / affirmative"},
+  {sym:"&#8593;", meaning:"Proceeding in this direction"},
+  {sym:"F", meaning:"Need food and water"},
+  {sym:"&#9632;&#9632;", meaning:"All is well"}
+];
+
+/* ---------------- QUIZ ---------------- */
+var QUIZ_QUESTIONS = [
+  {q:"For severe limb bleeding that won't stop, where do you place a tourniquet?", a:["Directly on the wound","2-3 in above the wound, not on a joint","On the nearest joint"], correct:1},
+  {q:"What is the universal SOS pattern?", a:["1 long, 1 short, 1 long","3 short, 3 long, 3 short","5 short blasts"], correct:1},
+  {q:"How many drops of unscented bleach purify 1 gallon of clear water?", a:["About 8 drops","About 1 drop","About 50 drops"], correct:0},
+  {q:"A person is shivering but alert and coordinated. That's which hypothermia stage?", a:["Severe","Moderate","Mild"], correct:2},
+  {q:"Hot, dry skin with confusion or seizure in the heat means:", a:["Mild heat stress, just rest","Heat stroke - a life-threatening emergency","Normal exertion"], correct:1},
+  {q:"The 30-30 lightning rule means:", a:["Shelter if thunder follows lightning within 30 sec, wait 30 min after last thunder","Only go outside for 30 minutes","Lightning strikes 30 miles away"], correct:0},
+  {q:"For choking with a completely blocked airway, you should:", a:["Give water to wash it down","Alternate 5 back blows and 5 abdominal thrusts","Wait for it to clear itself"], correct:1},
+  {q:"How deep is safe to cross moving flood water on foot?", a:["Any depth is fine if you're careful","6 inches can already knock you down - avoid it","Up to 3 feet"], correct:1},
+  {q:"For a snake bite, you should:", a:["Cut the wound and suck out venom","Apply a tight tourniquet","Keep the person calm, still, and the limb below heart level"], correct:2},
+  {q:"When stranded in snow in a vehicle, the best move is usually to:", a:["Walk to find help immediately","Stay with the vehicle and run the engine briefly each hour for heat","Turn the engine off completely and stay silent"], correct:1}
+];
+
+/* ---------------- LIVE DATA (online, opt-in only) ---------------- */
+var WMO_CODES = {
+  0:"Clear sky", 1:"Mainly clear", 2:"Partly cloudy", 3:"Overcast",
+  45:"Fog", 48:"Depositing rime fog",
+  51:"Light drizzle", 53:"Moderate drizzle", 55:"Dense drizzle",
+  56:"Light freezing drizzle", 57:"Dense freezing drizzle",
+  61:"Slight rain", 63:"Moderate rain", 65:"Heavy rain",
+  66:"Light freezing rain", 67:"Heavy freezing rain",
+  71:"Slight snow", 73:"Moderate snow", 75:"Heavy snow", 77:"Snow grains",
+  80:"Slight rain showers", 81:"Moderate rain showers", 82:"Violent rain showers",
+  85:"Slight snow showers", 86:"Heavy snow showers",
+  95:"Thunderstorm", 96:"Thunderstorm with hail", 99:"Thunderstorm with heavy hail"
+};
+function wmoDesc(code){ return WMO_CODES[code] || "Unknown conditions"; }
+function aqiCategory(aqi){
+  if(aqi<=50) return {label:"Good", sev:"mild"};
+  if(aqi<=100) return {label:"Moderate", sev:"mild"};
+  if(aqi<=150) return {label:"Unhealthy for sensitive groups", sev:"moderate"};
+  if(aqi<=200) return {label:"Unhealthy", sev:"severe"};
+  if(aqi<=300) return {label:"Very unhealthy", sev:"severe"};
+  return {label:"Hazardous", sev:"severe"};
+}
+function quakeSev(mag){ if(mag>=6) return "severe"; if(mag>=4.5) return "moderate"; return "mild"; }
+function timeAgo(ms){
+  var diff = Date.now()-ms, mins=Math.floor(diff/60000);
+  if(mins<1) return "just now";
+  if(mins<60) return mins+" min ago";
+  var hrs=Math.floor(mins/60);
+  if(hrs<24) return hrs+" hr ago";
+  return Math.floor(hrs/24)+" day(s) ago";
+}
+function getLocation(){
+  return new Promise(function(resolve,reject){
+    if(!navigator.geolocation){ reject(new Error("Location is not available in this browser.")); return; }
+    navigator.geolocation.getCurrentPosition(
+      function(pos){ resolve({lat:pos.coords.latitude, lon:pos.coords.longitude}); },
+      function(err){ reject(new Error("Location permission was denied or unavailable.")); },
+      {timeout:15000, maximumAge:300000}
+    );
+  });
+}
+function liveBox(id, loadingMsg){
+  return '<div class="live-result" id="'+id+'"><p class="live-hint">Tap the button above - this needs an internet connection and your device location.</p></div>';
+}
+function setLive(id, html){ var el=document.getElementById(id); if(el) el.innerHTML = html; }
+function liveError(id, msg){
+  setLive(id, '<div class="live-error">&#9888; '+esc(msg)+'</div>');
+}
+function friendlyErrMsg(err, fallback){
+  var m = err && err.message;
+  if(!m) return fallback;
+  if(m.indexOf("permission")!==-1 || m.indexOf("Location")!==-1) return m;
+  if(m.indexOf("service error")!==-1) return m;
+  return fallback;
+}
+function liveLoading(id){
+  setLive(id, '<div class="live-loading">Contacting server&hellip;</div>');
+}
+
+function runWeatherCheck(){
+  var id = "live-weather";
+  liveLoading(id);
+  getLocation().then(function(loc){
+    var tempUnit = state.units==="imperial" ? "fahrenheit" : "celsius";
+    var windUnit = state.units==="imperial" ? "mph" : "kmh";
+    var url = "https://api.open-meteo.com/v1/forecast?latitude="+loc.lat+"&longitude="+loc.lon+
+      "&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m"+
+      "&temperature_unit="+tempUnit+"&wind_speed_unit="+windUnit+"&timezone=auto";
+    return fetch(url).then(function(r){ if(!r.ok) throw new Error("Weather service error"); return r.json(); }).then(function(data){
+      var c = data.current;
+      var html = '<div class="calc-output"><div class="out-grid">'+
+        '<div><div class="big-num">'+Math.round(c.temperature_2m)+'&deg;'+(state.units==="imperial"?"F":"C")+'</div><div class="lbl">temperature</div></div>'+
+        '<div><div class="big-num">'+Math.round(c.apparent_temperature)+'&deg;'+(state.units==="imperial"?"F":"C")+'</div><div class="lbl">feels like</div></div>'+
+        '<div><div class="big-num">'+Math.round(c.wind_speed_10m)+' '+(state.units==="imperial"?"mph":"km/h")+'</div><div class="lbl">wind</div></div>'+
+        '<div><div class="big-num">'+Math.round(c.relative_humidity_2m)+'%</div><div class="lbl">humidity</div></div>'+
+        '</div><p style="margin-top:.6rem">'+esc(wmoDesc(c.weather_code))+'</p></div>';
+      return fetch("https://api.weather.gov/alerts/active?point="+loc.lat+","+loc.lon)
+        .then(function(r2){ return r2.ok ? r2.json() : {features:[]}; })
+        .catch(function(){ return {features:[]}; })
+        .then(function(alertData){
+          var feats = alertData.features || [];
+          if(feats.length){
+            html += '<h3>Active alerts</h3>';
+            feats.slice(0,8).forEach(function(f){
+              var p = f.properties;
+              var sev = p.severity==="Extreme"||p.severity==="Severe" ? "severe" : p.severity==="Moderate" ? "moderate" : "mild";
+              html += '<div class="result-card '+sev+'"><span class="badge '+sev+'">'+esc(p.severity||"Alert")+'</span><h3>'+esc(p.event)+'</h3><p>'+esc(p.areaDesc||"")+'</p></div>';
+            });
+          } else {
+            html += '<p class="live-hint">No active NWS alerts for this location (US only - other regions will always show none here).</p>';
+          }
+          setLive(id, html);
+        });
+    });
+  }).catch(function(err){ liveError(id, friendlyErrMsg(err, "Could not fetch live weather. Check your connection.")); });
+}
+
+function runFacilitiesCheck(){
+  var id = "live-facilities";
+  liveLoading(id);
+  getLocation().then(function(loc){
+    var q = "[out:json][timeout:20];(node[\"amenity\"=\"hospital\"](around:8000,"+loc.lat+","+loc.lon+");way[\"amenity\"=\"hospital\"](around:8000,"+loc.lat+","+loc.lon+");node[\"amenity\"=\"police\"](around:8000,"+loc.lat+","+loc.lon+");way[\"amenity\"=\"police\"](around:8000,"+loc.lat+","+loc.lon+");node[\"amenity\"=\"fire_station\"](around:8000,"+loc.lat+","+loc.lon+");way[\"amenity\"=\"fire_station\"](around:8000,"+loc.lat+","+loc.lon+");node[\"amenity\"=\"pharmacy\"](around:8000,"+loc.lat+","+loc.lon+");way[\"amenity\"=\"pharmacy\"](around:8000,"+loc.lat+","+loc.lon+"););out center tags;";
+    return fetch("https://overpass-api.de/api/interpreter", {method:"POST", body:"data="+encodeURIComponent(q)})
+      .then(function(r){ if(!r.ok) throw new Error("Facility lookup service error"); return r.json(); })
+      .then(function(data){
+        var icons = {hospital:"&#127973;", police:"&#128110;", fire_station:"&#128658;", pharmacy:"&#128138;"};
+        var items = (data.elements||[]).map(function(el){
+          var lat = el.lat || (el.center && el.center.lat);
+          var lon = el.lon || (el.center && el.center.lon);
+          if(lat==null || lon==null) return null;
+          var tags = el.tags || {};
+          var addrParts = [tags["addr:housenumber"], tags["addr:street"], tags["addr:city"]].filter(Boolean);
+          return {
+            name: tags.name || ("Unnamed "+(tags.amenity||"facility")),
+            type: tags.amenity, icon: icons[tags.amenity] || "&#128205;",
+            phone: tags.phone || tags["contact:phone"] || null,
+            addr: addrParts.join(" "),
+            km: haversineKm(loc.lat, loc.lon, lat, lon), lat:lat, lon:lon
+          };
+        }).filter(Boolean).sort(function(a,b){ return a.km-b.km; }).slice(0,18);
+        if(!items.length){ setLive(id, '<p class="live-hint">No facilities found in this radius via OpenStreetMap data - try again nearer a populated area.</p>'); return; }
+        var html = '<div class="qbtn-list">'+items.map(function(it){
+          return '<a class="qbtn" href="https://www.google.com/maps/dir/?api=1&destination='+it.lat+','+it.lon+'" target="_blank" rel="noopener">'+
+            '<span>'+it.icon+' <b>'+esc(it.name)+'</b><br><span class="live-hint">'+esc(it.addr||"")+(it.phone?" &middot; "+esc(it.phone):"")+'</span></span>'+
+            '<span class="arrow">'+distLabel(it.km)+'</span></a>';
+        }).join("")+'</div>';
+        setLive(id, html);
+      });
+  }).catch(function(err){ liveError(id, friendlyErrMsg(err, "Could not look up nearby facilities. Check your connection.")); });
+}
+
+function runEarthquakeCheck(){
+  var id = "live-quakes";
+  liveLoading(id);
+  getLocation().then(function(loc){ runEarthquakeFetch(id, loc); })
+    .catch(function(){ runEarthquakeFetch(id, null); });
+}
+function runEarthquakeFetch(id, loc){
+  fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson")
+    .then(function(r){ if(!r.ok) throw new Error("USGS service error"); return r.json(); })
+    .then(function(data){
+      var feats = (data.features||[]).map(function(f){
+        var coords = f.geometry.coordinates;
+        var km = loc ? haversineKm(loc.lat, loc.lon, coords[1], coords[0]) : null;
+        return {mag:f.properties.mag, place:f.properties.place, time:f.properties.time, url:f.properties.url, km:km};
+      });
+      if(loc) feats.sort(function(a,b){ return a.km-b.km; }); else feats.sort(function(a,b){ return b.time-a.time; });
+      feats = feats.slice(0,10);
+      if(!feats.length){ setLive(id, '<p class="live-hint">No significant earthquakes reported in the past week.</p>'); return; }
+      var html = feats.map(function(f){
+        var sev = quakeSev(f.mag||0);
+        return '<div class="result-card '+sev+'"><span class="badge '+sev+'">M '+(f.mag!=null?f.mag.toFixed(1):"?")+'</span>'+
+          '<h3>'+esc(f.place||"Unknown location")+'</h3>'+
+          '<p>'+timeAgo(f.time)+(f.km!=null?' &middot; '+distLabel(f.km)+' away':'')+' &middot; <a href="'+esc(f.url)+'" target="_blank" rel="noopener">USGS details</a></p></div>';
+      }).join("");
+      setLive(id, html);
+    }).catch(function(err){ liveError(id, friendlyErrMsg(err, "Could not fetch earthquake data. Check your connection.")); });
+}
+
+function runAirQualityCheck(){
+  var id = "live-aqi";
+  liveLoading(id);
+  getLocation().then(function(loc){
+    var url = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude="+loc.lat+"&longitude="+loc.lon+"&current=us_aqi,pm2_5,pm10";
+    return fetch(url).then(function(r){ if(!r.ok) throw new Error("Air quality service error"); return r.json(); }).then(function(data){
+      var c = data.current || {};
+      var aqi = Math.round(c.us_aqi);
+      var cat = aqiCategory(aqi);
+      var html = '<div class="result-card '+cat.sev+'"><span class="badge '+cat.sev+'">'+esc(cat.label)+'</span><h3>US AQI '+aqi+'</h3>'+
+        '<p>PM2.5: '+round1(c.pm2_5)+' &micro;g/m&sup3; &middot; PM10: '+round1(c.pm10)+' &micro;g/m&sup3;</p></div>';
+      setLive(id, html);
+    });
+  }).catch(function(err){ liveError(id, friendlyErrMsg(err, "Could not fetch air quality. Check your connection.")); });
+}
+
+/* ---------------- RENDER HELPERS ---------------- */
+function esc(s){ return String(s).replace(/[&<>]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];}); }
+function favKey(k){ return state.favorites.has(k); }
+function favBtn(key, label){
+  return '<button class="fav-btn '+(favKey(key)?"active":"")+'" data-fav="'+key+'" aria-label="Favorite '+esc(label)+'" title="Favorite">'+(favKey(key)?"&#9733;":"&#9734;")+'</button>';
+}
+function severityBadge(sev){
+  var labels = {mild:"Mild", moderate:"Moderate", severe:"Severe", info:"Info"};
+  return '<span class="badge '+sev+'">'+labels[sev]+'</span>';
+}
+function renderNotDo(list){
+  if(!list || !list.length) return "";
+  return '<div class="notdo"><h4>&#128683; What NOT to do</h4><ul>'+list.map(function(i){return "<li>"+esc(i)+"</li>";}).join("")+'</ul></div>';
+}
+function renderWarning(title, list){
+  if(!list || !list.length) return "";
+  return '<div class="notdo"><h4>&#9888; '+esc(title)+'</h4><ul>'+list.map(function(i){return "<li>"+esc(i)+"</li>";}).join("")+'</ul></div>';
+}
+function renderSteps(steps){
+  return '<ol>'+steps.map(function(s){return "<li>"+esc(s)+"</li>";}).join("")+'</ol>';
+}
+
+function displayVol(litersLow, litersHigh){ return null; }
+
+function unitLabelVol(){ return state.units==="imperial" ? "gal" : "L"; }
+function unitLabelTemp(){ return state.units==="imperial" ? "&deg;F" : "&deg;C"; }
+function unitLabelDist(){ return state.units==="imperial" ? "mi" : "km"; }
+
+/* ---------------- VIEWS ---------------- */
+function go(route, opts){
+  opts = opts || {};
+  stopStrobe();
+  if(opts.push !== false){ state.history.push(state.route); }
+  state.route = route;
+  render();
+  var m = document.getElementById("main");
+  if(m){ m.scrollTop = 0; m.focus({preventScroll:true}); window.scrollTo(0,0); }
+  closeSidebar();
+}
+function goBack(){
+  if(state.history.length){ state.route = state.history.pop(); render(); }
+  else { go({view:"home"}, {push:false}); }
+}
+
+function renderHome(){
+  var html = '';
+  html += '<div class="hero">';
+  html += '<h1>Offline Survival Guide</h1>';
+  html += '<p>Everything below works with no signal and no internet. In a real emergency, tap the red button first.</p>';
+  html += '<button class="big-emergency" data-go="triage:entry:start">&#9888; EMERGENCY NOW<small>Start First Aid triage</small></button>';
+  html += '<div class="secondary-row">';
+  html += '<button class="btn primary" data-go="browse">&#128218; Browse &amp; Learn</button>';
+  html += '<button class="btn" data-go="quickref">&#128203; Quick Reference</button>';
+  html += '<button class="btn" data-go="quiz">&#10067; Knowledge Check</button>';
+  html += '</div></div>';
+
+  html += '<div class="section"><h2>Categories</h2><div class="grid">';
+  CATEGORIES.forEach(function(c){
+    html += '<div class="card">'+favBtn("cat:"+c.id, c.name)+
+      '<button class="card-link" data-go="cat:'+c.id+'"><span class="ic">'+c.ic+'</span><h3>'+c.name+'</h3><p>'+catBlurb(c.id)+'</p></button></div>';
+  });
+  html += '</div></div>';
+
+  if(state.favorites.size){
+    html += '<div class="section"><h2>&#9733; Favorites</h2>'+renderFavList()+'</div>';
+  }
+  return html;
+}
+function catBlurb(id){
+  var m = {
+    firstaid:"Tap-through triage for bleeding, breathing, burns, and more.",
+    water:"Purify water and plan food rations.",
+    shelter:"Lean-to and debris hut builds.",
+    fire:"Methods, tinder, and fire safety.",
+    nav:"Find direction without a compass.",
+    signal:"Get found: SOS, mirrors, ground signals.",
+    weather:"Lightning, heat, cold, floods, storms.",
+    wildlife:"Bears, snakes, cougars, insects, ticks.",
+    vehicle:"Stranded, breakdown, overheating, submersion.",
+    longterm:"Farming, plant ID, preservation, sanitation, barter, power, and community for extended scenarios.",
+    disasters:"Earthquakes, wildfires, tsunamis, volcanic ashfall, and landslides.",
+    home:"Emergency kits, utility shutoffs, fire safety, generators, and shelter-in-place decisions.",
+    pandemic:"Stockpiling, infection control, isolation basics, and when to seek care.",
+    unrest:"Situational awareness, home security, communication blackouts, and active threats.",
+    outages:"Food safety, safe heat and light, and backup power for medical needs.",
+    specialneeds:"Prep for infants, elderly and mobility needs, and pets.",
+    connect:"Live weather, nearby facilities, and quakes when you have signal - plus offline emergency contacts."
+  };
+  return m[id]||"";
+}
+function renderFavList(){
+  if(!state.favorites.size) return '<p style="color:var(--ink-dim)">No favorites yet. Tap the star on any card or item to save it here.</p>';
+  var html = '<div class="qbtn-list">';
+  state.favorites.forEach(function(key){
+    var label = favLabel(key);
+    html += '<button class="qbtn" data-go="fav:'+key+'"><span>'+esc(label)+'</span><span class="arrow">&rarr;</span></button>';
+  });
+  html += '</div>';
+  return html;
+}
+function favLabel(key){
+  var parts = key.split(":");
+  if(parts[0]==="cat"){ var c=CATEGORIES.filter(function(x){return x.id===parts[1];})[0]; return c?c.name:key; }
+  if(parts[0]==="triage"){ var f=parts[1]; var item = TRIAGE_FLOWS.entry.start.items.filter(function(i){return i.go.split(":")[0]===f;})[0]; return item?item.label:key; }
+  if(parts[0]==="qr"){ return "Quick Ref: "+QUICK_REF[+parts[1]].t; }
+  return key;
+}
+function goFav(key){
+  var parts = key.split(":");
+  if(parts[0]==="cat") return go({view:"category", cat:parts[1]});
+  if(parts[0]==="triage") return go({view:"triage", flow:parts[1], node:"start"});
+  if(parts[0]==="qr") return go({view:"quickref"});
+  return go({view:"home"});
+}
+
+function renderQuickRef(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section">';
+  html += '<h2>&#128203; Quick Reference <button class="btn small no-print" style="margin-left:auto" id="print-btn">&#128424; Print</button></h2>';
+  html += '<p>The ~10 most critical facts, condensed for a single screen or printed page.</p>';
+  html += '<div class="qr-grid">';
+  QUICK_REF.forEach(function(item, i){
+    html += '<div class="qr-card">'+favBtn("qr:"+i, item.t)+'<h4>'+esc(item.t)+'</h4><p>'+esc(item.d)+'</p></div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function renderBrowse(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#128218; Browse &amp; Learn</h2><p>Calm-context reading, organized by topic.</p><div class="grid">';
+  CATEGORIES.forEach(function(c){
+    html += '<div class="card">'+favBtn("cat:"+c.id, c.name)+
+      '<button class="card-link" data-go="cat:'+c.id+'"><span class="ic">'+c.ic+'</span><h3>'+c.name+'</h3><p>'+catBlurb(c.id)+'</p></button></div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+/* ---- First Aid category ---- */
+function renderFirstAidCat(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#9877; First Aid</h2>';
+  html += '<button class="big-emergency" data-go="triage:entry:start">&#9888; START TRIAGE<small>Tap-through decision flow</small></button>';
+  html += '<div class="legend-row">'+
+    '<span class="legend-chip"><span class="dot mild"></span> Mild - manage yourself</span>'+
+    '<span class="legend-chip"><span class="dot moderate"></span> Moderate - prompt care</span>'+
+    '<span class="legend-chip"><span class="dot severe"></span> Severe - emergency</span>'+
+  '</div>';
+  html += '<h3>Jump straight to a condition</h3><div class="entry-grid">';
+  TRIAGE_FLOWS.entry.start.items.forEach(function(item){
+    var flow = item.go.split(":")[0];
+    html += '<button class="entry-btn" data-go="triage:'+flow+':start"><span class="ic">'+item.ic+'</span><span>'+esc(item.label)+'</span></button>';
+  });
+  html += '</div></div>';
+
+  html += '<div class="section"><h2>Step-through: Pressure Bandaging</h2>'+svgViewer("bandage", BANDAGE_STEPS, 0)+'</div>';
+  html += '<div class="section"><h2>Step-through: Basic Splinting</h2>'+svgViewer("splint", SPLINT_STEPS, 0)+'</div>';
+
+  html += '<div class="section"><h2>Common Myths - What NOT to Do</h2>';
+  html += renderNotDo(["Don't suck out snake venom - it doesn't work and risks the helper.","Don't rub or massage frostbitten skin - it damages tissue further.","Don't remove an embedded object from a wound - stabilize it in place.","Don't apply ice directly to a burn.","Don't tilt a choking person's head back and give water.","Don't move someone with a suspected spinal injury unless there's immediate danger."]);
+  html += '</div>';
+  return html;
+}
+
+function renderTriage(flowId, nodeId){
+  var flow = TRIAGE_FLOWS[flowId];
+  var node = flow ? flow[nodeId] : null;
+  var html = '<div class="breadcrumb"><button data-go="cat:firstaid">&larr; First Aid</button><span>/</span><span>Triage</span></div>';
+  html += '<div class="section">';
+  if(!node){ html += '<p>Not found.</p></div>'; return html; }
+
+  if(node.type === "menu"){
+    html += '<h2>&#9888; '+esc(node.title)+'</h2><p style="color:var(--ink-dim)">Tap the situation that matches. Each leads to a short set of yes/no questions.</p>';
+    html += '<div class="entry-grid">';
+    node.items.forEach(function(item){
+      var fkey = "triage:"+item.go.split(":")[0];
+      html += '<div style="position:relative">'+favBtn(fkey, item.label)+
+        '<button class="entry-btn" style="width:100%" data-go="triage:'+esc(item.go)+'"><span class="ic">'+item.ic+'</span><span>'+esc(item.label)+'</span></button></div>';
+    });
+    html += '</div>';
+  } else if(node.type === "q"){
+    html += '<div class="badge info">Question</div>';
+    html += '<h2 style="margin-top:.5rem">'+esc(node.text)+'</h2>';
+    html += '<div class="qbtn-list">';
+    node.options.forEach(function(opt){
+      html += '<button class="qbtn" data-go="triage:'+flowId+':'+opt.next+'"><span>'+esc(opt.label)+'</span><span class="arrow">&rarr;</span></button>';
+    });
+    html += '</div>';
+  } else if(node.type === "result"){
+    html += '<div class="result-card '+node.severity+'">';
+    html += severityBadge(node.severity)+'<h3>'+esc(node.title)+'</h3>';
+    html += renderSteps(node.steps);
+    html += '</div>';
+    html += renderNotDo(node.notdo);
+    html += '<div class="secondary-row" style="margin-top:1rem">';
+    html += '<button class="btn" data-go="triage:'+flowId+':start">&#8635; Start this flow over</button>';
+    html += '<button class="btn" data-go="triage:entry:start">&#9776; Choose different situation</button>';
+    html += '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+/* ---- Water & Food ---- */
+function renderWater(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#128167; Water &amp; Food</h2>';
+  html += '<h3>Water purification calculator</h3>';
+  html += '<div class="calc-row">'+
+    '<div class="field"><label for="wf-vol">Water volume ('+unitLabelVol()+')</label><input id="wf-vol" type="number" min="0" step="0.1" value="1"></div>'+
+    '</div><div id="wf-output" class="calc-output"></div>';
+  html += '<h3>Purification methods</h3><table class="ref-table"><tr><th>Method</th><th>Notes</th></tr>'+
+    '<tr><td>Boiling</td><td>Rolling boil 1 min (3 min above 6,500 ft / 2,000 m). Most reliable, kills all pathogens.</td></tr>'+
+    '<tr><td>Unscented bleach</td><td>5-9% sodium hypochlorite, no added scents/soaps. Wait 30 min before drinking.</td></tr>'+
+    '<tr><td>Purification tablets</td><td>Follow product label; wait time varies (often 30-60 min).</td></tr>'+
+    '<tr><td>Filter</td><td>Removes bacteria/protozoa; check if it also removes viruses.</td></tr>'+
+    '<tr><td>UV pen</td><td>Needs clear water and working batteries.</td></tr></table>';
+  html += '<h3>Finding water</h3><p>Priority: flowing water over stagnant, moving over still. Avoid water near dead animals, algae blooms, or industrial runoff. Collect dew or rainwater when possible - both are relatively clean but should still be treated if time allows.</p>';
+
+  html += '<h3>Calorie / ration calculator</h3>';
+  html += '<div class="calc-row">'+
+    '<div class="field"><label for="cal-people">People</label><input id="cal-people" type="number" min="1" step="1" value="1"></div>'+
+    '<div class="field"><label for="cal-days">Days</label><input id="cal-days" type="number" min="1" step="1" value="3"></div>'+
+    '<div class="field"><label for="cal-activity">Activity level</label><select id="cal-activity">'+
+      '<option value="low">Low (resting/sheltering)</option>'+
+      '<option value="moderate" selected>Moderate (hiking, tasks)</option>'+
+      '<option value="high">High (strenuous exertion)</option>'+
+    '</select></div>'+
+  '</div><div id="cal-output" class="calc-output"></div>';
+  html += '<h3>Food safety &amp; foraging</h3><p>When food is uncertain, prioritize known-safe sources. Never eat mushrooms unless positively identified. Cook wild game and fish thoroughly. If forced to test an unknown plant, use extreme caution: separate parts, test a small skin patch, wait between steps - this can still be dangerous and is a last resort only.</p>';
+  html += '</div>';
+  return html;
+}
+function computeWater(){
+  var volInput = parseFloat(document.getElementById("wf-vol").value) || 0;
+  var liters = state.units === "imperial" ? galToL(volInput) : volInput;
+  var dropsClear = Math.ceil(liters * 2);
+  var dropsCloudy = Math.ceil(liters * 4);
+  var tablets = Math.max(1, Math.ceil(liters));
+  var out = document.getElementById("wf-output");
+  if(!out) return;
+  out.innerHTML = '<div class="out-grid">'+
+    '<div><div class="big-num">'+dropsClear+'</div><div class="lbl">bleach drops (clear water)</div></div>'+
+    '<div><div class="big-num">'+dropsCloudy+'</div><div class="lbl">bleach drops (cloudy water)</div></div>'+
+    '<div><div class="big-num">'+tablets+'</div><div class="lbl">purification tablets (~1/liter)</div></div>'+
+    '</div><p style="margin-top:.6rem; color:var(--ink-dim)">Use unscented bleach, 5-9% sodium hypochlorite, no additives. Mix, stir, and wait 30 minutes before drinking.</p>';
+}
+var CAL_RATES = {low:2000, moderate:2800, high:4000};
+function computeCalories(){
+  var people = parseInt(document.getElementById("cal-people").value) || 0;
+  var days = parseInt(document.getElementById("cal-days").value) || 0;
+  var act = document.getElementById("cal-activity").value;
+  var rate = CAL_RATES[act];
+  var daily = people * rate;
+  var total = daily * days;
+  var minSurvival = people * 1200 * days;
+  var out = document.getElementById("cal-output");
+  if(!out) return;
+  out.innerHTML = '<div class="out-grid">'+
+    '<div><div class="big-num">'+daily.toLocaleString()+'</div><div class="lbl">kcal / day, all people</div></div>'+
+    '<div><div class="big-num">'+total.toLocaleString()+'</div><div class="lbl">kcal total over '+days+' day(s)</div></div>'+
+    '<div><div class="big-num">'+minSurvival.toLocaleString()+'</div><div class="lbl">kcal, bare minimum ration (short-term only)</div></div>'+
+    '</div><p style="margin-top:.6rem; color:var(--ink-dim)">If supplies are limited, prioritize water first, then ration food evenly rather than front-loading. A minimum ~1,200 kcal/person/day can sustain short emergencies but is not adequate long-term.</p>';
+}
+
+/* ---- Shelter ---- */
+function renderShelter(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#9974; Shelter</h2>';
+  html += '<p>Insulating yourself from the ground matters as much as blocking wind - most body heat is lost downward into cold ground.</p>';
+  html += '<h3>Siting your shelter</h3><ul><li>Avoid low ground and dry creek beds (flash flood risk).</li><li>Check overhead for dead branches ("widow makers").</li><li>Stay near, but not in, a water source.</li><li>Face the entrance away from prevailing wind.</li></ul>';
+  html += '</div>';
+
+  html += '<div class="section"><h2>Lean-to shelter</h2>'+leanToSvg()+
+    renderSteps(["Find or set a sturdy ridge pole against a tree fork or two uprights, angled about 45 degrees.","Lay ribbing branches along one side of the ridge pole, spaced a few inches apart.","Thatch with debris (leaves, boughs, bark) from the bottom up, like shingles, for water shedding.","Add a thick insulating floor layer of dry leaves or boughs.","Block the open end you're not using to cut wind."])+'</div>';
+
+  html += '<div class="section"><h2>Debris hut</h2>'+debrisHutSvg()+
+    renderSteps(["Build a low ridge pole tunnel just barely wider than your body, one end propped on a support.","Lean a rib lattice of branches along both sides of the ridge pole.","Pile debris (leaves, pine needles, duff) at least 2-3 ft (60-90 cm) thick over the whole frame.","Stuff the interior with loose, dry insulating debris.","Leave a small entrance and plug it with a debris \"door\" once inside."])+'</div>';
+  return html;
+}
+
+/* ---- Fire ---- */
+function renderFire(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#128293; Fire</h2>';
+  html += '<h3>Starting methods</h3><table class="ref-table"><tr><th>Method</th><th>Difficulty</th><th>Reliability</th></tr>'+
+    FIRE_METHODS.map(function(m){return '<tr><td>'+esc(m.name)+'</td><td>'+esc(m.difficulty)+'</td><td>'+esc(m.reliability)+'</td></tr>';}).join("")+
+    '</table>';
+  html += '<h3>Tinder, kindling, fuel</h3><ul>'+
+    '<li><b>Tinder</b> (catches a spark): dry grass, birch bark, fine wood shavings, cotton, dryer lint.</li>'+
+    '<li><b>Kindling</b> (grows the flame): pencil- to thumb-thick dry twigs, smallest first.</li>'+
+    '<li><b>Fuel</b> (sustains the fire): wrist-thick and larger dry, seasoned wood.</li>'+
+  '</ul>';
+  html += '<h3>Fire lay structures</h3><p><b>Teepee:</b> tinder in the center, kindling leaned around it in a cone - burns hot and fast, good for starting. <b>Log cabin:</b> fuel stacked in a square around the teepee - burns longer, good for cooking coals.</p>';
+  html += '<h3>Fire safety</h3><ul><li>Clear a wide area down to bare soil; ring with stones if available.</li><li>Never leave a fire unattended.</li><li>Fully extinguish: drown with water, stir the ashes, drown again, and feel for heat before leaving.</li></ul>';
+  html += '</div>';
+  return html;
+}
+
+/* ---- Navigation ---- */
+function renderNav(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#129517; Navigation</h2>';
+  html += '<h3>Shadow-stick method</h3><p>Push a straight stick upright into open ground.</p>';
+  html += '<div class="svg-viewer">'+shadowStickSvg()+'</div>';
+  html += renderSteps(["Mark the tip of the stick's shadow (this is roughly the west mark).","Wait 15-20 minutes without moving the stick.","Mark the new shadow tip (roughly the east mark).","Draw a line between the two marks: it runs approximately west to east.","A line perpendicular to it, crossing between the marks, points roughly north-south."]);
+  html += '<h3>Big Dipper &rarr; North Star</h3>'+bigDipperSvg()+
+    '<p>Find the two \"pointer stars\" at the front edge of the Big Dipper\'s bowl. Draw an imaginary line through them, extending about 5 times the distance between them - it lands on Polaris, the North Star, which sits above true north.</p>';
+  html += '<h3>Moon-phase direction (rough estimate only)</h3><p>A waxing moon (lit on the right side, Northern Hemisphere) rises in the afternoon and sets after sunset roughly in the west. A waning moon (lit on the left side) rises before sunrise roughly in the east. This is only a rough estimate - prefer the sun, stars, or a compass whenever available.</p>';
+  html += '</div>';
+  return html;
+}
+
+/* ---- Signaling ---- */
+function renderSignal(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#128225; Signaling</h2>';
+  html += '<h3>SOS - the universal distress signal</h3><p style="font-size:1.4rem; font-weight:800; letter-spacing:.05em">&middot;&middot;&middot; &ndash;&ndash;&ndash; &middot;&middot;&middot;</p><p>3 short signals, 3 long, 3 short - repeat. Works with a whistle, flashlight, mirror flashes, or shouted/radio calls.</p>';
+  html += '<h3>Signal mirror</h3><p>Hold the mirror close to your eye. Extend your other hand and make a V with two fingers, framing the target (aircraft, boat, ridge). Angle the mirror so the reflected sunlight spot passes through the V toward the target, then sweep slowly across the horizon. Effective for miles in direct sun.</p>';
+  html += '<h3>Whistle</h3><p>3 sharp blasts is a universally recognized distress call - far less effort than shouting and carries much farther.</p>';
+  html += '<h3>Fire &amp; smoke</h3><p>Three fires arranged in a triangle or straight line is a recognized distress pattern. Green boughs thrown on a fire create heavy white smoke by day; a clear, bright fire is more visible at night.</p>';
+  html += '<h3>Ground-to-air symbols</h3><table class="ref-table"><tr><th>Symbol</th><th>Meaning</th></tr>'+
+    GROUND_SIGNALS.map(function(g){return '<tr><td style="font-weight:800; font-size:1.1rem">'+g.sym+'</td><td>'+esc(g.meaning)+'</td></tr>';}).join("")+
+    '</table><p>Make symbols large (at least 10 ft / 3 m) using rocks, logs, trampled vegetation, or dug trenches so they are visible from the air.</p>';
+  html += '<h3>General tips</h3><ul><li>Straight lines, right angles, and bright colors rarely occur in nature - they draw the eye.</li><li>Movement and contrast attract attention faster than a static object.</li><li>Sound and light travel farther at night and in calm, still air.</li></ul>';
+  html += '</div>';
+
+  html += '<div class="section"><h2>&#128241; Screen Strobe / SOS Flashlight</h2>';
+  html += '<p>Uses your screen as a signal light. Works fully offline - no permissions, no network. Set your screen brightness to maximum first for the best range.</p>';
+  html += '<div class="strobe-controls">'+
+    '<button class="btn primary" data-strobe="strobe">&#128163; Steady Strobe</button>'+
+    '<button class="btn primary" data-strobe="sos">&#128225; SOS Pattern</button>'+
+  '</div>';
+  html += renderWarning("Before you use this", ["Flashes rapidly - avoid this feature if you are photosensitive or have epilepsy.","A large STOP button stays on screen the whole time to end it instantly."]);
+  html += '</div>';
+  return html;
+}
+
+/* ---- Weather ---- */
+function renderWeather(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#9928; Weather</h2>';
+  html += '<h3>Lightning - the 30-30 rule</h3><p>If the gap between seeing lightning and hearing thunder is less than 30 seconds, take shelter. Wait 30 minutes after the last thunder before going back outside. Avoid open fields, isolated tall trees, water, and metal objects. Caught in the open, crouch low on the balls of your feet - don\'t lie flat.</p>';
+  html += '<h3>Extreme heat</h3><p>Drink water before you feel thirsty. Seek shade during peak midday hours. Wear light, loose clothing. Watch companions for heat exhaustion/heat stroke signs (see First Aid).</p>';
+  html += '<h3>Extreme cold / wind chill</h3><p>Layer clothing and cover extremities - most heat is lost from the head, hands, and feet. Watch for frostbite: numbness and white or waxy-looking skin. Stay dry; wet clothing loses insulating value fast.</p>';
+  html += '<h3>Flash floods</h3><p>Never cross moving water: 6 in (15 cm) can knock an adult off their feet, and 12-24 in (30-60 cm) can float a vehicle. Move to higher ground immediately during heavy rain and avoid camping in dry washes or canyon bottoms.</p>';
+  html += '<h3>Tornado</h3><p>Get to the lowest level, interior room, away from windows. Avoid vehicles and mobile structures. If caught outside with no shelter, lie flat in a low ditch and cover your head.</p>';
+  html += '<h3>Hurricane / high wind</h3><p>Secure or shelter well before arrival. Avoid coastal and flood-prone areas. Prepare for extended power and communication outages.</p>';
+  html += '</div>';
+  return html;
+}
+
+/* ---- Wildlife ---- */
+function renderWildlife(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#128062; Wildlife</h2>';
+  html += '<h3>Bear encounters</h3><p>Never run - it can trigger a chase instinct. Speak in a low, calm voice and back away slowly, giving the bear an escape route. Make yourself look larger and use bear spray if charged. If a brown/grizzly bear makes contact, play dead: lie flat, protect your neck and head. If a black bear attacks, fight back aggressively, targeting the face and muzzle. Store food well away from your camp using a hang or canister.</p>';
+  html += '<h3>Snakes</h3><p>Give snakes a wide berth and watch where you step and reach, especially around rocks and brush. Most bites happen when a snake is handled or provoked - leave them alone. If bitten, use the First Aid snake bite flow.</p>';
+  html += '<h3>Mountain lion / cougar</h3><p>Don\'t run. Make noise, appear as large as possible, and keep children close and picked up. If attacked, fight back hard, targeting the eyes and face.</p>';
+  html += '<h3>Insect stings &amp; allergic reactions</h3><p>Remove a stinger by scraping it out sideways (not pinching, which injects more venom). Watch for signs of a severe allergic reaction - see First Aid &gt; Allergic reaction.</p>';
+  html += '<h3>Ticks</h3><p>Check your whole body after time in brush or woods. Remove a tick promptly using fine-tipped tweezers, grasping close to the skin, and pulling straight up with steady pressure. Watch for rash or fever in the following weeks.</p>';
+  html += '</div>';
+  return html;
+}
+
+/* ---- Vehicle ---- */
+function renderVehicle(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#128663; Vehicle Emergencies</h2>';
+  html += '<h3>Stranded in snow</h3><p>Stay with the vehicle - it\'s far easier for rescuers to find than a person on foot. Run the engine about 10 minutes each hour for heat, cracking a window for ventilation. Make sure the exhaust pipe isn\'t blocked by snow (carbon monoxide risk). Stay visible: tie bright cloth to the antenna, use the dome light at night. Keep moving your arms and legs to maintain circulation.</p>';
+  html += '<h3>Breakdown on the road</h3><p>Pull as far off the roadway as possible and turn on hazard lights. Place flares or reflective triangles behind the vehicle if available. If it\'s safer, exit away from traffic to a location off the road; if you stay inside, keep your seatbelt on.</p>';
+  html += '<h3>Stuck in mud or sand</h3><p>Don\'t spin the wheels - it digs you in deeper. Clear debris/sand from around the tires, use traction aids like boards or floor mats, and for sand, slightly deflating tires can help. Rock the vehicle gently forward and back if safe to do so.</p>';
+  html += '<h3>Overheating engine</h3><p>Pull over safely and turn off the AC, turning on the heater to draw heat away from the engine. Let it cool 15-20 minutes before opening the hood. Never open a hot radiator cap - pressurized coolant can cause severe burns.</p>';
+  html += '<h3>Submerged / sinking vehicle</h3><p>Unbuckle your seatbelt immediately and open a window or break it right away, before the vehicle fully submerges - power windows and doors can fail once underwater. Get out through the window if the door won\'t open, get children or the lightest occupants out first, then swim to the surface.</p>';
+  html += '<h3>Keep in the vehicle</h3><p>Blanket, water, flashlight, basic tools, jumper cables, and some food make up a solid baseline emergency kit.</p>';
+  html += '</div>';
+  return html;
+}
+
+/* ---- Long-Term Survival ---- */
+function renderLongTerm(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#127806; Long-Term Survival</h2>';
+  html += '<p>For extended, infrastructure-down scenarios rather than a single emergency: growing and preserving food, staying healthy without hospitals, and building resilience over months, not hours.</p>';
+  html += '<div class="jump-row">'+
+    '<a class="jump-chip" href="#lt-farming">Farming</a>'+
+    '<a class="jump-chip" href="#lt-plants">Plants</a>'+
+    '<a class="jump-chip" href="#lt-preservation">Preservation &amp; Water</a>'+
+    '<a class="jump-chip" href="#lt-health">Sanitation &amp; Medicine</a>'+
+    '<a class="jump-chip" href="#lt-barter">Barter</a>'+
+    '<a class="jump-chip" href="#lt-power">Power &amp; Tools</a>'+
+    '<a class="jump-chip" href="#lt-community">Community</a>'+
+  '</div></div>';
+
+  html += '<div class="section" id="lt-farming"><h2>&#127793; Farming &amp; Food Production</h2>';
+  html += '<h3>Start with reliable staples</h3><p>Potatoes, beans, and squash are traditionally grown together as the "Three Sisters": corn or another tall stalk supports climbing bean vines, beans fix nitrogen into the soil for the other two, and squash leaves shade out weeds and hold in moisture.</p>';
+  html += '<ul><li><b>Potatoes</b> - calorie-dense and store well through winter in a cool, dark space.</li><li><b>Beans</b> - a reliable protein source that also improves the soil they grow in.</li><li><b>Squash</b> - many varieties store for months without refrigeration.</li><li><b>Leafy greens</b> - fast-growing (30-60 days), useful for quick nutrition between larger harvests.</li></ul>';
+  html += '<h3>Seed saving</h3><p>Only open-pollinated or heirloom seeds reliably breed true year after year - most hybrid seeds do not. Beans, peas, tomatoes, peppers, and lettuce are the easiest crops to save seed from, since they are self-pollinating and rarely cross with other varieties. Dry seeds completely before storing them in a cool, dark, dry container; well-dried seeds can remain viable for several years.</p>';
+  html += '<h3>Composting and soil building</h3><p>Alternate "greens" (kitchen scraps, grass clippings, for nitrogen) with "browns" (dry leaves, cardboard, straw, for carbon). Turn the pile every couple of weeks to add oxygen, and keep it about as damp as a wrung-out sponge. Leave out meat, dairy, and fats in a basic compost pile, since they attract pests and smell. Finished compost usually takes a few months to a year.</p>';
+  html += '<h3>Basic livestock</h3><p>Chickens and rabbits are the two most practical animals to start with: both breed quickly, need modest space, and convert scraps and forage into food. Chickens provide eggs without needing to be slaughtered, but require a secure, predator-proof coop. Rabbits are quiet, breed fast, and convert grass efficiently into meat, but require dedicated care through slaughter. Keep any livestock housing predator-proof and well ventilated.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="lt-plants"><h2>&#127807; Edible &amp; Poisonous Plants</h2>';
+  html += '<p>Misidentifying a wild plant can be fatal. Never eat anything from a plant you cannot positively identify, and cross-check more than one source before relying on any wild plant as food.</p>';
+  html += '<h3>Common, widespread edibles</h3><table class="ref-table"><tr><th>Plant</th><th>Notes</th></tr>'+
+    '<tr><td>Dandelion</td><td>Leaves, flowers, and roots are all edible; leaves grow more bitter as the plant matures.</td></tr>'+
+    '<tr><td>Plantain (the weed, not the fruit)</td><td>Broad, low-growing leaves; also used topically as a poultice for minor skin irritation and stings.</td></tr>'+
+    '<tr><td>Cattail</td><td>Young shoots and roots are edible; grows in wet ground near water.</td></tr>'+
+    '<tr><td>Clover</td><td>Edible in small amounts, best cooked; raw clover in quantity can cause bloating.</td></tr>'+
+    '<tr><td>Chickweed</td><td>Low, tender edible green common in disturbed soil and gardens.</td></tr>'+
+    '<tr><td>Wild blackberry / raspberry</td><td>Recognizable bramble fruit; avoid unfamiliar white or pale berries entirely.</td></tr>'+
+    '</table>';
+  html += renderWarning("Dangerous look-alikes", ["Poison hemlock and water hemlock closely resemble wild carrot (Queen Anne's Lace) and wild parsnip - both hemlocks are extremely toxic and can be fatal in small amounts. Hemlock stems usually show purple blotches and are smooth; wild carrot stems are hairy.","Death cap and destroying angel mushrooms closely resemble edible varieties - never eat wild mushrooms without expert identification. Symptoms can appear many hours after serious damage is already done.","Pokeweed berries look like edible dark berries, but the entire plant is toxic.","Treat any white or pale berries as inedible by default."]);
+  html += '<h3>Universal Edibility Test (last resort only)</h3><p>Use this only when no positively identified food source is available, and only on a plant that is abundant nearby, since a full test uses small amounts over many hours. Do not eat anything else for several hours beforehand, and test only one plant part at a time.</p>';
+  html += renderSteps(["Separate the plant into parts (leaves, stem, roots) and test only one part at a time.","Smell it - a strong, unpleasant, or almond-like odor is a bad sign. Stop if so.","Rub a piece on the inner wrist or elbow and wait 15 minutes. Stop at any burning, itching, rash, or numbness.","Touch a small piece to the lips for 3 minutes. Stop at any burning or tingling.","Hold a small piece on the tongue for 15 minutes without swallowing. Stop at any bad reaction.","Chew a small piece for 15 minutes without swallowing, then spit it out. Stop at any bad reaction.","Swallow a small amount and wait 8 hours, eating or drinking nothing else. Stop at any nausea, cramping, or other symptoms.","If there is no reaction after 8 hours, eat a slightly larger amount and wait another 8 hours before treating that plant part as food."]);
+  html += renderWarning("Stop the test immediately if", ["Any burning, numbness, tingling, or rash appears at any stage.","Nausea, vomiting, or stomach cramps develop.","Dizziness or difficulty breathing occurs."]);
+  html += '</div>';
+
+  html += '<div class="section" id="lt-preservation"><h2>&#128230; Food Preservation &amp; Long-Term Water</h2>';
+  html += '<h3>Drying</h3><p>The oldest and most reliable preservation method - it removes the moisture pathogens need to grow. Thin-slice meat or vegetables and dry using sun, air, or gentle heat until leathery and brittle, then store fully dried food in a sealed, dry container.</p>';
+  html += '<h3>Smoking</h3><p>Cold smoking adds flavor and some short-term preservation at low temperatures without fully cooking the food. Hot smoking cooks the meat while adding smoke flavor and extends storage somewhat longer. Neither replaces proper curing or refrigeration for long-term safety.</p>';
+  html += '<h3>Salt curing and brining</h3><p>Salt draws out moisture and creates an environment hostile to most bacteria. A basic dry cure works salt thoroughly into meat, then leaves it in a cool location for days depending on thickness. Brining (salt dissolved in water) works similarly for smaller cuts.</p>';
+  html += '<h3>Root cellaring</h3><p>A cool, humid, dark space - a dug-out cellar, buried barrel, or unheated basement corner - can store root vegetables for months. Potatoes, carrots, beets, and cabbage store well; leafy greens and most fruit do not.</p>';
+  html += '<h3>Canning</h3><p>High-acid foods (fruit, pickles, most tomatoes) can be safely preserved with a water-bath canner. Low-acid foods (most vegetables, meat) require pressure canning to reach a high enough temperature to destroy Clostridium botulinum spores.</p>';
+  html += renderWarning("Botulism risk", ["Never water-bath can low-acid vegetables or meat - it does not reach a temperature high enough to kill botulism spores.","Discard any canned food with a bulging lid, off smell, or spurting liquid when opened. Do not taste it to check."]);
+  html += '<h3>Long-term water</h3><p>Rainwater catchment from a roof into a covered, food-grade container is one of the most reliable long-term water sources; divert the first flush of runoff, which carries the most roof debris, away from storage. A simple biosand or ceramic filter can make cloudy water usable for washing, and combined with boiling or chemical treatment, safer to drink. Rotate stored drinking water every six to twelve months and keep containers out of direct sunlight.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="lt-health"><h2>&#129532; Sanitation, Hygiene &amp; Extended Medicine</h2>';
+  html += renderWarning("Sanitation is a priority, not an afterthought", ["Poor sanitation has historically caused more deaths after a disaster than violence or starvation - treat it accordingly."]);
+  html += '<h3>Latrines</h3><p>A simple cathole - roughly 6-8 in (15-20 cm) deep, at least 200 ft (60 m) from any water source - works for a short stay. For longer-term use, a deeper pit latrine with a simple cover and seat reduces smell and flies; add a layer of ash or dry soil after each use to speed breakdown and control odor.</p>';
+  html += '<h3>Handwashing without plumbing</h3><p>A "tippy-tap" - a hanging, tilted container with a small hole that releases a trickle of water when tipped by a foot pedal or string - uses very little water for effective handwashing. Ash can serve as a rough soap substitute in a true emergency. Wash hands after using the latrine, before handling food or water, and after handling raw meat.</p>';
+  html += '<h3>Extended wound care</h3><p>Without access to a hospital, clean wounds daily with the cleanest available water, change dressings regularly, and watch closely for spreading redness, warmth, red streaking, fever, or pus - all signs of infection needing urgent care if at all possible. Raw honey has genuine antimicrobial properties and has been used as a wound dressing when nothing else is available.</p>';
+  html += '<h3>Managing chronic conditions</h3><p>Stockpiling a longer supply of any regular medication, along with a written list of dosages and conditions, is worth far more than any improvised alternative. Herbal or folk remedies are not a substitute for insulin, blood pressure medication, or other prescribed treatment.</p>';
+  html += '<h3>Herbal remedies (supportive care only)</h3>';
+  html += renderWarning("Not a substitute for real medicine", ["Herbal remedies are supportive care at best, not a substitute for antibiotics or emergency medical treatment.","When in doubt about a plant's identity or safety, do not use it medicinally."]);
+  html += '<p>A few widely documented supportive uses: crushed plantain leaf as a poultice for minor skin irritation or insect stings, garlic for its mild antimicrobial properties in food, and chamomile or mint as a calming tea. None of these treat serious infection, injury, or illness.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="lt-barter"><h2>&#128260; Barter &amp; Scavenging</h2>';
+  html += '<h3>What holds trade value</h3><p>Small, practical, consumable goods tend to hold the most trade value: batteries, over-the-counter medication and first aid supplies, hygiene products, hand tools, seeds, fuel, and clean water containers. Skills - the ability to fix things, treat injuries, or grow food - are often worth more than any physical good.</p>';
+  html += '<h3>Scavenging safely</h3><ul>'+
+    '<li>Avoid entering a structure alone if possible, and tell someone where you are going.</li>'+
+    '<li>Test floors and stairs before putting full weight on them - fire, water, and time weaken structures quickly.</li>'+
+    '<li>Watch for gas smells, standing water near electrical sources, and mold - all can be more dangerous than the search itself.</li>'+
+    '<li>Note your exit before going further inside.</li>'+
+    '<li>Take only what is needed and can be carried - overloading slows you down when it matters most.</li>'+
+  '</ul></div>';
+
+  html += '<div class="section" id="lt-power"><h2>&#128295; Off-Grid Power &amp; Tool Maintenance</h2>';
+  html += '<h3>Basic solar and battery power</h3><p>A small solar panel paired with a battery bank can keep essentials running - a radio, lights, and small medical devices - though it will not power large appliances. Prioritize charging what actually matters (communication, light, medical needs) over convenience items, and keep panels clean and angled toward the sun for the best output.</p>';
+  html += '<h3>Hand-crank and battery basics</h3><p>Hand-crank radios and flashlights remove batteries as a point of failure entirely. Store spare batteries in a cool, dry place, and rotate stock so nothing sits unused for years.</p>';
+  html += '<h3>Tool maintenance</h3><p>A well-maintained hand tool will outlast several cheap replacements. Keep cutting edges sharp - a dull blade is more dangerous, not less, since it requires more force to use. Wipe metal tools dry and lightly oil them to prevent rust, especially in humid conditions. Learning basic repair - resharpening, re-handling, patching - matters more long-term than any single tool owned.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="lt-community"><h2>&#129309; Community Resilience</h2>';
+  html += '<h3>Low profile</h3><p>Avoid signaling that supplies are available when others may not have them - lit windows at night, visible food stores, or loose talk about what is stocked can draw unwanted attention. This is not about secrecy from trusted neighbors, but about not broadcasting vulnerability to strangers.</p>';
+  html += '<h3>Mutual aid</h3><p>A small, trusted group pooling skills and labor is consistently more resilient than any individual or household alone - one person who can treat injuries, one who can fix things, and one who can grow food cover far more ground together than any one of them could alone. Build these relationships before they are needed.</p>';
+  html += '<h3>Conflict de-escalation</h3><p>The safest outcome in almost any tense encounter is the one that ends without confrontation. Stay calm, keep hands visible, give people an easy way to back down without losing face, and prioritize disengaging and creating distance over standing your ground. Avoiding a conflict entirely is always the better outcome than winning one.</p>';
+  html += '</div>';
+
+  return html;
+}
+
+/* ---- Natural Disasters ---- */
+function renderDisasters(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#127755; Natural Disasters</h2>';
+  html += '<p>Large-scale geological and environmental events. For storm-specific hazards like lightning, flooding, and high wind, see the Weather category; for being stranded in a vehicle during a storm, see Vehicle Emergencies.</p>';
+  html += '<div class="jump-row">'+
+    '<a class="jump-chip" href="#nd-earthquake">Earthquakes</a>'+
+    '<a class="jump-chip" href="#nd-wildfire">Wildfires</a>'+
+    '<a class="jump-chip" href="#nd-tsunami">Tsunamis</a>'+
+    '<a class="jump-chip" href="#nd-volcano">Volcanic Ashfall</a>'+
+    '<a class="jump-chip" href="#nd-landslide">Landslides</a>'+
+  '</div></div>';
+
+  html += '<div class="section" id="nd-earthquake"><h2>&#128165; Earthquakes</h2>';
+  html += '<h3>During the shaking</h3>';
+  html += renderSteps(["Drop to the ground before it drops you.","Take Cover under a sturdy table or desk if one is nearby.","Hold On to it, and protect your head and neck until the shaking stops.","If in bed, stay there and cover your head with a pillow rather than run for a doorway.","If outdoors, move to an open area away from buildings, trees, and power lines.","If driving, pull over away from overpasses, bridges, and power lines, and stay inside the vehicle until shaking stops."]);
+  html += '<h3>After the shaking stops</h3><p>Expect aftershocks. Check for gas leaks by smell or a hissing sound - if suspected, shut off the gas at the main valve and leave the area without using switches, lighters, or anything that could spark. Check for structural damage before re-entering a building, and be cautious around damaged stairs, chimneys, and overhead fixtures.</p>';
+  html += renderWarning("What NOT to do", ["Do not run outside during the shaking - falling debris near exits and walls is a leading cause of injury.","Standing in a doorway is an outdated myth - modern doorways are not stronger than the rest of the structure. Get under sturdy furniture instead.","Do not use elevators after an earthquake."]);
+  html += '</div>';
+
+  html += '<div class="section" id="nd-wildfire"><h2>&#128293; Wildfires</h2>';
+  html += '<h3>Before fire season</h3><p>Know at least two evacuation routes from home in advance, sign up for local emergency alerts, and keep a vehicle fueled and ready during high-risk periods. Create defensible space by clearing dead brush and vegetation roughly 30 ft (9 m) from structures.</p>';
+  html += '<h3>If evacuation is ordered</h3><p>Leave immediately rather than waiting to see how close the fire gets. Close all windows and doors, remove flammable curtains, and shut off gas at the meter before leaving if time allows.</p>';
+  html += '<h3>If trapped with no escape route</h3>';
+  html += renderSteps(["In a vehicle: stay inside, close windows and vents, turn headlights on, get down below window level, and cover yourself with a blanket or jacket as a last resort.","On foot: move to a cleared area away from vegetation, downhill from the fire if possible.","If caught in the open with fire approaching, lie face down in a low spot and cover exposed skin with wet cloth if available."]);
+  html += '</div>';
+
+  html += '<div class="section" id="nd-tsunami"><h2>&#127754; Tsunamis</h2>';
+  html += '<p>Natural warning signs matter more than waiting for an official alert, since a tsunami can arrive within minutes of a nearby earthquake.</p>';
+  html += renderWarning("Move to high ground immediately if", ["You feel a strong or long-lasting earthquake near the coast.","The ocean suddenly and unusually recedes, exposing the sea floor.","You hear a loud, unusual roaring sound from the ocean."]);
+  html += '<p>Move inland or to high ground - as a rough guide, at least 100 ft (30 m) of elevation or one to two miles (1.5-3 km) inland. If caught in the water, grab onto floating debris and try to reach higher structure. Do not return to the coast until officials confirm it is safe - tsunamis often arrive as a series of waves over several hours, and later waves can be larger than the first.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="nd-volcano"><h2>&#127755; Volcanic Ashfall</h2>';
+  html += '<p>Even far from an eruption itself, falling ash is the hazard most people actually encounter.</p>';
+  html += '<h3>Ashfall</h3><p>Stay indoors with windows and doors sealed. Wear an N95 respirator or similar mask outdoors, and swap it for a fresh one if breathing becomes difficult. Avoid driving - ash reduces visibility and can damage engines. Clear ash from flat roofs carefully, since accumulated ash is heavy and heavier still once wet. Cover electronics and outdoor equipment.</p>';
+  html += '<h3>Lava and pyroclastic flow</h3><p>Evacuate immediately per official orders. These move far too fast to outrun once close, so the safe window is before the danger zone is declared, not after.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="nd-landslide"><h2>&#9968; Landslides &amp; Mudslides</h2>';
+  html += '<h3>Warning signs</h3><ul>'+
+    '<li>Cracking sounds from trees, or cracks opening in the ground or pavement.</li>'+
+    '<li>A sudden increase or decrease in stream or creek water levels, especially if it turns muddy.</li>'+
+    '<li>Doors or windows sticking for the first time.</li>'+
+    '<li>Trees, fences, or retaining walls slowly tilting.</li>'+
+  '</ul>';
+  html += '<p>If any of these appear during or after heavy rain on steep terrain, move away and uphill, perpendicular to the likely flow path - never cross it. If actually caught in a slide, curl into a tight ball and protect your head.</p>';
+  html += '</div>';
+  return html;
+}
+
+/* ---- Home Survival ---- */
+function renderHomeSurvival(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#127968; Home Survival</h2>';
+  html += '<p>Preparing the place you are most likely to actually be when something goes wrong.</p>';
+  html += '<div class="jump-row">'+
+    '<a class="jump-chip" href="#hs-kit">Emergency Kit</a>'+
+    '<a class="jump-chip" href="#hs-utilities">Utility Shutoffs</a>'+
+    '<a class="jump-chip" href="#hs-fire">Fire Safety</a>'+
+    '<a class="jump-chip" href="#hs-generator">Generator &amp; CO</a>'+
+    '<a class="jump-chip" href="#hs-shelter">Shelter or Evacuate</a>'+
+    '<a class="jump-chip" href="#hs-postcheck">Post-Disaster Check</a>'+
+  '</div></div>';
+
+  html += '<div class="section" id="hs-kit"><h2>&#127890; Emergency Kit</h2>';
+  html += '<p>Build a kit that covers at least 3 days for everyone in the household, stored somewhere accessible you can grab quickly.</p>';
+  html += '<ul>'+
+    '<li>Water - 1 gallon (4 L) per person per day, minimum 3 days.</li>'+
+    '<li>Non-perishable food, minimum 3 days, plus a manual can opener.</li>'+
+    '<li>Flashlight and extra batteries, or a hand-crank light.</li>'+
+    '<li>First aid kit and at least a week of any regular medications.</li>'+
+    '<li>Battery or hand-crank radio for emergency broadcasts.</li>'+
+    '<li>Phone charger or power bank.</li>'+
+    '<li>Cash in small bills - card readers and ATMs may be down.</li>'+
+    '<li>Copies of important documents (ID, insurance, medical) in a waterproof bag.</li>'+
+    '<li>Whistle, dust masks, local paper map, basic sanitation supplies.</li>'+
+  '</ul></div>';
+
+  html += '<div class="section" id="hs-utilities"><h2>&#128295; Utility Shutoffs</h2>';
+  html += '<p>Know the locations before an emergency, not during one.</p>';
+  html += '<h3>Gas</h3><p>Only shut off the gas if you smell it, hear hissing, or are told to by officials. Use a wrench kept near the valve to turn it a quarter turn until it is perpendicular to the pipe. Once off, do not turn it back on yourself - leave that to the utility company, since relighting it incorrectly can create an explosion risk.</p>';
+  html += '<h3>Water</h3><p>Locate the main shutoff valve, usually near the water meter, so a broken pipe or plumbing failure can be stopped before it floods the home.</p>';
+  html += '<h3>Electricity</h3><p>Know the location of the main breaker for a full power cutoff - important before flood water reaches outlets or wiring, or before working on anything electrical.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="hs-fire"><h2>&#128293; Home Fire Safety</h2>';
+  html += '<ul>'+
+    '<li>Test smoke detectors monthly, replace batteries yearly, and replace the units themselves every 10 years.</li>'+
+    '<li>Fire extinguisher use - PASS: Pull the pin, Aim at the base of the fire, Squeeze the handle, Sweep side to side.</li>'+
+    '<li>Plan two escape routes from every room and practice a home fire drill.</li>'+
+    '<li>Close bedroom doors while sleeping - a closed door measurably slows fire and smoke spread.</li>'+
+  '</ul></div>';
+
+  html += '<div class="section" id="hs-generator"><h2>&#9889; Generator &amp; Carbon Monoxide Safety</h2>';
+  html += renderWarning("Never run a generator", ["Indoors, in a garage, or in any enclosed space - even with doors open.","Near windows, doors, or vents where exhaust can be drawn inside.","Closer than about 20 ft (6 m) from the house."]);
+  html += '<p>Install carbon monoxide detectors near sleeping areas. Symptoms of CO poisoning include headache, dizziness, nausea, and confusion - if suspected, get to fresh air immediately and seek medical help.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="hs-shelter"><h2>&#128737; Shelter in Place or Evacuate</h2>';
+  html += '<p>The right call depends on the hazard. A short-duration airborne hazard, such as a nearby chemical spill, often favors sealing a room and sheltering in place. A flood, wildfire, or structural risk usually favors leaving early rather than waiting. Always follow official guidance when it is available.</p>';
+  html += '<p>Set up a family communication plan in advance: an out-of-area contact everyone can reach if local lines are down, and an agreed meeting point if the household gets separated.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="hs-postcheck"><h2>&#128269; Post-Disaster Home Check</h2>';
+  html += '<p>Before re-entering a home after an earthquake, flood, storm, or fire:</p>';
+  html += renderSteps(["Look for structural damage - cracks, leaning walls, or a sagging roofline - before going inside.","Smell for gas and listen for hissing; if detected, do not enter and do not use any switches.","Watch for downed power lines nearby - stay well away and report them rather than moving them.","Avoid standing water near anything electrical.","Photograph damage for insurance before starting cleanup.","Wear sturdy shoes and gloves while inspecting or cleaning up."]);
+  html += '</div>';
+  return html;
+}
+
+/* ---- Pandemic & Illness ---- */
+function renderPandemic(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#128567; Pandemic &amp; Illness Preparedness</h2>';
+  html += '<p>For a widespread outbreak or an extended illness at home, separate from single-injury First Aid.</p>';
+  html += '<div class="jump-row">'+
+    '<a class="jump-chip" href="#pd-stock">Stockpiling</a>'+
+    '<a class="jump-chip" href="#pd-infection">Infection Control</a>'+
+    '<a class="jump-chip" href="#pd-isolation">Isolation &amp; Quarantine</a>'+
+    '<a class="jump-chip" href="#pd-care">When To Seek Care</a>'+
+    '<a class="jump-chip" href="#pd-mental">Isolation &amp; Mental Health</a>'+
+  '</div></div>';
+
+  html += '<div class="section" id="pd-stock"><h2>&#128230; Stockpiling for Illness</h2>';
+  html += '<p>On top of the standard emergency kit (see Home Survival), keep at least 2 extra weeks of the following on hand:</p>';
+  html += '<ul>'+
+    '<li>Thermometer, fever and pain reducers, and an electrolyte or rehydration solution.</li>'+
+    '<li>Basic over-the-counter cold and flu medication.</li>'+
+    '<li>N95 or similar masks, disposable gloves, and hand sanitizer.</li>'+
+    '<li>Household disinfecting supplies for surfaces.</li>'+
+    '<li>A pulse oximeter, useful for monitoring respiratory illness at home.</li>'+
+    '<li>An extra supply of any regular prescription medications.</li>'+
+  '</ul></div>';
+
+  html += '<div class="section" id="pd-infection"><h2>&#129440; Infection Control at Home</h2>';
+  html += renderSteps(["Set up a separate sick room if possible, with a separate bathroom if available.","Use dedicated dishes, cups, and linens for the sick person until they recover.","Wash hands frequently and disinfect high-touch surfaces (doorknobs, light switches, phones) daily.","Improve ventilation where possible - open windows or run a fan to increase air circulation.","Wear a mask when caring for a sick household member, and have the sick person mask if moving through shared spaces."]);
+  html += '</div>';
+
+  html += '<div class="section" id="pd-isolation"><h2>&#128683; Isolation &amp; Quarantine Basics</h2>';
+  html += '<p><b>Isolation</b> means separating someone who is already sick from healthy household members. <b>Quarantine</b> means separating someone who was exposed but is not yet sick, to see whether illness develops. As a general rule, stay home when sick rather than going to work, school, or public spaces, and follow local public health guidance for how long to isolate or quarantine for a specific illness.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="pd-care"><h2>&#128680; When To Seek Care</h2>';
+  html += renderWarning("Seek urgent medical care for", ["Difficulty breathing or shortness of breath at rest.","Persistent chest pain or pressure.","New confusion or difficulty waking.","Bluish lips or face.","Inability to keep fluids down.","Symptoms that seem to improve, then suddenly worsen again."]);
+  html += '<p>Milder symptoms - low fever, cough, fatigue, aches - are generally manageable at home with rest, fluids, and over-the-counter medication.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="pd-mental"><h2>&#128172; Isolation &amp; Mental Health</h2>';
+  html += '<p>Extended isolation takes a real toll. Keep a daily routine, stay connected with others by phone or video even when physically apart, limit continuous news consumption, and keep moving physically if health allows, even just stretching or walking indoors.</p>';
+  html += '</div>';
+  return html;
+}
+
+/* ---- Civil Unrest & Public Safety ---- */
+function renderUnrest(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#128274; Civil Unrest &amp; Public Safety</h2>';
+  html += '<p>Focused on awareness and avoidance. For interpersonal conflict de-escalation, see Long-Term Survival &gt; Community Resilience.</p>';
+  html += '<div class="jump-row">'+
+    '<a class="jump-chip" href="#cu-awareness">Situational Awareness</a>'+
+    '<a class="jump-chip" href="#cu-home">Securing Your Home</a>'+
+    '<a class="jump-chip" href="#cu-comms">Communication Blackouts</a>'+
+    '<a class="jump-chip" href="#cu-active">Active Threats</a>'+
+  '</div></div>';
+
+  html += '<div class="section" id="cu-awareness"><h2>&#128065; Situational Awareness</h2>';
+  html += '<ul>'+
+    '<li>Follow reliable local news or official channels rather than unverified social media during a developing situation.</li>'+
+    '<li>Avoid crowds and known flashpoints where possible, and steer clear of areas with a heavy, tense police or security presence.</li>'+
+    '<li>Always have an exit in mind wherever you are, and identify it as soon as you arrive somewhere.</li>'+
+    '<li>Trust your instincts - leaving early because something feels wrong costs little; leaving too late can cost a great deal.</li>'+
+  '</ul></div>';
+
+  html += '<div class="section" id="cu-home"><h2>&#128273; Securing Your Home</h2>';
+  html += '<p>Reinforce and lock doors and windows. Keep a low profile - avoid visibly displaying valuables, supplies, or anything that suggests the household is well stocked. Identify an interior room away from windows as a fallback gathering point. Keep your emergency kit and important documents where they can be grabbed quickly if you need to leave.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="cu-comms"><h2>&#128241; Communication When Networks Are Down</h2>';
+  html += '<p>Cell networks can become congested or intentionally limited during large-scale unrest. Agree on a family plan in advance: an out-of-area contact everyone can reach, and a physical meeting point if local communication fails (see Home Survival &gt; Shelter in Place or Evacuate). Text messages often get through when voice calls fail, since they need far less bandwidth. Handheld FRS/GMRS radios are a useful backup for short-range family communication that does not depend on cell networks at all.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="cu-active"><h2>&#128680; Active Threats: Run, Hide, Fight</h2>';
+  html += '<p>Standard public safety guidance for an active violent threat, in order of preference:</p>';
+  html += renderSteps(["Run - if there is a safe escape route, leave the area, leave your belongings behind, and keep your hands visible.","Hide - if you cannot safely leave, get out of the threat's view, lock or barricade the door, stay low, and silence your phone.","Fight - only as an absolute last resort, if your life is in imminent danger and there is no other option, act with full commitment.","Once safe or once help arrives, keep your hands visible and follow the instructions of responding officers."]);
+  html += '</div>';
+  return html;
+}
+
+/* ---- Power Outages ---- */
+function renderOutages(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#128268; Power Outages</h2>';
+  html += '<p>Short outages are mostly an inconvenience; the risks show up around food safety, heating, and medical equipment. For generator-specific carbon monoxide safety, see Home Survival.</p>';
+  html += '<div class="jump-row">'+
+    '<a class="jump-chip" href="#po-food">Food Safety</a>'+
+    '<a class="jump-chip" href="#po-heat">Safe Heat &amp; Light</a>'+
+    '<a class="jump-chip" href="#po-medical">Medical Equipment</a>'+
+    '<a class="jump-chip" href="#po-general">General Steps</a>'+
+  '</div></div>';
+
+  html += '<div class="section" id="po-food"><h2>&#129482; Food Safety</h2>';
+  html += '<p>An unopened refrigerator keeps food safely cold for about 4 hours. A full freezer holds its temperature for about 48 hours unopened (24 hours if only half full). Use an appliance thermometer if available - when in doubt, discard perishable food that has been above 40&deg;F (4&deg;C) for more than 2 hours.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="po-heat"><h2>&#128367; Safe Heat &amp; Light</h2>';
+  html += renderWarning("Never use indoors", ["A charcoal or gas grill, or any outdoor cooking equipment, as an indoor heat source - carbon monoxide risk.","A generator inside the house or garage, even with doors open."]);
+  html += '<p>Battery-powered or hand-crank lanterns are safer than open flame. If candles are the only option, never leave them unattended and keep them well clear of anything flammable.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="po-medical"><h2>&#128137; Medical Equipment &amp; Refrigerated Medication</h2>';
+  html += '<p>Know in advance how your specific medication tolerates being unrefrigerated - many, including insulin, can handle brief periods at room temperature, but check the guidance for your prescription. A cooler with ice packs can bridge a short outage. For powered medical devices (oxygen concentrators, CPAP machines), have a backup plan: a battery backup, a generator, or a known alternate location such as a relative\'s home or a hospital for an extended outage.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="po-general"><h2>&#128161; General Outage Steps</h2><ul>'+
+    '<li>Unplug sensitive electronics to protect them from a power surge when service is restored.</li>'+
+    '<li>Keep one corded phone on hand - it does not need separate power the way most cordless phones do.</li>'+
+    '<li>Leave one light switched on so you know when power returns.</li>'+
+    '<li>Conserve device and vehicle battery use for when it is actually needed.</li>'+
+  '</ul></div>';
+  return html;
+}
+
+/* ---- Infants, Elderly & Pets ---- */
+function renderSpecialNeeds(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#128118; Infants, Elderly &amp; Pets</h2>';
+  html += '<p>The parts of a preparedness plan that are easy to forget until they are needed.</p>';
+  html += '<div class="jump-row">'+
+    '<a class="jump-chip" href="#sn-infants">Infants &amp; Children</a>'+
+    '<a class="jump-chip" href="#sn-elderly">Elderly &amp; Mobility Needs</a>'+
+    '<a class="jump-chip" href="#sn-pets">Pets</a>'+
+    '<a class="jump-chip" href="#sn-disability">Other Disabilities</a>'+
+  '</div></div>';
+
+  html += '<div class="section" id="sn-infants"><h2>&#128118; Infants &amp; Young Children</h2>';
+  html += '<p>Stock extra formula, diapers, and wipes beyond the standard kit duration, along with any medications a child needs regularly. For formula-fed infants under 6 months, avoid mixing formula with plain untreated water unless following specific package or medical guidance. Pack a comfort item, and keep explanations simple and calm for what is happening, matched to the child\'s age.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="sn-elderly"><h2>&#129491; Elderly &amp; Mobility Needs</h2>';
+  html += '<p>Keep an extra supply of all prescription medications along with a written list of dosages, conditions, and allergies. Keep mobility aids - power wheelchairs, scooters, walkers - charged and accessible, along with spare hearing aid batteries and a backup pair of glasses. A written list of physicians and their contact information is worth having on paper, not just a phone. For anyone living alone, consider a medical alert method that does not depend on a working phone line.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="sn-pets"><h2>&#128062; Pets</h2>';
+  html += '<p>Stock pet food and water for a comparable duration to the household supply, and keep a carrier or leash ready to go. Keep ID tags current and microchip information up to date. Bring copies of vaccination records - many emergency shelters require them, and some emergency shelters do not accept pets at all, so it is worth knowing which ones near you do before an emergency happens.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="sn-disability"><h2>&#9855; Other Disabilities</h2>';
+  html += '<p>Keep essential equipment - mobility aids, communication devices - charged and within reach. Make sure at least one trusted contact outside the household is aware of specific needs and how to help. A service animal should have the same preparation as any pet, plus its working gear kept together and ready.</p>';
+  html += '</div>';
+  return html;
+}
+
+/* ---- Connect & Alerts ---- */
+var EMERGENCY_NUMBERS = [
+  {region:"United States &amp; Canada", num:"911"},
+  {region:"European Union (all member states)", num:"112"},
+  {region:"United Kingdom", num:"999 or 112"},
+  {region:"Australia", num:"000"},
+  {region:"New Zealand", num:"111"},
+  {region:"India", num:"112"},
+  {region:"Mexico", num:"911"},
+  {region:"Japan", num:"110 (police), 119 (fire/ambulance)"},
+  {region:"China", num:"110 (police), 119 (fire), 120 (ambulance)"},
+  {region:"Brazil", num:"190 (police), 192 (ambulance), 193 (fire)"}
+];
+var EMERGENCY_ORGS = [
+  {name:"American Red Cross", contact:"1-800-733-2767 (1-800-RED-CROSS)", note:"Disaster relief and shelter information. Their Emergency app can be downloaded in advance and used offline."},
+  {name:"FEMA Disaster Assistance (US)", contact:"1-800-621-3362, or text 43362 (4FEMA)", note:"Federal disaster assistance registration and information."},
+  {name:"Poison Control (US)", contact:"1-800-222-1222", note:"Routes to your regional poison control center automatically."},
+  {name:"211 (US &amp; Canada)", contact:"Dial 2-1-1", note:"Free helpline for local non-emergency health and human services."},
+  {name:"Disaster Distress Helpline (US)", contact:"1-800-985-5990, or text TalkWithUs to 66746", note:"Crisis counseling for anyone experiencing distress related to a disaster."}
+];
+function renderConnect(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#128246; Connect &amp; Alerts</h2>';
+  html += '<p>Most of this guide works with zero signal by design. The tools below are the exception - they only run when you tap them, and they need an internet connection and (for most of them) permission to use your device location. Nothing is sent anywhere unless you tap one of these buttons.</p>';
+  html += '<div class="jump-row">'+
+    '<a class="jump-chip" href="#cn-weather">Live Weather</a>'+
+    '<a class="jump-chip" href="#cn-facilities">Nearby Facilities</a>'+
+    '<a class="jump-chip" href="#cn-quakes">Earthquakes &amp; Air Quality</a>'+
+    '<a class="jump-chip" href="#cn-numbers">Emergency Numbers</a>'+
+    '<a class="jump-chip" href="#cn-orgs">Relief Organizations</a>'+
+  '</div></div>';
+
+  html += '<div class="section" id="cn-weather"><h2><span class="badge live">Live</span> Weather &amp; Alerts</h2>';
+  html += '<p>Current conditions plus any active US National Weather Service alerts for your location.</p>';
+  html += '<button class="btn primary" id="btn-weather">&#127780; Check Current Weather</button>';
+  html += liveBox("live-weather");
+  html += '</div>';
+
+  html += '<div class="section" id="cn-facilities"><h2><span class="badge live">Live</span> Nearby Emergency Facilities</h2>';
+  html += '<p>Finds nearby hospitals, police, fire stations, and pharmacies using OpenStreetMap data, sorted by distance, with directions.</p>';
+  html += '<button class="btn primary" id="btn-facilities">&#128205; Find Nearby Facilities</button>';
+  html += liveBox("live-facilities");
+  html += '</div>';
+
+  html += '<div class="section" id="cn-quakes"><h2><span class="badge live">Live</span> Earthquakes &amp; Air Quality</h2>';
+  html += '<p>Recent significant earthquakes worldwide (USGS) and current air quality at your location - useful during wildfire smoke.</p>';
+  html += '<div class="secondary-row"><button class="btn primary" id="btn-quakes">&#127757; Check Recent Earthquakes</button><button class="btn primary" id="btn-aqi">&#127786; Check Air Quality</button></div>';
+  html += '<h3>Earthquakes</h3>'+liveBox("live-quakes");
+  html += '<h3>Air quality</h3>'+liveBox("live-aqi");
+  html += '</div>';
+
+  html += '<div class="section" id="cn-numbers"><h2>&#9742; Emergency Numbers by Region</h2>';
+  html += '<p>Works fully offline - this is a static reference, not a live lookup.</p>';
+  html += '<table class="ref-table"><tr><th>Region</th><th>Number</th></tr>'+
+    EMERGENCY_NUMBERS.map(function(e){ return '<tr><td>'+e.region+'</td><td class="mono">'+e.num+'</td></tr>'; }).join("")+
+    '</table>';
+  html += '<p style="margin-top:.6rem">On many mobile phones, dialing <b>112</b> reaches local emergency services as a built-in carrier failsafe, even in regions where it is not the primary number. This list is not exhaustive and numbers can change - verify locally when you have signal.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="cn-orgs"><h2>&#128735; Relief Organizations</h2>';
+  html += '<p>Works fully offline. Widely known, stable contact points worth having before you need them.</p>';
+  html += '<div class="qr-grid">'+
+    EMERGENCY_ORGS.map(function(o){ return '<div class="qr-card"><h4>'+o.name+'</h4><p class="mono">'+o.contact+'</p><p>'+o.note+'</p></div>'; }).join("")+
+    '</div></div>';
+  return html;
+}
+
+/* ---- Quiz ---- */
+function shuffle(arr){ var a=arr.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function renderQuiz(){
+  if(!state.quiz.order){ state.quiz.order = shuffle(QUIZ_QUESTIONS.map(function(_,i){return i;})); state.quiz.idx=0; state.quiz.score=0; state.quiz.answered=0; state.quiz.done=false; }
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#10067; Knowledge Check</h2>';
+  if(state.quiz.done){
+    html += '<div class="result-card '+(state.quiz.score>=8?"mild":state.quiz.score>=5?"moderate":"severe")+'">';
+    html += '<h3>Score: '+state.quiz.score+' / '+QUIZ_QUESTIONS.length+'</h3>';
+    html += '<p>This score lives only in memory for this session - nothing is saved.</p></div>';
+    html += '<button class="btn primary" id="quiz-retry">&#8635; Retake quiz</button>';
+  } else {
+    var qi = state.quiz.order[state.quiz.idx];
+    var q = QUIZ_QUESTIONS[qi];
+    html += '<p style="color:var(--ink-dim)">Question '+(state.quiz.idx+1)+' of '+QUIZ_QUESTIONS.length+' &middot; Score so far: '+state.quiz.score+'</p>';
+    html += '<h3>'+esc(q.q)+'</h3><div class="qbtn-list">';
+    q.a.forEach(function(ans, ai){
+      html += '<button class="qbtn" data-quiz-answer="'+ai+'"><span>'+esc(ans)+'</span></button>';
+    });
+    html += '</div><div id="quiz-feedback"></div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+/* ---------------- MAIN RENDER ---------------- */
+function renderCategory(id){
+  var fns = {firstaid:renderFirstAidCat, water:renderWater, shelter:renderShelter, fire:renderFire, nav:renderNav, signal:renderSignal, weather:renderWeather, wildlife:renderWildlife, vehicle:renderVehicle, longterm:renderLongTerm, disasters:renderDisasters, home:renderHomeSurvival, pandemic:renderPandemic, unrest:renderUnrest, outages:renderOutages, specialneeds:renderSpecialNeeds, connect:renderConnect};
+  return fns[id] ? fns[id]() : "<p>Not found.</p>";
+}
+
+function render(){
+  var main = document.getElementById("main");
+  var r = state.route;
+  var html = "";
+  if(r.view === "home") html = renderHome();
+  else if(r.view === "browse") html = renderBrowse();
+  else if(r.view === "quickref") html = renderQuickRef();
+  else if(r.view === "quiz") html = renderQuiz();
+  else if(r.view === "category") html = renderCategory(r.cat);
+  else if(r.view === "triage") html = renderTriage(r.flow, r.node);
+  else html = renderHome();
+  main.innerHTML = html;
+  renderSidebar();
+  wireDynamic();
+}
+
+function renderSidebar(){
+  var sb = document.getElementById("sidebar");
+  var r = state.route;
+  var html = '<button id="sidebar-close" class="icon-btn" style="margin-bottom:.5rem" aria-label="Close menu">&times; Close</button>';
+  html += '<button class="nav-btn '+(r.view==="home"?"active":"")+'" data-go="home"><span class="ic">&#127968;</span>Home</button>';
+  html += '<button class="nav-btn '+(r.view==="quickref"?"active":"")+'" data-go="quickref"><span class="ic">&#128203;</span>Quick Reference</button>';
+  html += '<button class="nav-btn '+(r.view==="browse"?"active":"")+'" data-go="browse"><span class="ic">&#128218;</span>Browse &amp; Learn</button>';
+  html += '<button class="nav-btn '+(r.view==="quiz"?"active":"")+'" data-go="quiz"><span class="ic">&#10067;</span>Knowledge Check</button>';
+  html += '<div class="nav-group-label">Categories</div>';
+  CATEGORIES.forEach(function(c){
+    var active = (r.view==="category" && r.cat===c.id) || (r.view==="triage" && c.id==="firstaid");
+    html += '<button class="nav-btn '+(active?"active":"")+'" data-go="cat:'+c.id+'"><span class="ic">'+c.ic+'</span>'+c.name+'</button>';
+  });
+  sb.innerHTML = html;
+}
+
+/* ---------------- EVENT WIRING ---------------- */
+function parseGo(goStr){
+  var parts = goStr.split(":");
+  if(parts[0]==="home") return {view:"home"};
+  if(parts[0]==="browse") return {view:"browse"};
+  if(parts[0]==="quickref") return {view:"quickref"};
+  if(parts[0]==="quiz") return {view:"quiz"};
+  if(parts[0]==="cat") return {view:"category", cat:parts[1]};
+  if(parts[0]==="triage") return {view:"triage", flow:parts[1], node:parts[2]};
+  return {view:"home"};
+}
+
+document.addEventListener("click", function(e){
+  var t = e.target.closest("[data-go]");
+  if(t){ go(parseGo(t.getAttribute("data-go"))); return; }
+  var fav = e.target.closest("[data-fav]");
+  if(fav){
+    var key = fav.getAttribute("data-fav");
+    if(state.favorites.has(key)) state.favorites.delete(key); else state.favorites.add(key);
+    render();
+    return;
+  }
+  var fitem = e.target.closest("[data-go-fav]");
+  if(fitem){ goFav(fitem.getAttribute("data-go-fav")); return; }
+  var prev = e.target.closest("[data-viewer-prev]");
+  if(prev){ stepViewer(prev.getAttribute("data-viewer-prev"), -1); return; }
+  var next = e.target.closest("[data-viewer-next]");
+  if(next){ stepViewer(next.getAttribute("data-viewer-next"), 1); return; }
+  var qa = e.target.closest("[data-quiz-answer]");
+  if(qa){ handleQuizAnswer(parseInt(qa.getAttribute("data-quiz-answer"))); return; }
+  var qretry = e.target.closest("#quiz-retry");
+  if(qretry){ state.quiz.order=null; render(); return; }
+  var pbtn = e.target.closest("#print-btn");
+  if(pbtn){ window.print(); return; }
+  if(e.target.closest("#btn-weather")){ runWeatherCheck(); return; }
+  if(e.target.closest("#btn-facilities")){ runFacilitiesCheck(); return; }
+  if(e.target.closest("#btn-quakes")){ runEarthquakeCheck(); return; }
+  if(e.target.closest("#btn-aqi")){ runAirQualityCheck(); return; }
+  var strobeBtn = e.target.closest("[data-strobe]");
+  if(strobeBtn){ startStrobe(strobeBtn.getAttribute("data-strobe")); return; }
+  if(e.target.closest("#strobe-stop")){ stopStrobe(); return; }
+});
+
+/* favorites list items use data-go="fav:key" mapping - patch renderFavList to use goFav */
+document.addEventListener("click", function(e){
+  var t = e.target.closest('[data-go^="fav:"]');
+  if(t){ e.stopPropagation(); goFav(t.getAttribute("data-go").split(":").slice(1).join(":")); }
+}, true);
+
+function stepViewer(id, dir){
+  var steps = VIEWERS[id];
+  var wrap = document.querySelector('[data-viewer="'+id+'"]');
+  if(!wrap || !steps) return;
+  var idx = parseInt(wrap.getAttribute("data-idx")) || 0;
+  idx = (idx + dir + steps.length) % steps.length;
+  wrap.setAttribute("data-idx", idx);
+  wrap.querySelector(".viewer-stage").innerHTML = steps[idx].svg;
+  wrap.querySelector(".svg-caption").textContent = steps[idx].cap;
+  var dots = wrap.querySelectorAll(".step-dots span");
+  dots.forEach(function(d,i){ d.classList.toggle("active", i===idx); });
+}
+
+function handleQuizAnswer(ai){
+  var qi = state.quiz.order[state.quiz.idx];
+  var q = QUIZ_QUESTIONS[qi];
+  var correct = ai === q.correct;
+  if(correct) state.quiz.score++;
+  state.quiz.answered++;
+  var fb = document.getElementById("quiz-feedback");
+  if(fb){
+    fb.innerHTML = '<div class="result-card '+(correct?"mild":"severe")+'" style="margin-top:.8rem"><h3>'+(correct?"Correct!":"Not quite")+'</h3><p>'+esc(q.a[q.correct])+' is the safer answer.</p></div>';
+  }
+  setTimeout(function(){
+    state.quiz.idx++;
+    if(state.quiz.idx >= QUIZ_QUESTIONS.length){ state.quiz.done = true; }
+    render();
+  }, 900);
+}
+
+/* Sidebar / hamburger */
+function openSidebar(){
+  document.getElementById("sidebar").classList.add("open");
+  document.getElementById("sidebar-scrim").classList.add("show");
+  document.getElementById("hamburger").setAttribute("aria-expanded","true");
+}
+function closeSidebar(){
+  var sb = document.getElementById("sidebar");
+  if(sb) sb.classList.remove("open");
+  var sc = document.getElementById("sidebar-scrim");
+  if(sc) sc.classList.remove("show");
+  var hb = document.getElementById("hamburger");
+  if(hb) hb.setAttribute("aria-expanded","false");
+}
+document.getElementById("hamburger").addEventListener("click", function(){
+  var sb = document.getElementById("sidebar");
+  if(sb.classList.contains("open")) closeSidebar(); else openSidebar();
+});
+document.getElementById("sidebar-scrim").addEventListener("click", closeSidebar);
+
+/* Font size + units toggles */
+function applyFontSize(){
+  document.documentElement.style.fontSize = FONT_SIZES[state.fontSize] + "px";
+  document.getElementById("fontsize-btn").textContent = "A " + FONT_LABELS[state.fontSize];
+}
+document.getElementById("fontsize-btn").addEventListener("click", function(){
+  state.fontSize = (state.fontSize + 1) % FONT_SIZES.length;
+  applyFontSize();
+});
+function applyUnits(){
+  document.getElementById("units-btn").textContent = state.units === "imperial" ? "Imperial" : "Metric";
+  if(state.route.view === "category" && state.route.cat === "water"){ render(); }
+}
+document.getElementById("units-btn").addEventListener("click", function(){
+  state.units = state.units === "imperial" ? "metric" : "imperial";
+  applyUnits();
+});
+
+/* Live calculator wiring (delegated on input) */
+document.addEventListener("input", function(e){
+  if(e.target.id === "wf-vol") computeWater();
+  if(["cal-people","cal-days","cal-activity"].indexOf(e.target.id) !== -1) computeCalories();
+});
+document.addEventListener("change", function(e){
+  if(e.target.id === "cal-activity") computeCalories();
+});
+
+function wireDynamic(){
+  if(document.getElementById("wf-vol")) computeWater();
+  if(document.getElementById("cal-people")) computeCalories();
+}
+
+/* ---------------- SEARCH ---------------- */
+function buildSearchIndex(){
+  SEARCH_INDEX.length = 0;
+  idx("Home","Emergency Now","start first aid triage help sos",{view:"triage",flow:"entry",node:"start"});
+  idx("Home","Quick Reference","cheat sheet critical facts printable",{view:"quickref"});
+  idx("Home","Knowledge Check","quiz test score",{view:"quiz"});
+  CATEGORIES.forEach(function(c){ idx(c.name, c.name, catBlurb(c.id), {view:"category", cat:c.id}); });
+  Object.keys(TRIAGE_FLOWS).forEach(function(flowId){
+    if(flowId==="entry") return;
+    var flow = TRIAGE_FLOWS[flowId];
+    var titleNode = flow.start;
+    var label = (TRIAGE_FLOWS.entry.start.items.filter(function(i){return i.go.split(":")[0]===flowId;})[0]||{}).label || flowId;
+    idx("First Aid", label, "triage first aid "+flowId, {view:"triage", flow:flowId, node:"start"});
+  });
+  QUICK_REF.forEach(function(item){ idx("Quick Reference", item.t, item.d, {view:"quickref"}); });
+  idx("Water & Food","Water purification calculator","bleach drops tablets gallons liters",{view:"category",cat:"water"});
+  idx("Water & Food","Calorie / ration calculator","food headcount days activity",{view:"category",cat:"water"});
+  idx("Shelter","Lean-to shelter","build steps diagram",{view:"category",cat:"shelter"});
+  idx("Shelter","Debris hut","build steps diagram insulation",{view:"category",cat:"shelter"});
+  FIRE_METHODS.forEach(function(m){ idx("Fire", m.name, "fire starting difficulty reliability", {view:"category",cat:"fire"}); });
+  idx("Navigation","Shadow-stick method","find north sun stick shadow",{view:"category",cat:"nav"});
+  idx("Navigation","Big Dipper North Star","polaris stars pointer",{view:"category",cat:"nav"});
+  idx("Navigation","Moon phase direction","waxing waning moon east west",{view:"category",cat:"nav"});
+  idx("Signaling","SOS signal","distress whistle mirror light morse",{view:"category",cat:"signal"});
+  idx("Signaling","Signal mirror","reflect sun aircraft",{view:"category",cat:"signal"});
+  idx("Signaling","Ground to air symbols","V X N Y assistance medical",{view:"category",cat:"signal"});
+  idx("Weather","Lightning 30-30 rule","thunder storm safety",{view:"category",cat:"weather"});
+  idx("Weather","Flash floods","moving water crossing",{view:"category",cat:"weather"});
+  idx("Weather","Extreme heat cold","wind chill frostbite",{view:"category",cat:"weather"});
+  idx("Weather","Tornado hurricane","high wind shelter",{view:"category",cat:"weather"});
+  idx("Wildlife","Bear encounters","grizzly black bear spray play dead",{view:"category",cat:"wildlife"});
+  idx("Wildlife","Snake safety","avoid bite",{view:"category",cat:"wildlife"});
+  idx("Wildlife","Mountain lion cougar","attack fight back",{view:"category",cat:"wildlife"});
+  idx("Wildlife","Ticks","lyme disease removal tweezers",{view:"category",cat:"wildlife"});
+  idx("Vehicle Emergencies","Stranded in snow","engine run heat exhaust",{view:"category",cat:"vehicle"});
+  idx("Vehicle Emergencies","Breakdown on road","hazards flares",{view:"category",cat:"vehicle"});
+  idx("Vehicle Emergencies","Stuck in mud or sand","traction wheels",{view:"category",cat:"vehicle"});
+  idx("Vehicle Emergencies","Overheating engine","radiator coolant burn",{view:"category",cat:"vehicle"});
+  idx("Vehicle Emergencies","Submerged vehicle","seatbelt window escape",{view:"category",cat:"vehicle"});
+  idx("Long-Term Survival","Farming and food production","gardening three sisters potatoes beans squash seed saving compost livestock chickens rabbits",{view:"category",cat:"longterm"});
+  idx("Long-Term Survival","Edible and poisonous plants","dandelion plantain cattail clover chickweed berries foraging",{view:"category",cat:"longterm"});
+  idx("Long-Term Survival","Dangerous plant look-alikes","poison hemlock water hemlock wild carrot death cap mushroom pokeweed",{view:"category",cat:"longterm"});
+  idx("Long-Term Survival","Universal Edibility Test","test unknown plant safe to eat wild food",{view:"category",cat:"longterm"});
+  idx("Long-Term Survival","Food preservation","drying smoking salt curing brining root cellar canning botulism",{view:"category",cat:"longterm"});
+  idx("Long-Term Survival","Long-term water","rainwater catchment biosand filter storage rotation",{view:"category",cat:"longterm"});
+  idx("Long-Term Survival","Sanitation and hygiene","latrine cathole handwashing tippy-tap disease",{view:"category",cat:"longterm"});
+  idx("Long-Term Survival","Extended wound care and chronic conditions","medicine honey herbal remedies infection",{view:"category",cat:"longterm"});
+  idx("Long-Term Survival","Barter and scavenging","trade value salvage looting structural safety",{view:"category",cat:"longterm"});
+  idx("Long-Term Survival","Off-grid power and tool maintenance","solar battery hand-crank sharpening rust repair",{view:"category",cat:"longterm"});
+  idx("Long-Term Survival","Community resilience","opsec mutual aid conflict de-escalation low profile",{view:"category",cat:"longterm"});
+  idx("Natural Disasters","Earthquakes","drop cover hold on aftershock gas leak structural damage",{view:"category",cat:"disasters"});
+  idx("Natural Disasters","Wildfires","evacuation defensible space trapped vehicle fire",{view:"category",cat:"disasters"});
+  idx("Natural Disasters","Tsunamis","high ground coast earthquake ocean recede warning signs",{view:"category",cat:"disasters"});
+  idx("Natural Disasters","Volcanic ashfall","eruption lava pyroclastic flow mask respirator",{view:"category",cat:"disasters"});
+  idx("Natural Disasters","Landslides and mudslides","warning signs steep terrain heavy rain",{view:"category",cat:"disasters"});
+  idx("Home Survival","Emergency kit go bag","water food flashlight first aid radio documents",{view:"category",cat:"home"});
+  idx("Home Survival","Utility shutoffs","gas water electricity main valve breaker",{view:"category",cat:"home"});
+  idx("Home Survival","Home fire safety","smoke detector fire extinguisher PASS escape route",{view:"category",cat:"home"});
+  idx("Home Survival","Generator and carbon monoxide safety","CO poisoning detector indoors",{view:"category",cat:"home"});
+  idx("Home Survival","Shelter in place or evacuate","family communication plan meeting point",{view:"category",cat:"home"});
+  idx("Home Survival","Post-disaster home check","structural damage gas leak downed power lines insurance",{view:"category",cat:"home"});
+  idx("Pandemic & Illness","Stockpiling for illness","masks thermometer medication pulse oximeter",{view:"category",cat:"pandemic"});
+  idx("Pandemic & Illness","Infection control at home","sick room disinfect ventilation dedicated dishes",{view:"category",cat:"pandemic"});
+  idx("Pandemic & Illness","Isolation and quarantine basics","exposed sick stay home",{view:"category",cat:"pandemic"});
+  idx("Pandemic & Illness","When to seek care","breathing chest pain confusion warning signs",{view:"category",cat:"pandemic"});
+  idx("Pandemic & Illness","Isolation and mental health","routine connected news",{view:"category",cat:"pandemic"});
+  idx("Civil Unrest & Public Safety","Situational awareness","crowds flashpoints exit plan instincts",{view:"category",cat:"unrest"});
+  idx("Civil Unrest & Public Safety","Securing your home","lock reinforce low profile",{view:"category",cat:"unrest"});
+  idx("Civil Unrest & Public Safety","Communication when networks are down","FRS GMRS radio text message family plan",{view:"category",cat:"unrest"});
+  idx("Civil Unrest & Public Safety","Active threats run hide fight","active shooter violence escape hide",{view:"category",cat:"unrest"});
+  idx("Power Outages","Food safety during an outage","refrigerator freezer four hours forty eight hours",{view:"category",cat:"outages"});
+  idx("Power Outages","Safe heat and light without power","candle carbon monoxide grill indoors",{view:"category",cat:"outages"});
+  idx("Power Outages","Medical equipment and refrigerated medication","insulin CPAP oxygen concentrator cooler",{view:"category",cat:"outages"});
+  idx("Infants, Elderly & Pets","Infants and young children","formula diapers wipes comfort item",{view:"category",cat:"specialneeds"});
+  idx("Infants, Elderly & Pets","Elderly and mobility needs","medication wheelchair hearing aid glasses",{view:"category",cat:"specialneeds"});
+  idx("Infants, Elderly & Pets","Pets","food carrier leash microchip vaccination shelter",{view:"category",cat:"specialneeds"});
+  idx("Infants, Elderly & Pets","Other disabilities","mobility aids communication devices service animal",{view:"category",cat:"specialneeds"});
+  idx("Connect & Alerts","Live weather and alerts","forecast temperature wind NWS current conditions",{view:"category",cat:"connect"});
+  idx("Connect & Alerts","Nearby emergency facilities","hospital police fire station pharmacy directions map",{view:"category",cat:"connect"});
+  idx("Connect & Alerts","Earthquakes and air quality","USGS AQI PM2.5 smoke",{view:"category",cat:"connect"});
+  idx("Connect & Alerts","Emergency numbers by region","911 112 999 000 phone",{view:"category",cat:"connect"});
+  idx("Connect & Alerts","Relief organizations","Red Cross FEMA poison control 211",{view:"category",cat:"connect"});
+  idx("Signaling","Screen strobe SOS flashlight","flash light visibility signal offline",{view:"category",cat:"signal"});
+}
+
+var searchInput = document.getElementById("search-input");
+var searchResults = document.getElementById("search-results");
+function renderSearch(q){
+  q = q.trim().toLowerCase();
+  if(!q){ searchResults.classList.remove("show"); searchResults.innerHTML=""; return; }
+  var matches = SEARCH_INDEX.filter(function(item){ return item.kw.indexOf(q) !== -1; }).slice(0,20);
+  if(!matches.length){
+    searchResults.innerHTML = '<div class="sr-empty">No results for "'+esc(q)+'"</div>';
+  } else {
+    searchResults.innerHTML = matches.map(function(m, i){
+      return '<button type="button" class="sr-item" data-search-idx="'+i+'"><div class="sr-cat">'+esc(m.cat)+'</div><div class="sr-title">'+esc(m.title)+'</div></button>';
+    }).join("");
+  }
+  searchResults._matches = matches;
+  searchResults.classList.add("show");
+}
+searchInput.addEventListener("input", function(){ renderSearch(searchInput.value); });
+searchInput.addEventListener("focus", function(){ if(searchInput.value.trim()) renderSearch(searchInput.value); });
+searchResults.addEventListener("click", function(e){
+  var t = e.target.closest("[data-search-idx]");
+  if(!t) return;
+  var m = searchResults._matches[parseInt(t.getAttribute("data-search-idx"))];
+  if(m){ go(m.go); searchInput.value=""; searchResults.classList.remove("show"); searchResults.innerHTML=""; }
+});
+document.addEventListener("click", function(e){
+  if(!e.target.closest("#search-wrap")){ searchResults.classList.remove("show"); }
+});
+document.addEventListener("keydown", function(e){
+  if(e.key === "Escape"){ searchResults.classList.remove("show"); closeSidebar(); stopStrobe(); }
+});
+
+/* ---------------- SCREEN STROBE ---------------- */
+function buildSosSequence(unit){
+  var seq = [];
+  function dot(){ seq.push([unit,true]); seq.push([unit,false]); }
+  function dash(){ seq.push([unit*3,true]); seq.push([unit,false]); }
+  dot();dot();dot(); seq[seq.length-1][0]=unit*3;
+  dash();dash();dash(); seq[seq.length-1][0]=unit*3;
+  dot();dot();dot(); seq[seq.length-1][0]=unit*7;
+  return seq;
+}
+function playSosStep(seq, idx, overlay){
+  if(state.strobeMode !== "sos") return;
+  var step = seq[idx % seq.length];
+  overlay.style.background = step[1] ? "#fff" : "#000";
+  state.strobeTimer = setTimeout(function(){ playSosStep(seq, idx+1, overlay); }, step[0]);
+}
+function playStrobeStep(overlay, on){
+  if(state.strobeMode !== "strobe") return;
+  overlay.style.background = on ? "#fff" : "#000";
+  state.strobeTimer = setTimeout(function(){ playStrobeStep(overlay, !on); }, 300);
+}
+function startStrobe(mode){
+  stopStrobe();
+  state.strobeMode = mode;
+  var overlay = document.getElementById("strobe-overlay");
+  overlay.classList.add("active");
+  if(mode === "sos"){ playSosStep(buildSosSequence(200), 0, overlay); }
+  else { playStrobeStep(overlay, true); }
+}
+function stopStrobe(){
+  state.strobeMode = null;
+  if(state.strobeTimer){ clearTimeout(state.strobeTimer); state.strobeTimer = null; }
+  var overlay = document.getElementById("strobe-overlay");
+  if(overlay){ overlay.classList.remove("active"); overlay.style.background = ""; }
+}
+
+/* ---------------- INIT ---------------- */
+buildSearchIndex();
+applyFontSize();
+applyUnits();
+render();
+})();
+</script>
+</body>
+</html>
