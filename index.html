@@ -366,12 +366,27 @@ footer.appfoot{text-align:center; color:var(--ink-faint); font-family:var(--font
 (function(){
 "use strict";
 
+var FAVORITES_KEY = "sos-favorites";
+function loadFavorites(){
+  try{
+    var raw = window.localStorage && window.localStorage.getItem(FAVORITES_KEY);
+    if(!raw) return new Set();
+    var arr = JSON.parse(raw);
+    return Array.isArray(arr) ? new Set(arr) : new Set();
+  } catch(e){ return new Set(); }
+}
+function saveFavorites(){
+  try{
+    if(window.localStorage) window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(state.favorites)));
+  } catch(e){ /* private browsing / storage blocked - favorites still work for this session */ }
+}
+
 var state = {
   route: {view:"home"},
   history: [],
   fontSize: 1, // index into FONT_SIZES
   units: "imperial",
-  favorites: new Set(),
+  favorites: loadFavorites(),
   checklists: {},
   quiz: {order: null, idx:0, score:0, answered:0, done:false},
   live: {weather:null, alerts:null, facilities:null, earthquakes:null, airquality:null},
@@ -436,16 +451,20 @@ var TRIAGE_FLOWS = {
       {label:"Not breathing / unresponsive", ic:"&#128557;", go:"breathing:start"},
       {label:"Trouble breathing", ic:"&#129729;", go:"breathing_distress:start"},
       {label:"Chest pain / possible heart attack", ic:"&#129728;", go:"cardiac:start"},
+      {label:"Seizure", ic:"&#128565;", go:"seizure:start"},
       {label:"Choking", ic:"&#128557;", go:"choking:start"},
       {label:"Burn", ic:"&#128293;", go:"burns:start"},
       {label:"Broken bone / severe sprain", ic:"&#129446;", go:"fracture:start"},
+      {label:"Head or spinal injury", ic:"&#129504;", go:"headspinal:start"},
       {label:"Cold exposure / hypothermia", ic:"&#10052;", go:"hypothermia:start"},
+      {label:"Frostbite", ic:"&#129398;", go:"frostbite:start"},
       {label:"Overheating / heat illness", ic:"&#9728;", go:"heat:start"},
       {label:"Dehydration", ic:"&#128167;", go:"dehydration:start"},
       {label:"Snake or animal bite", ic:"&#128013;", go:"snakebite:start"},
       {label:"Shock (pale, cold, rapid pulse)", ic:"&#128148;", go:"shock:start"},
       {label:"Severe allergic reaction", ic:"&#128163;", go:"allergic:start"},
       {label:"Poison / chemical exposure", ic:"&#9760;", go:"poison:start"},
+      {label:"Electrical injury", ic:"&#9889;", go:"electrical:start"},
       {label:"Fire", ic:"&#128293;", go:"fireemergency:start"},
       {label:"Vehicle emergency", ic:"&#128663;", go:"vehicleemergency:start"},
       {label:"Water emergency / drowning", ic:"&#127754;", go:"waterincident:start"},
@@ -678,8 +697,8 @@ var TRIAGE_FLOWS = {
       steps:["Pull as far off the roadway as possible and turn on hazard lights.","If available, place flares or reflective triangles behind the vehicle.","If it's safer, exit away from traffic to a location off the road; otherwise stay inside with your seatbelt on.","Call for roadside assistance, or emergency help if you're somewhere dangerous (highway shoulder, blind curve, unlit at night)."],
       notdo:["Don't stand between your vehicle and passing traffic.","Don't attempt repairs on the traffic side of the vehicle."]},
     stuck:{type:"result", severity:"moderate", title:"Stuck in mud, sand, or snow",
-      steps:["Stop spinning the wheels - it digs you in deeper.","Clear debris, sand, or snow from around the tires.","Use traction aids if available: boards, floor mats, or sand/gravel under the tires.","Gently rock the vehicle forward and back if it's safe to do so.","If stuck in snow and can't free the vehicle, stay with it (see Vehicle Emergencies and Cold exposure/hypothermia) and run the engine briefly each hour for heat, making sure the exhaust pipe is clear of snow."],
-      notdo:["Don't keep spinning the wheels.","Don't leave the vehicle to walk for help in severe weather unless you know help is very close - staying with it is usually safer."]},
+      steps:["Stop spinning the wheels - it digs you in deeper.","Clear debris, sand, or snow from around the tires.","Use traction aids if available: boards, floor mats, or sand/gravel under the tires.","Gently rock the vehicle forward and back if it's safe to do so.","If stuck in snow and can't free the vehicle, stay with it - it's far easier for rescuers to find than a person on foot. Run the engine about 10 minutes each hour for heat, cracking a window for ventilation, and make sure the exhaust pipe is clear of snow first (carbon monoxide risk)."],
+      notdo:["Don't keep spinning the wheels.","Don't run the engine for heat without cracking a window and checking the exhaust pipe is clear - carbon monoxide can build up fast in a snowed-in vehicle.","Don't leave the vehicle to walk for help in severe weather unless you know help is very close - staying with it is usually safer."]},
     submerged:{type:"result", severity:"severe", title:"Vehicle sinking or submerged",
       steps:["Unbuckle your seatbelt immediately.","Open a window or break it right away, before the vehicle fully submerges - power windows and doors can fail once underwater.","Get children or the lightest occupants out first through the window.","Once out, swim to the surface and away from the vehicle, then call/send for emergency help."],
       notdo:["Don't wait for the vehicle to fill with water before trying to exit - escape early, while windows and doors may still work."]}
@@ -708,6 +727,47 @@ var TRIAGE_FLOWS = {
   other:{
     start:{type:"result", severity:"info", forceCall:true, title:"Not sure what to call it?",
       steps:["If there's any threat to life, call for emergency help now.","If you can describe what's wrong, try the search bar at the top for a specific symptom or situation.","Otherwise, browse the full First Aid and category guides below for step-by-step guidance."]}
+  },
+  seizure:{
+    start:{type:"q", text:"Has it lasted more than 5 minutes, or are there repeated seizures without waking up in between?", options:[
+      {label:"Yes - 5+ minutes, or repeated without waking", next:"prolonged"},
+      {label:"No - a single episode, still going or just ended", next:"typical"}
+    ]},
+    typical:{type:"result", severity:"moderate", title:"Seizure: protect them, time it, don't restrain",
+      steps:["Ease them to the floor and clear the area of anything hard or sharp.","Cushion their head with something soft.","Time the seizure from when it starts.","Once the jerking movements stop, roll them onto their side to keep the airway clear.","Stay with them until they're fully alert - they're often confused for a while afterward.","Get medical care afterward if this is their first seizure, or call for help if it lasted more than 5 minutes, they were injured, or don't wake up fully."],
+      notdo:["Don't hold them down or try to stop the movements.","Don't put anything in their mouth - they cannot swallow their tongue, and this can injure them or you.","Don't give food or water until they're fully alert."]},
+    prolonged:{type:"result", severity:"severe", title:"Prolonged or repeated seizure: emergency",
+      steps:["Call/send for emergency help immediately - a seizure lasting more than 5 minutes, or repeated seizures without waking in between, needs urgent care.","Ease them to the floor, clear the area of anything hard or sharp, and cushion their head.","Once the jerking stops (or between seizures), roll them onto their side to keep the airway clear.","Keep timing it and stay with them until help arrives."],
+      notdo:["Don't hold them down or restrain the movements.","Don't put anything in their mouth.","Also call for help if this is a first-ever seizure, happened in water, or the person is injured, pregnant, or diabetic and isn't waking up."]}
+  },
+  electrical:{
+    start:{type:"q", text:"Is the person still touching the power source or a downed power line?", options:[
+      {label:"Yes - still in contact", next:"stillcontact"},
+      {label:"No - the power is off or they're no longer in contact", next:"safe"}
+    ]},
+    stillcontact:{type:"result", severity:"severe", title:"Don't touch them yet - the power may still be live",
+      steps:["Do not touch the person directly - you can be electrocuted too.","If possible, cut the power at the source first (breaker, switch, or unplug it).","If you can't shut off the power, call/send for emergency help and stay well back - for a downed power line, treat the ground itself as electrified for a wide radius around it and the vehicle/object it's touching.","Only move them once you're certain the power is off, and even then only using something dry and non-conductive (wood, plastic) if you must."],
+      notdo:["Don't touch the person, water, or anything metal near them while the source may still be live.","Don't approach a downed power line, even if it looks dead or isn't sparking."]},
+    safe:{type:"result", severity:"severe", title:"Electrical injury: get emergency help",
+      steps:["Call/send for emergency help - electrical injury can cause serious internal damage even when it looks minor from the outside.","Check breathing and begin CPR immediately if they're not breathing.","Cover any visible burns loosely with a clean, dry dressing (see Burn).","Keep them still and monitor closely until help arrives, even if they seem fine."],
+      notdo:["Don't assume they're okay just because they're conscious and talking - internal injury isn't always visible.","Don't apply anything to burns other than a clean, dry covering."]}
+  },
+  frostbite:{
+    start:{type:"q", text:"Is the skin hard, waxy-white, and numb - not just cold and red?", options:[
+      {label:"Yes - hard, white/waxy, numb", next:"severe"},
+      {label:"No - cold and red or pale, but still soft with some feeling", next:"mild"}
+    ]},
+    mild:{type:"result", severity:"moderate", title:"Early frostbite / frostnip",
+      steps:["Get out of the cold and into shelter.","Remove wet or tight clothing, rings, and jewelry near the area.","Rewarm gently with body heat (e.g., tuck hands in armpits) or lukewarm - not hot - water.","Watch for numbness or hardening skin - that means it's progressing, so switch to the severe steps if so."],
+      notdo:["Don't rub or massage the skin.","Don't use direct dry heat like a fire, heater, or hot water bottle - numb skin can burn before you feel it."]},
+    severe:{type:"result", severity:"severe", title:"Frostbite: get to medical care",
+      steps:["Get to shelter and out of the cold.","Remove wet or tight clothing and jewelry near the area.","Only rewarm in warm - not hot - water, around 100-105°F (37-40°C), for 15-30 minutes, and only if you're confident it won't refreeze before you reach lasting warmth. Refreezing causes worse damage than waiting.","Loosely bandage with clean, dry gauze, separating fingers or toes, once rewarmed.","Get medical care as soon as possible - deep frostbite can cause lasting tissue damage."],
+      notdo:["Don't rub or massage the frostbitten area.","Don't rewarm it if there's a real chance it could refreeze before you're somewhere warm for good.","Don't use direct dry heat (fire, heater) or break any blisters that form."]}
+  },
+  headspinal:{
+    start:{type:"result", severity:"severe", title:"Suspected head or spinal injury: keep them still",
+      steps:["Call/send for emergency help.","Keep the person as still as possible - support their head and neck in the position you found them, without trying to straighten or realign it.","If you must move them because of immediate danger (fire, traffic, rising water), move the head, neck, and body together as one unit rather than letting the head twist.","Watch for and report to responders: loss of consciousness, vomiting, worsening headache, confusion, unequal pupil size, seizure, clear fluid from the nose or ears, or weakness/numbness/tingling in the arms or legs.","If they're not breathing, they still need CPR - use a jaw-thrust instead of tilting the head back if you're trained to."],
+      notdo:["Don't move them unless there's immediate danger of further harm.","Don't remove a helmet unless you're trained to and it's blocking the airway.","Don't let them get up and \"walk it off\" after a hard fall or blow to the head, even if they seem fine at first."]}
   }
 };
 
@@ -1011,7 +1071,7 @@ function runEarthquakeFetch(id, loc){
         var sev = quakeSev(f.mag||0);
         return '<div class="result-card '+sev+'"><span class="badge '+sev+'">M '+(f.mag!=null?f.mag.toFixed(1):"?")+'</span>'+
           '<h3>'+esc(f.place||"Unknown location")+'</h3>'+
-          '<p>'+timeAgo(f.time)+(f.km!=null?' &middot; '+distLabel(f.km)+' away':'')+' &middot; <a href="'+esc(f.url)+'" target="_blank" rel="noopener">USGS details</a></p></div>';
+          '<p>'+timeAgo(f.time)+(f.km!=null?' &middot; '+distLabel(f.km)+' away':'')+' &middot; <a href="'+safeHref(f.url)+'" target="_blank" rel="noopener">USGS details</a></p></div>';
       }).join("");
       setLive(id, html);
     }).catch(function(err){ liveError(id, friendlyErrMsg(err, "Could not fetch earthquake data. Check your connection.")); });
@@ -1034,7 +1094,8 @@ function runAirQualityCheck(){
 }
 
 /* ---------------- RENDER HELPERS ---------------- */
-function esc(s){ return String(s).replace(/[&<>]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];}); }
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];}); }
+function safeHref(url){ return /^https?:\/\//i.test(String(url||"")) ? esc(url) : "#"; }
 function favKey(k){ return state.favorites.has(k); }
 function favBtn(key, label){
   return '<button class="fav-btn '+(favKey(key)?"active":"")+'" data-fav="'+key+'" aria-label="Favorite '+esc(label)+'" title="Favorite">'+(favKey(key)?"&#9733;":"&#9734;")+'</button>';
@@ -1476,9 +1537,7 @@ function renderLongTerm(){
     '<tr><td>Wild blackberry / raspberry</td><td>Recognizable bramble fruit; avoid unfamiliar white or pale berries entirely.</td></tr>'+
     '</table>';
   html += renderWarning("Dangerous look-alikes", ["Poison hemlock and water hemlock closely resemble wild carrot (Queen Anne's Lace) and wild parsnip - both hemlocks are extremely toxic and can be fatal in small amounts. Hemlock stems usually show purple blotches and are smooth; wild carrot stems are hairy.","Death cap and destroying angel mushrooms closely resemble edible varieties - never eat wild mushrooms without expert identification. Symptoms can appear many hours after serious damage is already done.","Pokeweed berries look like edible dark berries, but the entire plant is toxic.","Treat any white or pale berries as inedible by default."]);
-  html += '<h3>Universal Edibility Test (last resort only)</h3><p>Use this only when no positively identified food source is available, and only on a plant that is abundant nearby, since a full test uses small amounts over many hours. Do not eat anything else for several hours beforehand, and test only one plant part at a time.</p>';
-  html += renderSteps(["Separate the plant into parts (leaves, stem, roots) and test only one part at a time.","Smell it - a strong, unpleasant, or almond-like odor is a bad sign. Stop if so.","Rub a piece on the inner wrist or elbow and wait 15 minutes. Stop at any burning, itching, rash, or numbness.","Touch a small piece to the lips for 3 minutes. Stop at any burning or tingling.","Hold a small piece on the tongue for 15 minutes without swallowing. Stop at any bad reaction.","Chew a small piece for 15 minutes without swallowing, then spit it out. Stop at any bad reaction.","Swallow a small amount and wait 8 hours, eating or drinking nothing else. Stop at any nausea, cramping, or other symptoms.","If there is no reaction after 8 hours, eat a slightly larger amount and wait another 8 hours before treating that plant part as food."]);
-  html += renderWarning("Stop the test immediately if", ["Any burning, numbness, tingling, or rash appears at any stage.","Nausea, vomiting, or stomach cramps develop.","Dizziness or difficulty breathing occurs."]);
+  html += '<h3>If you can\'t identify a plant</h3><p>Don\'t eat it. Some of the most dangerous plants and mushrooms - including death cap mushrooms and water hemlock - cause no warning taste, smell, or reaction until serious, often irreversible harm is already done, so field self-testing is not a reliable way to tell a plant is safe. A person can survive roughly three weeks without food, which is almost always enough margin to stick to sources you can positively identify from more than one reliable reference, prioritize known-safe food and water, and wait for rescue or resupply instead.</p>';
   html += '</div>';
 
   html += '<div class="section" id="lt-preservation"><h2>&#128230; Food Preservation &amp; Long-Term Water</h2>';
@@ -1933,6 +1992,7 @@ document.addEventListener("click", function(e){
   if(fav){
     var key = fav.getAttribute("data-fav");
     if(state.favorites.has(key)) state.favorites.delete(key); else state.favorites.add(key);
+    saveFavorites();
     render();
     return;
   }
@@ -2087,7 +2147,7 @@ function buildSearchIndex(){
   idx("Long-Term Survival","Farming and food production","gardening three sisters potatoes beans squash seed saving compost livestock chickens rabbits",{view:"category",cat:"longterm"});
   idx("Long-Term Survival","Edible and poisonous plants","dandelion plantain cattail clover chickweed berries foraging",{view:"category",cat:"longterm"});
   idx("Long-Term Survival","Dangerous plant look-alikes","poison hemlock water hemlock wild carrot death cap mushroom pokeweed",{view:"category",cat:"longterm"});
-  idx("Long-Term Survival","Universal Edibility Test","test unknown plant safe to eat wild food",{view:"category",cat:"longterm"});
+  idx("Long-Term Survival","If you can't identify a plant, don't eat it","unknown plant safe to eat wild food foraging identification",{view:"category",cat:"longterm"});
   idx("Long-Term Survival","Food preservation","drying smoking salt curing brining root cellar canning botulism",{view:"category",cat:"longterm"});
   idx("Long-Term Survival","Long-term water","rainwater catchment biosand filter storage rotation",{view:"category",cat:"longterm"});
   idx("Long-Term Survival","Sanitation and hygiene","latrine cathole handwashing tippy-tap disease",{view:"category",cat:"longterm"});
@@ -2128,22 +2188,30 @@ function buildSearchIndex(){
   idx("Connect & Alerts","Emergency numbers by region","911 112 999 000 phone",{view:"category",cat:"connect"});
   idx("Connect & Alerts","Relief organizations","Red Cross FEMA poison control 211",{view:"category",cat:"connect"});
   idx("Signaling","Screen strobe SOS flashlight","flash light visibility signal offline",{view:"category",cat:"signal"});
-  idx("First Aid","Not breathing / unresponsive (CPR)","cpr chest compressions rescue breaths cardiac arrest aed",{view:"triage",flow:"breathing",node:"start"});
+  idx("First Aid","Not breathing / unresponsive (CPR)","cpr chest compressions rescue breaths cardiac arrest aed cant breathe not breathing",{view:"triage",flow:"breathing",node:"start"});
   idx("First Aid","Broken bone / severe sprain","broken arm leg wrist ankle limb fracture splint",{view:"triage",flow:"fracture",node:"start"});
   idx("First Aid","Chest pain / possible heart attack","cardiac chest pain pressure arm jaw",{view:"triage",flow:"cardiac",node:"start"});
-  idx("First Aid","Trouble breathing","asthma wheezing shortness of breath inhaler",{view:"triage",flow:"breathing_distress",node:"start"});
+  idx("First Aid","Trouble breathing","asthma wheezing shortness of breath inhaler cant breathe cant catch my breath",{view:"triage",flow:"breathing_distress",node:"start"});
   idx("First Aid","Poison / chemical exposure","poison control swallowed ingested overdose chemical",{view:"triage",flow:"poison",node:"start"});
   idx("First Aid","Fire emergency","structure fire building on fire clothing on fire stop drop roll wildfire",{view:"triage",flow:"fireemergency",node:"start"});
   idx("Vehicle Emergencies","Vehicle emergency: crash, breakdown, stuck, submerged","car stuck crash breakdown submerged roadside stranded vehicle",{view:"triage",flow:"vehicleemergency",node:"start"});
-  idx("First Aid","Lost or stranded","stop think observe plan search and rescue",{view:"triage",flow:"lost",node:"start"});
+  idx("First Aid","Lost or stranded","stop think observe plan search and rescue lost hiking lost in the woods",{view:"triage",flow:"lost",node:"start"});
   idx("First Aid","Water emergency / drowning","drowning water rescue reach throw dont go",{view:"triage",flow:"waterincident",node:"start"});
   idx("Water & Food","Finding and purifying water","no water dehydrated thirsty out of water find water",{view:"category",cat:"water"});
+  idx("First Aid","Severe bleeding","blood cut bad cut bleeding badly wound gash laceration tourniquet tourniquets",{view:"triage",flow:"bleeding",node:"start"});
+  idx("First Aid","Snake or animal bite","snake snakes bitten snakebite venom fangs bitten by a snake",{view:"triage",flow:"snakebite",node:"start"});
+  idx("First Aid","Burn","burned burning scald scalded hot",{view:"triage",flow:"burns",node:"start"});
+  idx("First Aid","Cold exposure / hypothermia","freezing cold hypothermic shivering exposure",{view:"triage",flow:"hypothermia",node:"start"});
+  idx("First Aid","Seizure","seizures convulsion convulsing epilepsy shaking fit",{view:"triage",flow:"seizure",node:"start"});
+  idx("First Aid","Electrical injury","electrocuted electrocution shock power line downed wire",{view:"triage",flow:"electrical",node:"start"});
+  idx("First Aid","Frostbite","frostbitten numb white waxy skin cold fingers toes",{view:"triage",flow:"frostbite",node:"start"});
+  idx("First Aid","Head or spinal injury","concussion head injury neck back injury fall hit head",{view:"triage",flow:"headspinal",node:"start"});
 }
 
 var searchInput = document.getElementById("search-input");
 var searchResults = document.getElementById("search-results");
 function renderSearch(q){
-  q = q.trim().toLowerCase();
+  q = q.trim().toLowerCase().replace(/['’]/g, "");
   if(!q){ searchResults.classList.remove("show"); searchResults.innerHTML=""; return; }
   var words = q.split(/\s+/).filter(Boolean);
   var matches = SEARCH_INDEX.filter(function(item){
@@ -2203,17 +2271,25 @@ function playStrobeStep(overlay, on){
 }
 function startStrobe(mode){
   stopStrobe();
+  state.strobePrevFocus = document.activeElement;
   state.strobeMode = mode;
   var overlay = document.getElementById("strobe-overlay");
   overlay.classList.add("active");
+  var stopBtn = document.getElementById("strobe-stop");
+  if(stopBtn) stopBtn.focus();
   if(mode === "sos"){ playSosStep(buildSosSequence(200), 0, overlay); }
   else { playStrobeStep(overlay, true); }
 }
 function stopStrobe(){
+  var wasActive = state.strobeMode !== null;
   state.strobeMode = null;
   if(state.strobeTimer){ clearTimeout(state.strobeTimer); state.strobeTimer = null; }
   var overlay = document.getElementById("strobe-overlay");
   if(overlay){ overlay.classList.remove("active"); overlay.style.background = ""; }
+  if(wasActive && state.strobePrevFocus && typeof state.strobePrevFocus.focus === "function"){
+    state.strobePrevFocus.focus();
+  }
+  state.strobePrevFocus = null;
 }
 
 /* ---------------- INIT ---------------- */
