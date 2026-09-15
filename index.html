@@ -88,10 +88,10 @@ p{margin:0 0 .75em;}
 }
 .icon-btn:hover{border-color:var(--gold-soft); color:var(--gold-soft);}
 #emergency-btn{
-  min-height:52px; background:var(--gold); border:0; color:var(--gold-ink); font-weight:800;
+  min-height:52px; background:var(--severe); border:0; color:#fff; font-weight:800;
   font-family:var(--font-display); text-transform:uppercase; letter-spacing:.03em;
   border-radius:var(--radius); padding:.6rem 1.1rem; font-size:1rem;
-  box-shadow:0 0 0 3px var(--gold-dim);
+  box-shadow:0 0 0 3px rgba(209,80,47,.35);
   display:flex; align-items:center; gap:.4rem; white-space:nowrap;
 }
 #emergency-btn:hover{filter:brightness(1.08);}
@@ -127,13 +127,13 @@ p{margin:0 0 .75em;}
 .hero p{color:var(--ink-dim);}
 .big-emergency{
   position:relative; display:flex; align-items:center; justify-content:center; gap:.6rem; width:100%;
-  min-height:88px; background:var(--gold); color:var(--gold-ink); border:0; border-radius:var(--radius-lg);
+  min-height:88px; background:var(--severe); color:#fff; border:0; border-radius:var(--radius-lg);
   font-family:var(--font-display); text-transform:uppercase; font-size:1.3rem; font-weight:800; letter-spacing:.02em;
-  margin:1rem 0; box-shadow:0 0 0 6px var(--gold-dim); overflow:visible;
+  margin:1rem 0; box-shadow:0 0 0 6px rgba(209,80,47,.35); overflow:visible;
 }
 .big-emergency::before{
   content:""; position:absolute; inset:-6px; border-radius:calc(var(--radius-lg) + 6px);
-  border:2px solid var(--gold); opacity:.55; animation:beacon-pulse 2.2s ease-out infinite;
+  border:2px solid var(--severe); opacity:.55; animation:beacon-pulse 2.2s ease-out infinite;
 }
 @keyframes beacon-pulse{
   0%{transform:scale(1); opacity:.55;}
