@@ -1,7 +1,7 @@
 /* Offline cache for the Survival Guide. Bump VERSION whenever a cached file changes. */
 "use strict";
-var VERSION = "sos-v1";
-var SHELL = ["./", "index.html", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png"];
+var VERSION = "sos-v2";
+var SHELL = ["./", "index.html", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", function(e){
   e.waitUntil(caches.open(VERSION).then(function(c){ return c.addAll(SHELL); }).then(function(){ return self.skipWaiting(); }));
