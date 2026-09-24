@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Offline Survival Guide</title>
+<meta name="theme-color" content="#0c0f09">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{
   /* ground: black / dark olive-drab */
@@ -424,6 +429,7 @@ var CATEGORIES = [
   {id:"wildlife", name:"Wildlife", ic:"&#128062;"},
   {id:"vehicle", name:"Vehicle Emergencies", ic:"&#128663;"},
   {id:"longterm", name:"Long-Term Survival", ic:"&#127806;"},
+  {id:"rebuild", name:"Rebuild From Zero", ic:"&#127959;"},
   {id:"disasters", name:"Natural Disasters", ic:"&#127755;"},
   {id:"home", name:"Home Survival", ic:"&#127968;"},
   {id:"pandemic", name:"Pandemic & Illness", ic:"&#128567;"},
@@ -438,7 +444,7 @@ var CATEGORY_GROUPS = [
   {label:"Vehicle", ids:["vehicle"]},
   {label:"Outdoors", ids:["weather","wildlife"]},
   {label:"Disaster &amp; Home", ids:["disasters","home","outages","pandemic","unrest"]},
-  {label:"Preparedness &amp; More", ids:["longterm","specialneeds","connect"]}
+  {label:"Preparedness &amp; More", ids:["longterm","rebuild","specialneeds","connect"]}
 ];
 function catById(id){ return CATEGORIES.filter(function(c){return c.id===id;})[0]; }
 
@@ -915,6 +921,8 @@ var QUIZ_QUESTIONS = [
   {q:"For choking with a completely blocked airway, you should:", a:["Give water to wash it down","Alternate 5 back blows and 5 abdominal thrusts","Wait for it to clear itself"], correct:1},
   {q:"How deep is safe to cross moving flood water on foot?", a:["Any depth is fine if you're careful","6 inches can already knock you down - avoid it","Up to 3 feet"], correct:1},
   {q:"For a snake bite, you should:", a:["Cut the wound and suck out venom","Apply a tight tourniquet","Keep the person calm, still, and the limb below heart level"], correct:2},
+  {q:"Home oral rehydration solution for diarrhea is 1 liter of clean water plus:", a:["6 level tsp sugar + 1/2 level tsp salt","1 cup salt","Nothing - plain water is best"], correct:0},
+  {q:"Before smelting ore to get metal after a collapse, the better first source is usually:", a:["Digging for iron ore","Salvaged steel from vehicles, springs, and rebar","Melting coins"], correct:1},
   {q:"When stranded in snow in a vehicle, the best move is usually to:", a:["Walk to find help immediately","Stay with the vehicle and run the engine briefly each hour for heat","Turn the engine off completely and stay silent"], correct:1}
 ];
 
@@ -1160,7 +1168,10 @@ function renderHome(){
   html += '<button class="btn primary" data-go="browse">&#128218; Browse &amp; Learn</button>';
   html += '<button class="btn" data-go="quickref">&#128203; Quick Reference</button>';
   html += '<button class="btn" data-go="quiz">&#10067; Knowledge Check</button>';
-  html += '</div></div>';
+  html += '<button class="btn" data-go="printall">&#128424; Print Full Guide</button>';
+  html += '</div>';
+  html += '<p class="no-print" style="color:var(--ink-dim); font-size:.85rem; margin:.9rem 0 0">Prepare before you need it: use your browser\'s <b>Add to Home Screen</b> / <b>Install</b> while online so it opens with no signal, and keep a printed copy for when the battery dies.</p>';
+  html += '</div>';
 
   html += '<div class="section"><h2>Categories</h2>';
   CATEGORY_GROUPS.forEach(function(g){
@@ -1197,6 +1208,7 @@ function catBlurb(id){
     pandemic:"Stockpiling, infection control, isolation basics, and when to seek care.",
     unrest:"Situational awareness, home security, communication blackouts, and active threats.",
     outages:"Food safety, safe heat and light, and backup power for medical needs.",
+    rebuild:"Years without help: public health, staple crops, soap, lime, pottery, metal, power, and preserving knowledge.",
     specialneeds:"Prep for infants, elderly and mobility needs, and pets.",
     connect:"Live weather, nearby facilities, and quakes when you have signal - plus offline emergency contacts."
   };
@@ -1519,7 +1531,7 @@ function renderLongTerm(){
   '</div></div>';
 
   html += '<div class="section" id="lt-farming"><h2>&#127793; Farming &amp; Food Production</h2>';
-  html += '<h3>Start with reliable staples</h3><p>Potatoes, beans, and squash are traditionally grown together as the "Three Sisters": corn or another tall stalk supports climbing bean vines, beans fix nitrogen into the soil for the other two, and squash leaves shade out weeds and hold in moisture.</p>';
+  html += '<h3>Start with reliable staples</h3><p>Corn, beans, and squash are traditionally grown together as the "Three Sisters": the corn stalks support climbing bean vines, beans fix nitrogen into the soil for the other two, and squash leaves shade out weeds and hold in moisture.</p>';
   html += '<ul><li><b>Potatoes</b> - calorie-dense and store well through winter in a cool, dark space.</li><li><b>Beans</b> - a reliable protein source that also improves the soil they grow in.</li><li><b>Squash</b> - many varieties store for months without refrigeration.</li><li><b>Leafy greens</b> - fast-growing (30-60 days), useful for quick nutrition between larger harvests.</li></ul>';
   html += '<h3>Seed saving</h3><p>Only open-pollinated or heirloom seeds reliably breed true year after year - most hybrid seeds do not. Beans, peas, tomatoes, peppers, and lettuce are the easiest crops to save seed from, since they are self-pollinating and rarely cross with other varieties. Dry seeds completely before storing them in a cool, dark, dry container; well-dried seeds can remain viable for several years.</p>';
   html += '<h3>Composting and soil building</h3><p>Alternate "greens" (kitchen scraps, grass clippings, for nitrogen) with "browns" (dry leaves, cardboard, straw, for carbon). Turn the pile every couple of weeks to add oxygen, and keep it about as damp as a wrung-out sponge. Leave out meat, dairy, and fats in a basic compost pile, since they attract pests and smell. Finished compost usually takes a few months to a year.</p>';
@@ -1581,6 +1593,107 @@ function renderLongTerm(){
   html += '<h3>Low profile</h3><p>Avoid signaling that supplies are available when others may not have them - lit windows at night, visible food stores, or loose talk about what is stocked can draw unwanted attention. This is not about secrecy from trusted neighbors, but about not broadcasting vulnerability to strangers.</p>';
   html += '<h3>Mutual aid</h3><p>A small, trusted group pooling skills and labor is consistently more resilient than any individual or household alone - one person who can treat injuries, one who can fix things, and one who can grow food cover far more ground together than any one of them could alone. Build these relationships before they are needed.</p>';
   html += '<h3>Conflict de-escalation</h3><p>The safest outcome in almost any tense encounter is the one that ends without confrontation. Stay calm, keep hands visible, give people an easy way to back down without losing face, and prioritize disengaging and creating distance over standing your ground. Avoiding a conflict entirely is always the better outcome than winning one.</p>';
+  html += '</div>';
+
+  return html;
+}
+
+/* ---- Rebuild (restarting from zero) ---- */
+function renderRebuild(){
+  var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#127959; Rebuild From Zero</h2>';
+  html += '<p>When help is not coming back for years, not weeks. This is the bootstrap order: the knowledge that turns a surviving group into a working community. It builds on <button type="button" class="linklike" data-go="cat:longterm">Long-Term Survival</button>. Read it now, while you have time, and <button type="button" class="linklike" data-go="printall">print the full guide</button> so it outlives this device.</p>';
+  html += '<div class="jump-row">'+
+    '<a class="jump-chip" href="#rb-order">Priorities</a>'+
+    '<a class="jump-chip" href="#rb-health">Public Health</a>'+
+    '<a class="jump-chip" href="#rb-food">Staple Food</a>'+
+    '<a class="jump-chip" href="#rb-chem">Basic Chemistry</a>'+
+    '<a class="jump-chip" href="#rb-materials">Materials</a>'+
+    '<a class="jump-chip" href="#rb-metal">Metal</a>'+
+    '<a class="jump-chip" href="#rb-power">Power &amp; Machines</a>'+
+    '<a class="jump-chip" href="#rb-knowledge">Knowledge</a>'+
+  '</div></div>';
+
+  html += '<div class="section" id="rb-order"><h2>&#129517; Order of Operations</h2>';
+  html += '<p>The most common failure is working on the wrong problem. Solve these in order; each layer depends on the one before it.</p>';
+  html += '<table class="ref-table"><tr><th>When</th><th>Focus</th></tr>'+
+    '<tr><td>First days</td><td>Safety, treat injuries, safe water, shelter and warmth. Account for every person.</td></tr>'+
+    '<tr><td>First weeks</td><td>Latrines away from water, handwashing, a food inventory, a rationing plan, and one person in charge of each job.</td></tr>'+
+    '<tr><td>First season</td><td>Plant fast crops, save every viable seed, set up rainwater catchment, gather tools, metal, fuel, and medicine before they spoil or are taken.</td></tr>'+
+    '<tr><td>First year</td><td>Staple grain and legume fields, food preservation for winter, firewood cut a year ahead, soap, and a written record of everything learned.</td></tr>'+
+    '<tr><td>Years 2-5</td><td>Draft animals, pottery and brick, a forge, water or wind power, schooling for children, and fair rules the group agrees on.</td></tr>'+
+    '</table>';
+  html += '<h3>Scavenge before you make</h3><p>For the first several years, the ruins of the old world are a better source of metal, glass, cloth, rope, tools, and chemicals than anything you can produce. A single car holds steel, copper wire, a battery, an alternator, glass, and rubber. Making things from raw materials is the fallback when salvage runs out, and practicing it early keeps the skill alive for when it does.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="rb-health"><h2>&#129534; Public Health: The Biggest Lifesaver</h2>';
+  html += '<p>Before modern medicine, most deaths came from infection, contaminated water, and diarrhea. A few ideas prevent most of them, no hospital needed.</p>';
+  html += '<h3>Germ theory, applied</h3><ul>'+
+    '<li>Invisible microbes cause infection. They spread by dirty hands, feces-contaminated water, coughs, and insects.</li>'+
+    '<li>Wash hands with soap after the latrine and before food. This alone sharply cuts diarrheal disease.</li>'+
+    '<li>Boil drinking water, or treat it, unless it comes from a protected source you trust.</li>'+
+    '<li>Keep latrines downhill and at least 200 ft (60 m) from wells and streams.</li>'+
+    '<li>Boil instruments, needles, and cloth used on wounds for 10+ minutes before use.</li>'+
+    '<li>Separate the sick. Have one person care for them, and have that person wash every time.</li>'+
+  '</ul>';
+  html += '<h3>Oral rehydration solution (ORS)</h3><p>Diarrhea kills by dehydration, and this simple drink has saved millions of lives. Mix <b>1 liter (about 1 quart) of clean water + 6 level teaspoons sugar + 1/2 level teaspoon salt</b>. Sip it steadily, even while vomiting. Keep breastfeeding infants. Too much salt is harmful, so measure carefully and never guess.</p>';
+  html += '<h3>Clean birth</h3><p>The WHO "cleans": clean hands, a clean surface, a clean (boiled) blade and ties for the cord, and nothing applied to the cord stump. Dry the baby and keep them warm, skin to skin on the mother. Start breastfeeding within the first hour. Heavy bleeding after birth is the top danger: massaging the top of the uterus firmly through the belly and putting the baby to the breast both help it contract.</p>';
+  html += '<h3>Alcohol as antiseptic</h3><p>Alcohol disinfects best around 60-90% strength. Ordinary wine or beer is far too weak. Distilled spirits can be concentrated further by distillation, but distilling risks fire and methanol (the first liquid out of the still). That makes the product unsafe to drink, so keep it for external use only.</p>';
+  html += renderWarning("Limits", ["None of this replaces antibiotics, surgery, or insulin. Scavenge and carefully store any real medicine, and keep a written record of what each one is for, its dose, and its expiry date.","Most tablet medicines lose potency slowly past their expiry date rather than turning toxic, but liquid medicines, insulin, and some antibiotics degrade faster. Store everything cool, dark, and dry."]);
+  html += '</div>';
+
+  html += '<div class="section" id="rb-food"><h2>&#127806; Staple Food at Scale</h2>';
+  html += '<p>Gardens feed families. Fields feed communities. Calories come from grains, legumes, and tubers, not from leafy greens.</p>';
+  html += '<h3>The staples</h3><ul>'+
+    '<li><b>Grains</b> (corn, wheat, oats, barley, rice) store dry for years and are the backbone of every historical civilization.</li>'+
+    '<li><b>Legumes</b> (beans, peas, lentils) supply protein and put nitrogen back into the soil. Grains plus legumes together give complete protein.</li>'+
+    '<li><b>Tubers</b> (potatoes, sweet potatoes) give the most calories per unit of land, but store less well than dry grain.</li>'+
+  '</ul>';
+  html += '<h3>The Three Sisters</h3><p>Corn, beans, and squash grown together: corn stalks give the beans something to climb, the beans fix nitrogen, and the broad squash leaves shade out weeds and hold in moisture.</p>';
+  html += '<h3>Crop rotation</h3><p>Planting the same crop in the same place drains the soil and builds up pests. A simple 4-bed cycle works: <b>legumes</b> &rarr; <b>leafy and heavy feeders</b> (corn, cabbage) &rarr; <b>roots</b> &rarr; <b>rest or cover crop</b>, then repeat. Return all manure and compost to the fields. Soil fertility is your real wealth.</p>';
+  html += '<h3>Seed saving at scale</h3><p>Save seed from many plants, not just the best one. For corn, aim for 100+ plants, because a small seed pool inbreeds and yields collapse within a few generations. Keep a seed reserve of at least two years in case one harvest fails.</p>';
+  html += '<h3>Nixtamalize corn</h3><p>If corn is a main staple, cook dried kernels in water with wood ash or slaked lime, soak them overnight, then rinse. This frees niacin. Communities living mostly on untreated corn develop pellagra (skin rash, diarrhea, confusion).</p>';
+  html += renderWarning("Hidden deficiencies", ["Scurvy (bleeding gums, poor healing) appears after about 1-3 months without vitamin C. Fresh vegetables, fruit, sprouted seeds or grains, and pine-needle tea all provide it.","Iodine deficiency causes goiter and harms child development. Iodized salt stores indefinitely, and seafood and seaweed supply iodine naturally."]);
+  html += '</div>';
+
+  html += '<div class="section" id="rb-chem"><h2>&#9879; Basic Chemistry From Wood, Ash &amp; Stone</h2>';
+  html += '<h3>Charcoal</h3><p>Charcoal burns much hotter and cleaner than wood, and a forge, a kiln hot enough for good pottery, or metal smelting all depend on it. Stack hardwood tightly, cover it with earth or sod leaving small vents, light it, and let it smolder with very little air for a day or more until the smoke turns thin and bluish. Then seal every vent and let it cool completely before opening. The goal is to cook the wood, not burn it.</p>';
+  html += '<h3>Lye from wood ash</h3><p>Pour rainwater slowly through hardwood ash packed in a container with a straw or cloth filter at the bottom, and collect the brown liquid that drips out. That liquid is lye (potassium hydroxide solution). It is strong enough for soap when a fresh egg floats in it with a coin-sized patch showing. Pass the liquid through the ash again to make it stronger.</p>';
+  html += '<h3>Soap</h3><p>Fat plus lye makes soap. Render animal fat (tallow or lard) clean, then slowly stir it into warm lye and keep stirring or boiling until it thickens like pudding. Wood-ash lye usually gives soft soap. Add salt near the end to get firmer soap. Let it cure several weeks before using it on skin.</p>';
+  html += '<h3>Lime</h3><p>Burning limestone, chalk, or seashells in a very hot fire or kiln (about 900&deg;C / 1650&deg;F) makes quicklime. Adding water to quicklime slakes it into hydrated lime, and it gets very hot while it does. Lime makes mortar and plaster (lime + sand + water, which hardens slowly in air) and whitewash. It also raises the pH of acidic soil, disinfects latrines, and is used to nixtamalize corn.</p>';
+  html += '<h3>Vinegar</h3><p>Leave any fruit juice or sweet liquid to ferment into alcohol, then leave it exposed to air (covered with cloth) for weeks, and it turns to vinegar. Vinegar pickles and preserves food and works as a mild cleaner.</p>';
+  html += renderWarning("Caustic hazards", ["Lye and quicklime cause severe chemical burns and blindness. Wear eye protection and gloves, add them to water slowly (never water into them), and keep them away from children.","Flush any skin or eye contact with plenty of water for 15+ minutes. Quicklime reacting with water can boil and spatter or ignite nearby materials."]);
+  html += '</div>';
+
+  html += '<div class="section" id="rb-materials"><h2>&#129521; Materials: Pottery, Brick, Fiber, Leather</h2>';
+  html += '<h3>Pottery</h3><p>Find clay by looking for sticky, smooth soil in stream banks that holds a coil without cracking when you bend it. Mix in about 20-30% sand or crushed old pottery ("temper") so it doesn\'t crack in the fire. Shape it by coiling ropes of clay, and let it dry slowly in shade for days until bone dry. Warm the pieces gradually beside a fire, then bury them in a large hot fire or a simple pit kiln. Open-fired earthenware stays porous but can cook and store food. A proper kiln fired with charcoal makes stronger, more watertight ware.</p>';
+  html += '<h3>Brick and building</h3><p>Adobe (mud brick) is clay soil + sand + straw, pressed into wooden molds and sun-dried for weeks. It works well in dry climates. Fired brick lasts much longer in wet climates. Keep walls dry with a stone foundation below and a wide roof overhang above. Lime mortar binds stone and brick.</p>';
+  html += '<h3>Cordage and textiles</h3><p>Rope comes from any long, strong fiber: inner tree bark, nettle, hemp, flax, yucca, or grass. Twist two strands the same direction, then wrap them around each other the opposite direction (a "reverse wrap"), and the tension locks them together. For cloth, spin wool or plant fiber into thread with a drop spindle, then weave it on a simple frame loom by passing crosswise threads (weft) over and under lengthwise threads (warp).</p>';
+  html += '<h3>Leather</h3><p>Scrape all flesh and fat from the hide, then remove the hair by soaking the hide in wood-ash or lime water. Tan it either by soaking for weeks in a strong brew of oak or other high-tannin bark, or by working in the animal\'s own mashed brain, then smoking it. Untanned hide rots when wet and turns stiff when dry.</p>';
+  html += '</div>';
+
+  html += '<div class="section" id="rb-metal"><h2>&#9874; Metal</h2>';
+  html += '<p>Cities are mines. Leaf springs, rebar, files, saw blades, and car axles are all ready-made steel. Salvage-and-reforge will serve for a generation or longer before anyone needs to smelt ore.</p>';
+  html += '<h3>A basic forge</h3><p>A charcoal fire in a hearth of stone or clay, with forced air blown in through a pipe from below or the side, gets hot enough to work steel. A bellows, a hair dryer on a battery, or a hand-crank blower all work. Use a heavy flat steel block (a section of railroad rail works) as an anvil. Heat steel to a bright orange and hammer it into shape, reheating whenever it fades to dull red. Hammering steel below dull red cracks it.</p>';
+  html += '<h3>Hardening and tempering</h3><p>High-carbon steel (files, springs, blades) can be hardened. Heat it until a magnet no longer sticks, then plunge it into oil or water. After that it is hard but brittle. To temper it, polish a spot, reheat gently, and watch the colors run: <b>straw yellow</b> for cutting edges, <b>bronze to purple</b> for tools that take impact, <b>blue</b> for springs. Quench again as soon as the color you want arrives. Mild steel (rebar, sheet metal) barely hardens at all.</p>';
+  html += '<h3>Smelting (last resort)</h3><p>A bloomery is a clay chimney furnace about waist-high, fed with alternating layers of charcoal and crushed iron ore (red or brown rock, or bog iron from marshes) and blown with air for hours. It produces a spongy "bloom" of iron and slag that has to be hammered while hot to squeeze out the slag. It takes a lot of charcoal and labor, which is why salvage comes first.</p>';
+  html += renderWarning("Forge safety", ["Galvanized (zinc-coated, dull gray crystalline) metal gives off toxic fumes when heated. Strip the coating first or don't use it.","Work in the open air: charcoal fires make carbon monoxide.","Wet or cold tools and molds make molten metal explode. Preheat everything that will touch it."]);
+  html += '</div>';
+
+  html += '<div class="section" id="rb-power"><h2>&#9881; Power &amp; Machines</h2>';
+  html += '<h3>Simple machines</h3><p>Every mechanism is built from six ideas: <b>lever, wheel and axle, pulley, inclined plane, wedge, screw</b>. Each trades distance for force. A lever with the load 1 unit from the pivot and your hand 5 units away lifts 5 times the weight. A block and tackle with 4 supporting rope strands lifts 4 times what you pull, minus friction. Ramps, rollers, and levers are how people moved stone blocks weighing tons.</p>';
+  html += '<h3>Water and wind</h3><p>Moving water is the most reliable pre-industrial power source. An undershot wheel only needs a flowing stream. An overshot wheel, fed from a channel above it, is far more efficient where the water drops. Power from a wheel can run grinding stones, saws, pumps, or a generator. Wind is less steady but works anywhere with open exposure.</p>';
+  html += '<h3>Electricity from salvage</h3><p>Moving a magnet near a coil of wire produces electricity, which is how every generator works. Car alternators, DC motors from treadmills or power tools, and permanent-magnet motors can all run as generators if you spin them fast enough with a water wheel, wind rotor, or bicycle. Car and deep-cycle lead-acid batteries store the power. 12-volt LED lighting and radios run directly from them, and a charge controller keeps overcharging from ruining the batteries. Salvaged solar panels keep producing for decades.</p>';
+  html += renderWarning("Electrical safety", ["Batteries can deliver huge currents: a wrench across the terminals can weld, burn, or explode. Remove rings and cover terminals.","Charging lead-acid batteries gives off hydrogen. Charge them in ventilated space away from sparks and flame.","Household mains voltage (120/230V) kills. Stay with low-voltage DC unless you truly know the work."]);
+  html += '</div>';
+
+  html += '<div class="section" id="rb-knowledge"><h2>&#128214; Knowledge: The Thing Worth Saving</h2>';
+  html += '<p>Tools wear out and people die. Knowledge only survives if it is written down and taught.</p>';
+  html += '<h3>Write everything down</h3><p>Keep a community logbook: planting dates, harvests, weather, births, deaths, what worked, what failed. Collect every book you can find on medicine, farming, engineering, and chemistry, and store them dry and off the ground. Paper lasts centuries when kept dry. Phones and drives don\'t.</p>';
+  html += '<h3>Teach every child to read, write, and do arithmetic</h3><p>Literacy is the tool that copies every other skill. Even an hour a day keeps it alive. Teach the method as well as the facts: guess, test it, observe honestly, and change your mind when the evidence says so. That habit is what rebuilt technology the first time.</p>';
+  html += '<h3>Standards of measure</h3><p>Trade and building need shared units. Keep a salvaged tape measure or ruler as the master length and cut copies from it. For weight, 1 liter of water weighs 1 kilogram (1 quart is about 2 lb), so a marked container of water is a mass standard anyone can recreate.</p>';
+  html += '<h3>Keeping time and the calendar</h3><p>Solar noon is when a vertical stick\'s shadow is shortest, and at that moment it points due north (in the Northern Hemisphere) or south (Southern). Mark the noon shadow tip each day: the <b>longest</b> noon shadow marks the winter solstice and the <b>shortest</b> the summer solstice. Days between them tell you when to plant. Keep a day count on the wall and restart it at each winter solstice.</p>';
+  html += '<h3>Governance</h3><p>Groups fail more often from conflict than from lack of skill. Agree early on how decisions are made, how food and work are shared, and how disputes get settled, and write it down where everyone can see it.</p>';
   html += '</div>';
 
   return html;
@@ -1932,8 +2045,41 @@ function renderQuiz(){
 }
 
 /* ---------------- MAIN RENDER ---------------- */
+/* ---- Print the whole guide: paper outlives batteries ---- */
+function renderTriageFlowFlat(flowId){
+  var flow = TRIAGE_FLOWS[flowId];
+  var label = (TRIAGE_FLOWS.entry.start.items.filter(function(i){return i.go.split(":")[0]===flowId;})[0]||{}).label || flowId;
+  var html = '<div class="section"><h2>'+esc(label)+'</h2>';
+  Object.keys(flow).forEach(function(nid){
+    var node = flow[nid];
+    if(node.type === "q"){
+      html += '<p><b>Q: '+esc(node.text)+'</b></p><ul>'+node.options.map(function(opt){
+        var target = (TRIAGE_FLOWS[opt.flow || flowId]||{})[opt.next] || {};
+        return '<li>'+esc(opt.label)+' &rarr; '+esc(target.title || target.text || opt.next)+'</li>';
+      }).join("")+'</ul>';
+    } else if(node.type === "result"){
+      html += '<div class="result-card '+node.severity+'">'+severityBadge(node.severity)+'<h3>'+esc(node.title)+'</h3>'+renderSteps(node.steps)+'</div>'+renderNotDo(node.notdo);
+    }
+  });
+  return html + '</div>';
+}
+function renderPrintAll(){
+  var html = '<div class="breadcrumb no-print"><button data-go="home">&larr; Home</button></div>';
+  html += '<div class="section"><h2>&#128424; Full Guide <button class="btn small no-print" style="margin-left:auto" id="print-btn">&#128424; Print / Save PDF</button></h2>';
+  html += '<p>Every section on one page. Phones die, batteries run out, and screens break, but a printed copy in a waterproof bag keeps working. Print it, or save it as a PDF and keep copies on other devices.</p></div>';
+  html += renderQuickRef().replace(/<div class="breadcrumb">[\s\S]*?<\/div>/, "");
+  html += '<div class="section"><h2>&#9877; Emergency Triage (all flows)</h2><p>Each flow below starts at its first question. Follow the arrow for the answer that fits.</p></div>';
+  Object.keys(TRIAGE_FLOWS).forEach(function(fid){ if(fid !== "entry") html += renderTriageFlowFlat(fid); });
+  CATEGORIES.forEach(function(c){
+    if(c.id === "connect" || c.id === "firstaid") return;
+    html += renderCategory(c.id).replace(/<div class="breadcrumb">[\s\S]*?<\/div>/, "");
+  });
+  html += renderConnect().replace(/<div class="breadcrumb">[\s\S]*?<\/div>/, "");
+  return html;
+}
+
 function renderCategory(id){
-  var fns = {firstaid:renderFirstAidCat, water:renderWater, shelter:renderShelter, fire:renderFire, nav:renderNav, signal:renderSignal, weather:renderWeather, wildlife:renderWildlife, vehicle:renderVehicle, longterm:renderLongTerm, disasters:renderDisasters, home:renderHomeSurvival, pandemic:renderPandemic, unrest:renderUnrest, outages:renderOutages, specialneeds:renderSpecialNeeds, connect:renderConnect};
+  var fns = {firstaid:renderFirstAidCat, water:renderWater, shelter:renderShelter, fire:renderFire, nav:renderNav, signal:renderSignal, weather:renderWeather, wildlife:renderWildlife, vehicle:renderVehicle, longterm:renderLongTerm, rebuild:renderRebuild, disasters:renderDisasters, home:renderHomeSurvival, pandemic:renderPandemic, unrest:renderUnrest, outages:renderOutages, specialneeds:renderSpecialNeeds, connect:renderConnect};
   return fns[id] ? fns[id]() : "<p>Not found.</p>";
 }
 
@@ -1945,6 +2091,7 @@ function render(){
   else if(r.view === "browse") html = renderBrowse();
   else if(r.view === "quickref") html = renderQuickRef();
   else if(r.view === "quiz") html = renderQuiz();
+  else if(r.view === "printall") html = renderPrintAll();
   else if(r.view === "category") html = renderCategory(r.cat);
   else if(r.view === "triage") html = renderTriage(r.flow, r.node);
   else html = renderHome();
@@ -1961,6 +2108,7 @@ function renderSidebar(){
   html += '<button class="nav-btn '+(r.view==="quickref"?"active":"")+'" data-go="quickref"><span class="ic">&#128203;</span>Quick Reference</button>';
   html += '<button class="nav-btn '+(r.view==="browse"?"active":"")+'" data-go="browse"><span class="ic">&#128218;</span>Browse &amp; Learn</button>';
   html += '<button class="nav-btn '+(r.view==="quiz"?"active":"")+'" data-go="quiz"><span class="ic">&#10067;</span>Knowledge Check</button>';
+  html += '<button class="nav-btn '+(r.view==="printall"?"active":"")+'" data-go="printall"><span class="ic">&#128424;</span>Print Full Guide</button>';
   CATEGORY_GROUPS.forEach(function(g){
     html += '<div class="nav-group-label">'+g.label+'</div>';
     g.ids.forEach(function(id){
@@ -1980,6 +2128,7 @@ function parseGo(goStr){
   if(parts[0]==="browse") return {view:"browse"};
   if(parts[0]==="quickref") return {view:"quickref"};
   if(parts[0]==="quiz") return {view:"quiz"};
+  if(parts[0]==="printall") return {view:"printall"};
   if(parts[0]==="cat") return {view:"category", cat:parts[1]};
   if(parts[0]==="triage") return {view:"triage", flow:parts[1], node:parts[2]};
   return {view:"home"};
@@ -2111,6 +2260,17 @@ function buildSearchIndex(){
   idx("Home","Emergency Now","start first aid triage help sos",{view:"triage",flow:"entry",node:"start"});
   idx("Home","Quick Reference","cheat sheet critical facts printable",{view:"quickref"});
   idx("Home","Knowledge Check","quiz test score",{view:"quiz"});
+  idx("Home","Print full guide","print pdf paper backup save everything offline copy",{view:"printall"});
+  idx("Rebuild From Zero","Order of operations","restart civilization rebuild society priorities first year collapse apocalypse long term plan scavenge salvage",{view:"category",cat:"rebuild"});
+  idx("Rebuild From Zero","Public health & germ theory","sanitation disease cholera diarrhea handwashing sterilize boil instruments quarantine",{view:"category",cat:"rebuild"});
+  idx("Rebuild From Zero","Oral rehydration solution (ORS)","ors diarrhea dehydration sugar salt water recipe cholera",{view:"category",cat:"rebuild"});
+  idx("Rebuild From Zero","Clean birth / childbirth","childbirth delivery baby birth pregnancy umbilical cord midwife",{view:"category",cat:"rebuild"});
+  idx("Rebuild From Zero","Staple crops & crop rotation","grain wheat corn beans legumes rotation soil fertility three sisters scurvy pellagra nixtamalization iodine",{view:"category",cat:"rebuild"});
+  idx("Rebuild From Zero","Charcoal, lye, soap, lime, vinegar","chemistry make soap wood ash lye quicklime mortar plaster whitewash charcoal kiln vinegar",{view:"category",cat:"rebuild"});
+  idx("Rebuild From Zero","Pottery, brick, rope, cloth, leather","clay pottery kiln adobe brick cordage rope weaving spinning textiles tanning hide leather",{view:"category",cat:"rebuild"});
+  idx("Rebuild From Zero","Metalworking & forge","blacksmith forge anvil steel harden temper quench smelt bloomery iron ore",{view:"category",cat:"rebuild"});
+  idx("Rebuild From Zero","Power & simple machines","lever pulley water wheel windmill generator alternator electricity battery solar",{view:"category",cat:"rebuild"});
+  idx("Rebuild From Zero","Knowledge, measurement & calendar","books literacy teaching school measurement units calendar solstice time keeping governance",{view:"category",cat:"rebuild"});
   CATEGORIES.forEach(function(c){ idx(c.name, c.name, catBlurb(c.id), {view:"category", cat:c.id}); });
   Object.keys(TRIAGE_FLOWS).forEach(function(flowId){
     if(flowId==="entry") return;
@@ -2290,6 +2450,15 @@ function stopStrobe(){
     state.strobePrevFocus.focus();
   }
   state.strobePrevFocus = null;
+}
+
+/* ---------------- OFFLINE INSTALL ---------------- */
+// Cache the app on first visit so it opens with no network afterwards.
+// Service workers need http(s); opened straight from a file, the page is already local.
+if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(){ /* still fully usable online */ });
+  });
 }
 
 /* ---------------- INIT ---------------- */
