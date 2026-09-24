@@ -372,6 +372,68 @@ function structuralChecks() {
     ok(errs.length === 0, "no console errors when geolocation API is entirely absent");
   });
 
+  console.log("Test: Rebuild From Zero section renders and is searchable");
+  await withPage(browser, { width: 390, height: 844 }, async (page, errs) => {
+    await page.route("**/*", (route) => (route.request().url().startsWith("file://") ? route.continue() : route.abort()));
+    await page.goto(FILE_URL);
+    await page.click('.card-link:has-text("Rebuild From Zero")');
+    await page.waitForSelector("#rb-knowledge");
+    const ids = await page.$$eval("#main .section[id^='rb-']", (els) => els.map((e) => e.id));
+    ok(ids.length === 8, "rebuild has all 8 subsections: " + ids.join(","));
+    await page.fill("#search-input", "make soap");
+    await page.waitForSelector("#search-results.show .sr-item");
+    const hit = await page.textContent("#search-results .sr-item");
+    ok(/lye|soap/i.test(hit || ""), "search 'make soap' finds rebuild chemistry: " + (hit || "").trim());
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    ok(overflow <= 0, "rebuild section: no horizontal overflow at 390px (delta " + overflow + ")");
+    ok(errs.length === 0, "no console errors in rebuild section");
+  });
+
+  console.log("Test: Print Full Guide renders every section and all triage flows");
+  await withPage(browser, { width: 390, height: 844 }, async (page, errs) => {
+    await page.route("**/*", (route) => (route.request().url().startsWith("file://") ? route.continue() : route.abort()));
+    await page.goto(FILE_URL);
+    await page.click('.hero button:has-text("Print Full Guide")');
+    await page.waitForSelector("#print-btn");
+    const text = await page.textContent("#main");
+    ["Quick Reference", "Not breathing: begin CPR now", "Rebuild From Zero", "Long-Term Survival", "Power Outages", "Emergency Numbers"]
+      .forEach((t) => ok(text.indexOf(t) !== -1, "full guide includes: " + t));
+    ok(errs.length === 0, "no console errors rendering full guide");
+  });
+
+  console.log("Test: after one online visit, the app reloads with the network gone (service worker)");
+  {
+    const http = require("http");
+    const root = path.resolve(__dirname, "..");
+    const types = { ".html": "text/html", ".js": "text/javascript", ".webmanifest": "application/manifest+json", ".svg": "image/svg+xml", ".png": "image/png" };
+    const server = http.createServer((req, res) => {
+      const rel = decodeURIComponent(req.url.split("?")[0]).replace(/^\/+/, "") || "index.html";
+      const file = path.join(root, rel);
+      if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); return res.end(); }
+      res.writeHead(200, { "Content-Type": types[path.extname(file)] || "application/octet-stream" });
+      fs.createReadStream(file).pipe(res);
+    });
+    await new Promise((r) => server.listen(0, "127.0.0.1", r));
+    const url = "http://127.0.0.1:" + server.address().port + "/";
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const page = await context.newPage();
+    const errs = [];
+    page.on("pageerror", (err) => errs.push(String(err)));
+    await page.goto(url);
+    await page.waitForSelector("#main .hero h1");
+    const ready = await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
+    ok(ready, "service worker installs and activates");
+    await new Promise((r) => server.close(r));
+    await context.setOffline(true);
+    await page.reload();
+    await page.waitForSelector("#main .hero h1", { timeout: 5000 });
+    ok(true, "app reloads from cache with the server down and the network offline");
+    await page.click('.card-link:has-text("Rebuild From Zero")');
+    await page.waitForSelector("#rb-order");
+    ok(errs.length === 0, "no page errors while running offline from cache");
+    await context.close();
+  }
+
   await browser.close();
 
   console.log("\n" + passed + " passed, " + failures + " failed");
