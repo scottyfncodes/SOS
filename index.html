@@ -100,6 +100,8 @@ p{margin:0 0 .75em;}
   display:flex; align-items:center; gap:.4rem; white-space:nowrap;
 }
 #emergency-btn:hover{filter:brightness(1.08);}
+/* Home already has the big hero EMERGENCY NOW - only show the top-bar shortcut on inner pages. */
+#topbar.on-home #emergency-btn{display:none;}
 
 /* SIDEBAR */
 #sidebar{
@@ -120,6 +122,16 @@ p{margin:0 0 .75em;}
 .nav-btn:hover{background:var(--ground-raised2); color:var(--ink);}
 .nav-btn.active{background:var(--gold-dim); color:var(--gold-soft); border-left-color:var(--gold-soft); font-weight:700;}
 #sidebar-scrim{display:none;}
+.nav-setting{padding:.3rem .6rem .5rem;}
+.nav-setting-label{display:block; color:var(--ink-dim); font-size:.85rem; font-weight:600; margin-bottom:.35rem;}
+.seg{display:flex; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+.seg button{
+  flex:1 1 0; min-height:44px; background:var(--ground-raised2); border:0; border-right:1px solid var(--line);
+  color:var(--ink-dim); font-family:var(--font-mono); font-weight:700; font-size:.9rem; padding:.3rem .2rem;
+}
+.seg button:last-child{border-right:0;}
+.seg button:hover{color:var(--ink);}
+.seg button[aria-pressed="true"]{background:var(--gold-dim); color:var(--gold-soft);}
 
 /* MAIN */
 #main{flex:1; min-width:0; padding:1rem 1rem 4rem;}
@@ -359,8 +371,6 @@ footer.appfoot{text-align:center; color:var(--ink-faint); font-family:var(--font
         <input id="search-input" type="search" placeholder="Search e.g. bleeding, water, north..." autocomplete="off">
         <div id="search-results" role="listbox"></div>
       </div>
-      <button class="icon-btn" id="fontsize-btn" title="Text size">A&plusmn;</button>
-      <button class="icon-btn" id="units-btn" title="Units">--</button>
       <button id="emergency-btn" data-go="triage:entry:start">&#9888; Emergency</button>
     </header>
     <main id="main" tabindex="-1"></main>
@@ -386,19 +396,33 @@ function saveFavorites(){
   } catch(e){ /* private browsing / storage blocked - favorites still work for this session */ }
 }
 
+var FONT_SIZES = [16,18,21,25];
+var FONT_LABELS = ["S","M","L","XL"];
+var FONT_SIZE_NAMES = ["Small","Medium","Large","Extra large"];
+var SETTINGS_KEY = "sos-settings";
+function loadSettings(){
+  try{
+    var raw = window.localStorage && window.localStorage.getItem(SETTINGS_KEY);
+    var s = raw ? JSON.parse(raw) : {};
+    return {
+      fontSize: (typeof s.fontSize === "number" && s.fontSize >= 0 && s.fontSize < FONT_SIZES.length) ? s.fontSize : 1,
+      units: s.units === "metric" ? "metric" : "imperial"
+    };
+  } catch(e){ return {fontSize:1, units:"imperial"}; }
+}
+var savedSettings = loadSettings();
+
 var state = {
   route: {view:"home"},
   history: [],
-  fontSize: 1, // index into FONT_SIZES
-  units: "imperial",
+  fontSize: savedSettings.fontSize, // index into FONT_SIZES
+  units: savedSettings.units,
   favorites: loadFavorites(),
   checklists: {},
   quiz: {order: null, idx:0, score:0, answered:0, done:false},
   live: {weather:null, alerts:null, facilities:null, earthquakes:null, airquality:null},
   strobeTimer: null, strobeMode: null
 };
-var FONT_SIZES = [16,18,21,25];
-var FONT_LABELS = ["S","M","L","XL"];
 
 function galToL(g){ return g*3.78541; }
 function lToGal(l){ return l/3.78541; }
@@ -1162,7 +1186,7 @@ function renderHome(){
   var html = '';
   html += '<div class="hero">';
   html += '<h1>Offline Survival Guide</h1>';
-  html += '<p>Everything below works with no signal and no internet. In a real emergency, tap the red button first.</p>';
+  html += '<p>Works with no signal and no internet.</p>';
   html += '<button class="big-emergency" data-go="triage:entry:start">&#9888; EMERGENCY NOW<small>Start First Aid triage</small></button>';
   html += '<div class="secondary-row">';
   html += '<button class="btn primary" data-go="browse">&#128218; Browse &amp; Learn</button>';
@@ -2096,6 +2120,7 @@ function render(){
   else if(r.view === "triage") html = renderTriage(r.flow, r.node);
   else html = renderHome();
   main.innerHTML = html;
+  document.getElementById("topbar").classList.toggle("on-home", r.view === "home");
   renderSidebar();
   wireDynamic();
 }
@@ -2118,6 +2143,16 @@ function renderSidebar(){
       html += '<button class="nav-btn '+(active?"active":"")+'" data-go="cat:'+c.id+'"><span class="ic">'+c.ic+'</span>'+c.name+'</button>';
     });
   });
+  html += '<div class="nav-group-label">Settings</div>';
+  html += '<div class="nav-setting" id="setting-fontsize"><span class="nav-setting-label" id="fontsize-label">Text size</span><div class="seg" role="group" aria-labelledby="fontsize-label">';
+  FONT_LABELS.forEach(function(lbl, i){
+    html += '<button type="button" data-fontsize="'+i+'" aria-pressed="'+(state.fontSize===i)+'" title="'+FONT_SIZE_NAMES[i]+'">'+lbl+'</button>';
+  });
+  html += '</div></div>';
+  html += '<div class="nav-setting" id="setting-units"><span class="nav-setting-label" id="units-label">Units</span><div class="seg" role="group" aria-labelledby="units-label">';
+  html += '<button type="button" data-units="imperial" aria-pressed="'+(state.units==="imperial")+'">Imperial</button>';
+  html += '<button type="button" data-units="metric" aria-pressed="'+(state.units==="metric")+'">Metric</button>';
+  html += '</div></div>';
   sb.innerHTML = html;
 }
 
@@ -2222,22 +2257,30 @@ document.getElementById("hamburger").addEventListener("click", function(){
 });
 document.getElementById("sidebar-scrim").addEventListener("click", closeSidebar);
 
-/* Font size + units toggles */
+/* Text size + units settings (in the menu), remembered between visits */
+function saveSettings(){
+  try{
+    if(window.localStorage) window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({fontSize:state.fontSize, units:state.units}));
+  } catch(e){ /* storage blocked - settings still apply for this session */ }
+}
 function applyFontSize(){
   document.documentElement.style.fontSize = FONT_SIZES[state.fontSize] + "px";
-  document.getElementById("fontsize-btn").textContent = "A " + FONT_LABELS[state.fontSize];
 }
-document.getElementById("fontsize-btn").addEventListener("click", function(){
-  state.fontSize = (state.fontSize + 1) % FONT_SIZES.length;
-  applyFontSize();
-});
 function applyUnits(){
-  document.getElementById("units-btn").textContent = state.units === "imperial" ? "Imperial" : "Metric";
   if(state.route.view === "category" && state.route.cat === "water"){ render(); }
 }
-document.getElementById("units-btn").addEventListener("click", function(){
-  state.units = state.units === "imperial" ? "metric" : "imperial";
-  applyUnits();
+document.addEventListener("click", function(e){
+  var fs = e.target.closest("[data-fontsize]");
+  if(fs){
+    state.fontSize = parseInt(fs.getAttribute("data-fontsize")) || 0;
+    applyFontSize(); saveSettings(); renderSidebar();
+    return;
+  }
+  var un = e.target.closest("[data-units]");
+  if(un){
+    state.units = un.getAttribute("data-units") === "metric" ? "metric" : "imperial";
+    applyUnits(); saveSettings(); renderSidebar();
+  }
 });
 
 /* Live calculator wiring (delegated on input) */

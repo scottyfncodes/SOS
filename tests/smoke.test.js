@@ -144,11 +144,52 @@ function structuralChecks() {
     ok(!!title && title.length > 0, "home hero renders: " + title);
   });
 
+  console.log("Test: opening screen has exactly one emergency button; top-bar shortcut appears on inner pages");
+  await withPage(browser, { width: 390, height: 844 }, async (page, errs) => {
+    await page.route("**/*", (route) => (route.request().url().startsWith("file://") ? route.continue() : route.abort()));
+    await page.goto(FILE_URL);
+    await page.waitForSelector("#main .hero h1");
+    const visibleEmergency = await page.$$eval('[data-go="triage:entry:start"]', (els) => els.filter((e) => e.offsetParent !== null).length);
+    ok(visibleEmergency === 1, "home shows exactly one visible emergency button (got " + visibleEmergency + ")");
+    ok(await page.isVisible(".big-emergency"), "the one emergency button is the hero EMERGENCY NOW");
+    const ctaBottom = await page.$eval(".big-emergency", (el) => el.getBoundingClientRect().bottom);
+    ok(ctaBottom <= 844, "EMERGENCY NOW is fully above the fold at 390x844 (bottom " + Math.round(ctaBottom) + "px)");
+    ok(await page.isVisible("#search-input"), "search stays in the top bar");
+    ok(!(await page.$("#fontsize-btn")) && !(await page.$("#units-btn")), "cryptic text-size / units toggles are gone from the top bar");
+    await page.click(".big-emergency");
+    await page.waitForSelector(".entry-grid");
+    ok(await page.isVisible("#emergency-btn"), "top-bar Emergency shortcut is available on inner pages");
+    ok(errs.length === 0, "no console errors on the opening screen");
+  });
+
+  console.log("Test: text size and units live in the menu with clear labels and persist across reload");
+  await withPage(browser, { width: 390, height: 844 }, async (page, errs) => {
+    await page.goto(FILE_URL);
+    await page.click("#hamburger");
+    await page.waitForSelector("#sidebar.open");
+    const sbText = await page.textContent("#sidebar");
+    ok(/Text size/.test(sbText || "") && /Units/.test(sbText || ""), "menu has labeled Text size and Units settings");
+    await page.click('#setting-fontsize [data-fontsize="2"]');
+    const fs = await page.evaluate(() => document.documentElement.style.fontSize);
+    ok(fs === "21px", "choosing L sets the root font size to 21px (got " + fs + ")");
+    await page.click('#setting-units [data-units="metric"]');
+    ok((await page.getAttribute('#setting-units [data-units="metric"]', "aria-pressed")) === "true", "Metric is marked selected");
+    await page.reload();
+    await page.waitForSelector("#main .hero h1");
+    const fs2 = await page.evaluate(() => document.documentElement.style.fontSize);
+    ok(fs2 === "21px", "text size survives a reload (got " + fs2 + ")");
+    ok((await page.getAttribute('#setting-units [data-units="metric"]', "aria-pressed")) === "true", "units survive a reload");
+    await page.click('.card-link:has-text("Water & Food")');
+    const volLabel = await page.textContent('label[for="wf-vol"]');
+    ok(/\(L\)/.test(volLabel || ""), "water calculator renders in metric after the setting change: " + (volLabel || "").trim());
+    ok(errs.length === 0, "no console errors using settings");
+  });
+
   console.log("Test: emergency entry menu has expected situations (old + newly added)");
   await withPage(browser, { width: 390, height: 844 }, async (page, errs) => {
     await page.route("**/*", (route) => (route.request().url().startsWith("file://") ? route.continue() : route.abort()));
     await page.goto(FILE_URL);
-    await page.click("#emergency-btn");
+    await page.click(".big-emergency");
     await page.waitForSelector(".entry-grid");
     const items = await page.$$eval(".entry-grid .entry-btn span:nth-child(2)", (els) => els.map((e) => e.textContent.trim()));
     [
@@ -162,7 +203,7 @@ function structuralChecks() {
   console.log("Test: severe result shows a Call 911 button with tel: link");
   await withPage(browser, { width: 390, height: 844 }, async (page) => {
     await page.goto(FILE_URL);
-    await page.click("#emergency-btn");
+    await page.click(".big-emergency");
     await page.click('.entry-btn:has-text("Severe bleeding")');
     await page.click('.qbtn:has-text("Yes, severe/rapid")');
     await page.waitForSelector(".result-card.severe");
@@ -175,7 +216,7 @@ function structuralChecks() {
   console.log("Test: not breathing -> CPR flow resolves with correct escalation");
   await withPage(browser, { width: 390, height: 844 }, async (page) => {
     await page.goto(FILE_URL);
-    await page.click("#emergency-btn");
+    await page.click(".big-emergency");
     await page.click('.entry-btn:has-text("Not breathing / unresponsive")');
     await page.click('.qbtn:has-text("No response")');
     await page.click('.qbtn:has-text("No, not breathing or gasping")');
@@ -189,14 +230,14 @@ function structuralChecks() {
   console.log("Test: chest pain (cardiac) flow resolves and cross-links to CPR when unresponsive");
   await withPage(browser, { width: 390, height: 844 }, async (page) => {
     await page.goto(FILE_URL);
-    await page.click("#emergency-btn");
+    await page.click(".big-emergency");
     await page.click('.entry-btn:has-text("Chest pain")');
     await page.click('.qbtn:has-text("No - awake and breathing")');
     await page.waitForSelector(".result-card.severe");
     const title = await page.textContent(".result-card h3");
     ok(/heart attack/i.test(title || ""), "conscious chest pain resolves: " + title);
 
-    await page.click('[data-go="triage:entry:start"]');
+    await page.click('[data-go="triage:entry:start"]:visible');
     await page.click('.entry-btn:has-text("Chest pain")');
     await page.click('.qbtn:has-text("Yes - unresponsive or not breathing")');
     await page.waitForSelector(".result-card.severe");
@@ -209,7 +250,8 @@ function structuralChecks() {
     await page.goto(FILE_URL);
 
     async function walkToResult(label, subLabel) {
-      await page.click('[data-go="triage:entry:start"]');
+      // home shows only the hero button; inner pages only the top-bar shortcut
+      await page.click('[data-go="triage:entry:start"]:visible');
       await page.click('.entry-btn:has-text("' + label + '")');
       if (subLabel) {
         await page.waitForSelector(".entry-grid");
@@ -311,12 +353,13 @@ function structuralChecks() {
       await page.click("#hamburger");
       await page.waitForSelector("#sidebar.open");
       ok(await page.isVisible("#sidebar.open"), "sidebar opens via hamburger at " + width + "px");
-      await page.click("#sidebar-scrim");
+      // tap the strip of scrim the 280px sidebar leaves uncovered (its center is under the sidebar at 320px)
+      await page.click("#sidebar-scrim", { position: { x: width - 12, y: 400 } });
       await page.waitForTimeout(50);
       ok(!(await page.$eval("#sidebar", (el) => el.classList.contains("open"))), "sidebar closes via scrim tap at " + width + "px");
 
       // Emergency entry grid now has 23 items - check it doesn't overflow either.
-      await page.click("#emergency-btn");
+      await page.click(".big-emergency");
       await page.waitForSelector(".entry-grid");
       const overflowEntry = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       ok(overflowEntry <= 1, "23-item emergency entry grid: no horizontal overflow at " + width + "px (delta " + overflowEntry + ")");
