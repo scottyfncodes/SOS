@@ -191,7 +191,7 @@ function structuralChecks() {
     await page.goto(FILE_URL);
     await page.click(".big-emergency");
     await page.waitForSelector(".entry-grid");
-    const items = await page.$$eval(".entry-grid .entry-btn span:nth-child(2)", (els) => els.map((e) => e.textContent.trim()));
+    const items = await page.$$eval(".entry-grid .entry-btn > span", (els) => els.map((e) => e.textContent.trim()));
     [
       "Severe bleeding", "Fire", "Vehicle emergency", "Lost / stranded", "Water emergency / drowning",
       "Poison / chemical exposure", "Chest pain / possible heart attack", "Trouble breathing", "Other emergency",

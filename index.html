@@ -60,7 +60,7 @@ p{margin:0 0 .75em;}
   border:1px solid var(--line); border-radius:var(--radius); font-size:1.4rem; color:var(--ink);
 }
 .brand{display:flex; align-items:center; gap:.55rem; font-size:1.05rem; white-space:nowrap;}
-.brand .flag{font-size:1.5rem;}
+.brand .flag{width:32px; height:32px; border-radius:7px; flex-shrink:0;}
 .brand .full{display:flex; flex-direction:column; line-height:1.15;}
 .brand-title{font-family:var(--font-display); font-weight:800; letter-spacing:.01em;}
 .brand-tag{font-family:var(--font-mono); font-size:.6rem; text-transform:uppercase; letter-spacing:.14em; color:var(--ink-faint);}
@@ -118,7 +118,6 @@ p{margin:0 0 .75em;}
   background:none; border:0; border-left:3px solid transparent; color:var(--ink-dim); border-radius:0 var(--radius) var(--radius) 0;
   padding:.55rem .6rem .55rem .55rem; text-align:left; font-size:.96rem; font-weight:600;
 }
-.nav-btn .ic{font-size:1.1rem; width:1.4em; text-align:center; opacity:.85;}
 .nav-btn:hover{background:var(--ground-raised2); color:var(--ink);}
 .nav-btn.active{background:var(--gold-dim); color:var(--gold-soft); border-left-color:var(--gold-soft); font-weight:700;}
 #sidebar-scrim{display:none;}
@@ -176,7 +175,6 @@ p{margin:0 0 .75em;}
 .card-link{display:block; width:100%; text-align:left; background:none; border:0; color:var(--ink); min-height:110px;}
 .card h3{font-size:1.05rem; margin-bottom:.25rem;}
 .card p{color:var(--ink-dim); font-size:.88rem; margin:0;}
-.card .ic{font-size:1.5rem; display:block; margin-bottom:.4rem; opacity:.9;}
 .fav-btn{
   position:absolute; z-index:2; top:.5rem; right:.5rem; min-width:40px; min-height:40px; background:none;
   border:0; font-size:1.25rem; color:var(--ink-faint);
@@ -250,7 +248,6 @@ p{margin:0 0 .75em;}
   position:relative;
 }
 .entry-btn:hover{border-color:var(--gold);}
-.entry-btn .ic{font-size:1.35rem; opacity:.9;}
 
 .breadcrumb{display:flex; gap:.4rem; align-items:center; color:var(--ink-faint); font-family:var(--font-mono); font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:.6rem; flex-wrap:wrap;}
 .breadcrumb button{background:none;border:0;color:var(--gold-soft); font-family:var(--font-mono); font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; padding:.2rem;}
@@ -360,18 +357,18 @@ footer.appfoot{text-align:center; color:var(--ink-faint); font-family:var(--font
   <nav id="sidebar" aria-label="Category navigation"></nav>
   <div id="sidebar-scrim"></div>
   <div id="strobe-overlay" role="alert" aria-live="assertive">
-    <button id="strobe-stop" aria-label="Stop strobe">&#9632; STOP</button>
+    <button id="strobe-stop" aria-label="Stop strobe">STOP</button>
   </div>
   <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
     <header id="topbar">
       <button id="hamburger" aria-label="Open menu" aria-expanded="false">&#9776;</button>
-      <div class="brand"><span class="flag">&#9906;</span><span class="full"><span class="brand-title">Survival Guide</span><span class="brand-tag">Offline Field Reference</span></span></div>
+      <div class="brand"><img class="flag" src="icon.svg" width="32" height="32" alt=""><span class="full"><span class="brand-title">Survival Guide</span><span class="brand-tag">Offline Field Reference</span></span></div>
       <div id="search-wrap">
         <label class="visually-hidden" for="search-input">Search the guide</label>
         <input id="search-input" type="search" placeholder="Search e.g. bleeding, water, north..." autocomplete="off">
         <div id="search-results" role="listbox"></div>
       </div>
-      <button id="emergency-btn" data-go="triage:entry:start">&#9888; Emergency</button>
+      <button id="emergency-btn" data-go="triage:entry:start">Emergency</button>
     </header>
     <main id="main" tabindex="-1"></main>
     <footer class="appfoot no-print">Fully usable offline &middot; the optional Connect &amp; Alerts tools use your location and a live connection only when you tap them &middot; not a substitute for professional medical care or emergency services when available</footer>
@@ -443,24 +440,24 @@ function distLabel(km){
 
 /* ---------------- CATEGORY DEFINITIONS ---------------- */
 var CATEGORIES = [
-  {id:"firstaid", name:"First Aid", ic:"&#9877;"},
-  {id:"water", name:"Water & Food", ic:"&#128167;"},
-  {id:"shelter", name:"Shelter", ic:"&#9974;"},
-  {id:"fire", name:"Fire", ic:"&#128293;"},
-  {id:"nav", name:"Navigation", ic:"&#129517;"},
-  {id:"signal", name:"Signaling", ic:"&#128225;"},
-  {id:"weather", name:"Weather", ic:"&#9928;"},
-  {id:"wildlife", name:"Wildlife", ic:"&#128062;"},
-  {id:"vehicle", name:"Vehicle Emergencies", ic:"&#128663;"},
-  {id:"longterm", name:"Long-Term Survival", ic:"&#127806;"},
-  {id:"rebuild", name:"Rebuild From Zero", ic:"&#127959;"},
-  {id:"disasters", name:"Natural Disasters", ic:"&#127755;"},
-  {id:"home", name:"Home Survival", ic:"&#127968;"},
-  {id:"pandemic", name:"Pandemic & Illness", ic:"&#128567;"},
-  {id:"unrest", name:"Civil Unrest & Public Safety", ic:"&#128274;"},
-  {id:"outages", name:"Power Outages", ic:"&#128268;"},
-  {id:"specialneeds", name:"Infants, Elderly & Pets", ic:"&#128118;"},
-  {id:"connect", name:"Connect & Alerts", ic:"&#128246;"}
+  {id:"firstaid", name:"First Aid"},
+  {id:"water", name:"Water & Food"},
+  {id:"shelter", name:"Shelter"},
+  {id:"fire", name:"Fire"},
+  {id:"nav", name:"Navigation"},
+  {id:"signal", name:"Signaling"},
+  {id:"weather", name:"Weather"},
+  {id:"wildlife", name:"Wildlife"},
+  {id:"vehicle", name:"Vehicle Emergencies"},
+  {id:"longterm", name:"Long-Term Survival"},
+  {id:"rebuild", name:"Rebuild From Zero"},
+  {id:"disasters", name:"Natural Disasters"},
+  {id:"home", name:"Home Survival"},
+  {id:"pandemic", name:"Pandemic & Illness"},
+  {id:"unrest", name:"Civil Unrest & Public Safety"},
+  {id:"outages", name:"Power Outages"},
+  {id:"specialneeds", name:"Infants, Elderly & Pets"},
+  {id:"connect", name:"Connect & Alerts"}
 ];
 var CATEGORY_GROUPS = [
   {label:"Injury &amp; Medical", ids:["firstaid"]},
@@ -477,29 +474,29 @@ function step(t){ return t; }
 var TRIAGE_FLOWS = {
   entry:{
     start:{type:"menu", title:"What's the situation?", items:[
-      {label:"Severe bleeding", ic:"&#129656;", go:"bleeding:start"},
-      {label:"Not breathing / unresponsive", ic:"&#128557;", go:"breathing:start"},
-      {label:"Trouble breathing", ic:"&#129729;", go:"breathing_distress:start"},
-      {label:"Chest pain / possible heart attack", ic:"&#129728;", go:"cardiac:start"},
-      {label:"Seizure", ic:"&#128565;", go:"seizure:start"},
-      {label:"Choking", ic:"&#128557;", go:"choking:start"},
-      {label:"Burn", ic:"&#128293;", go:"burns:start"},
-      {label:"Broken bone / severe sprain", ic:"&#129446;", go:"fracture:start"},
-      {label:"Head or spinal injury", ic:"&#129504;", go:"headspinal:start"},
-      {label:"Cold exposure / hypothermia", ic:"&#10052;", go:"hypothermia:start"},
-      {label:"Frostbite", ic:"&#129398;", go:"frostbite:start"},
-      {label:"Overheating / heat illness", ic:"&#9728;", go:"heat:start"},
-      {label:"Dehydration", ic:"&#128167;", go:"dehydration:start"},
-      {label:"Snake or animal bite", ic:"&#128013;", go:"snakebite:start"},
-      {label:"Shock (pale, cold, rapid pulse)", ic:"&#128148;", go:"shock:start"},
-      {label:"Severe allergic reaction", ic:"&#128163;", go:"allergic:start"},
-      {label:"Poison / chemical exposure", ic:"&#9760;", go:"poison:start"},
-      {label:"Electrical injury", ic:"&#9889;", go:"electrical:start"},
-      {label:"Fire", ic:"&#128293;", go:"fireemergency:start"},
-      {label:"Vehicle emergency", ic:"&#128663;", go:"vehicleemergency:start"},
-      {label:"Water emergency / drowning", ic:"&#127754;", go:"waterincident:start"},
-      {label:"Lost / stranded", ic:"&#129517;", go:"lost:start"},
-      {label:"Other emergency", ic:"&#10067;", go:"other:start"}
+      {label:"Severe bleeding", go:"bleeding:start"},
+      {label:"Not breathing / unresponsive", go:"breathing:start"},
+      {label:"Trouble breathing", go:"breathing_distress:start"},
+      {label:"Chest pain / possible heart attack", go:"cardiac:start"},
+      {label:"Seizure", go:"seizure:start"},
+      {label:"Choking", go:"choking:start"},
+      {label:"Burn", go:"burns:start"},
+      {label:"Broken bone / severe sprain", go:"fracture:start"},
+      {label:"Head or spinal injury", go:"headspinal:start"},
+      {label:"Cold exposure / hypothermia", go:"hypothermia:start"},
+      {label:"Frostbite", go:"frostbite:start"},
+      {label:"Overheating / heat illness", go:"heat:start"},
+      {label:"Dehydration", go:"dehydration:start"},
+      {label:"Snake or animal bite", go:"snakebite:start"},
+      {label:"Shock (pale, cold, rapid pulse)", go:"shock:start"},
+      {label:"Severe allergic reaction", go:"allergic:start"},
+      {label:"Poison / chemical exposure", go:"poison:start"},
+      {label:"Electrical injury", go:"electrical:start"},
+      {label:"Fire", go:"fireemergency:start"},
+      {label:"Vehicle emergency", go:"vehicleemergency:start"},
+      {label:"Water emergency / drowning", go:"waterincident:start"},
+      {label:"Lost / stranded", go:"lost:start"},
+      {label:"Other emergency", go:"other:start"}
     ]}
   },
   breathing:{
@@ -683,9 +680,9 @@ var TRIAGE_FLOWS = {
   },
   poison:{
     start:{type:"menu", title:"How did the exposure happen?", items:[
-      {label:"Swallowed", ic:"&#128132;", go:"poison:swallowed"},
-      {label:"Inhaled fumes or gas", ic:"&#128168;", go:"poison:inhaled"},
-      {label:"On skin or in eyes", ic:"&#128065;", go:"poison:contact"}
+      {label:"Swallowed", go:"poison:swallowed"},
+      {label:"Inhaled fumes or gas", go:"poison:inhaled"},
+      {label:"On skin or in eyes", go:"poison:contact"}
     ]},
     swallowed:{type:"result", severity:"severe", title:"Swallowed a poison or chemical",
       steps:["Call Poison Control (US: 1-800-222-1222) or emergency services immediately - have the container or substance name ready if possible.","Follow their instructions exactly - what's safe to do depends entirely on what was swallowed.","If the person becomes unresponsive or stops breathing, call/send for emergency help and begin CPR if needed."],
@@ -699,9 +696,9 @@ var TRIAGE_FLOWS = {
   },
   fireemergency:{
     start:{type:"menu", title:"What kind of fire?", items:[
-      {label:"Building / structure fire", ic:"&#127968;", go:"fireemergency:structure"},
-      {label:"Someone's clothing is on fire", ic:"&#128128;", go:"fireemergency:clothing"},
-      {label:"Wildfire nearby", ic:"&#127795;", go:"fireemergency:wildfire"}
+      {label:"Building / structure fire", go:"fireemergency:structure"},
+      {label:"Someone's clothing is on fire", go:"fireemergency:clothing"},
+      {label:"Wildfire nearby", go:"fireemergency:wildfire"}
     ]},
     structure:{type:"result", severity:"severe", title:"Structure fire: get out now",
       steps:["Get everyone out immediately - don't stop to gather belongings.","Stay low under smoke - smoke and toxic gases rise.","Before opening any closed door, feel it with the back of your hand - if it's hot, use another way out.","Close doors behind you as you leave to slow the fire's spread.","Go to your agreed meeting point outside and call/send for emergency help once you're safely out."],
@@ -715,10 +712,10 @@ var TRIAGE_FLOWS = {
   },
   vehicleemergency:{
     start:{type:"menu", title:"What's the vehicle situation?", items:[
-      {label:"Crash / collision", ic:"&#128165;", go:"vehicleemergency:crash"},
-      {label:"Broken down on the road", ic:"&#128663;", go:"vehicleemergency:breakdown"},
-      {label:"Stuck (mud, sand, snow)", ic:"&#10052;", go:"vehicleemergency:stuck"},
-      {label:"Sinking / submerged in water", ic:"&#127754;", go:"vehicleemergency:submerged"}
+      {label:"Crash / collision", go:"vehicleemergency:crash"},
+      {label:"Broken down on the road", go:"vehicleemergency:breakdown"},
+      {label:"Stuck (mud, sand, snow)", go:"vehicleemergency:stuck"},
+      {label:"Sinking / submerged in water", go:"vehicleemergency:submerged"}
     ]},
     crash:{type:"result", severity:"severe", title:"Vehicle crash",
       steps:["Check yourself and passengers for injuries before moving anyone.","If anyone is seriously injured, don't move them unless staying puts them in immediate danger (fire, traffic) - call/send for emergency help.","If the vehicle is drivable and it's safe, move it to the shoulder; otherwise turn on hazard lights and stay clear of traffic.","Exchange information with other involved drivers if everyone is safe to do so.","Call emergency services - most places require reporting a crash with injury or significant damage."],
@@ -740,8 +737,8 @@ var TRIAGE_FLOWS = {
   },
   waterincident:{
     start:{type:"menu", title:"Water emergency", items:[
-      {label:"Someone is struggling in the water now", ic:"&#127754;", go:"waterincident:rescue"},
-      {label:"Someone was just pulled from the water", ic:"&#128167;", go:"waterincident:check"}
+      {label:"Someone is struggling in the water now", go:"waterincident:rescue"},
+      {label:"Someone was just pulled from the water", go:"waterincident:check"}
     ]},
     rescue:{type:"result", severity:"severe", title:"Person in the water: reach or throw, don't go",
       steps:["Call/send for emergency help immediately.","Reach or throw something that floats - a rope, life ring, cooler, or branch - rather than entering the water yourself.","Only enter the water to help if you're trained in water rescue - a struggling swimmer can pull a rescuer under too.","Once they're out, check if they're breathing normally - if not, begin CPR immediately."],
@@ -996,7 +993,7 @@ function liveBox(id, loadingMsg){
 }
 function setLive(id, html){ var el=document.getElementById(id); if(el) el.innerHTML = html; }
 function liveError(id, msg){
-  setLive(id, '<div class="live-error">&#9888; '+esc(msg)+'</div>');
+  setLive(id, '<div class="live-error">'+esc(msg)+'</div>');
 }
 function friendlyErrMsg(err, fallback){
   var m = err && err.message;
@@ -1055,7 +1052,7 @@ function runFacilitiesCheck(){
     return fetch("https://overpass-api.de/api/interpreter", {method:"POST", body:"data="+encodeURIComponent(q)})
       .then(function(r){ if(!r.ok) throw new Error("Facility lookup service error"); return r.json(); })
       .then(function(data){
-        var icons = {hospital:"&#127973;", police:"&#128110;", fire_station:"&#128658;", pharmacy:"&#128138;"};
+        var kinds = {hospital:"Hospital", police:"Police", fire_station:"Fire station", pharmacy:"Pharmacy"};
         var items = (data.elements||[]).map(function(el){
           var lat = el.lat || (el.center && el.center.lat);
           var lon = el.lon || (el.center && el.center.lon);
@@ -1064,7 +1061,7 @@ function runFacilitiesCheck(){
           var addrParts = [tags["addr:housenumber"], tags["addr:street"], tags["addr:city"]].filter(Boolean);
           return {
             name: tags.name || ("Unnamed "+(tags.amenity||"facility")),
-            type: tags.amenity, icon: icons[tags.amenity] || "&#128205;",
+            type: kinds[tags.amenity] || "Facility",
             phone: tags.phone || tags["contact:phone"] || null,
             addr: addrParts.join(" "),
             km: haversineKm(loc.lat, loc.lon, lat, lon), lat:lat, lon:lon
@@ -1073,7 +1070,7 @@ function runFacilitiesCheck(){
         if(!items.length){ setLive(id, '<p class="live-hint">No facilities found in this radius via OpenStreetMap data - try again nearer a populated area.</p>'); return; }
         var html = '<div class="qbtn-list">'+items.map(function(it){
           return '<a class="qbtn" href="https://www.google.com/maps/dir/?api=1&destination='+it.lat+','+it.lon+'" target="_blank" rel="noopener">'+
-            '<span>'+it.icon+' <b>'+esc(it.name)+'</b><br><span class="live-hint">'+esc(it.addr||"")+(it.phone?" &middot; "+esc(it.phone):"")+'</span></span>'+
+            '<span><span class="sr-cat">'+esc(it.type)+'</span><br><b>'+esc(it.name)+'</b><br><span class="live-hint">'+esc(it.addr||"")+(it.phone?" &middot; "+esc(it.phone):"")+'</span></span>'+
             '<span class="arrow">'+distLabel(it.km)+'</span></a>';
         }).join("")+'</div>';
         setLive(id, html);
@@ -1138,11 +1135,11 @@ function severityBadge(sev){
 }
 function renderNotDo(list){
   if(!list || !list.length) return "";
-  return '<div class="notdo"><h4>&#128683; What NOT to do</h4><ul>'+list.map(function(i){return "<li>"+esc(i)+"</li>";}).join("")+'</ul></div>';
+  return '<div class="notdo"><h4>What NOT to do</h4><ul>'+list.map(function(i){return "<li>"+esc(i)+"</li>";}).join("")+'</ul></div>';
 }
 function renderWarning(title, list){
   if(!list || !list.length) return "";
-  return '<div class="notdo"><h4>&#9888; '+esc(title)+'</h4><ul>'+list.map(function(i){return "<li>"+esc(i)+"</li>";}).join("")+'</ul></div>';
+  return '<div class="notdo"><h4>'+esc(title)+'</h4><ul>'+list.map(function(i){return "<li>"+esc(i)+"</li>";}).join("")+'</ul></div>';
 }
 function renderSteps(steps){
   return '<ol>'+steps.map(function(s){return "<li>"+esc(s)+"</li>";}).join("")+'</ol>';
@@ -1150,12 +1147,12 @@ function renderSteps(steps){
 function renderCallBox(node){
   if(node.severity === "severe" || node.forceCall){
     return '<div class="call-now">'+
-      '<a class="call-btn" href="tel:911">&#9742; Call 911 Now</a>'+
+      '<a class="call-btn" href="tel:911">Call 911 Now</a>'+
       '<p class="call-note">US &amp; Canada number shown by default. Outside the US/Canada, '+
       '<button type="button" class="linklike" data-go="cat:connect">see your local emergency number</button></p></div>';
   }
   if(node.severity === "moderate"){
-    return '<p class="care-note">&#128337; Get medical care as soon as you reasonably can.</p>';
+    return '<p class="care-note">Get medical care as soon as you reasonably can.</p>';
   }
   return "";
 }
@@ -1187,12 +1184,12 @@ function renderHome(){
   html += '<div class="hero">';
   html += '<h1>Offline Survival Guide</h1>';
   html += '<p>Works with no signal and no internet.</p>';
-  html += '<button class="big-emergency" data-go="triage:entry:start">&#9888; EMERGENCY NOW<small>Start First Aid triage</small></button>';
+  html += '<button class="big-emergency" data-go="triage:entry:start">EMERGENCY NOW<small>Start First Aid triage</small></button>';
   html += '<div class="secondary-row">';
-  html += '<button class="btn primary" data-go="browse">&#128218; Browse &amp; Learn</button>';
-  html += '<button class="btn" data-go="quickref">&#128203; Quick Reference</button>';
-  html += '<button class="btn" data-go="quiz">&#10067; Knowledge Check</button>';
-  html += '<button class="btn" data-go="printall">&#128424; Print Full Guide</button>';
+  html += '<button class="btn primary" data-go="browse">Browse &amp; Learn</button>';
+  html += '<button class="btn" data-go="quickref">Quick Reference</button>';
+  html += '<button class="btn" data-go="quiz">Knowledge Check</button>';
+  html += '<button class="btn" data-go="printall">Print Full Guide</button>';
   html += '</div>';
   html += '<p class="no-print" style="color:var(--ink-dim); font-size:.85rem; margin:.9rem 0 0">Prepare before you need it: use your browser\'s <b>Add to Home Screen</b> / <b>Install</b> while online so it opens with no signal, and keep a printed copy for when the battery dies.</p>';
   html += '</div>';
@@ -1204,14 +1201,14 @@ function renderHome(){
       var c = catById(id);
       if(!c) return;
       html += '<div class="card">'+favBtn("cat:"+c.id, c.name)+
-        '<button class="card-link" data-go="cat:'+c.id+'"><span class="ic">'+c.ic+'</span><h3>'+c.name+'</h3><p>'+catBlurb(c.id)+'</p></button></div>';
+        '<button class="card-link" data-go="cat:'+c.id+'"><h3>'+c.name+'</h3><p>'+catBlurb(c.id)+'</p></button></div>';
     });
     html += '</div>';
   });
   html += '</div>';
 
   if(state.favorites.size){
-    html += '<div class="section"><h2>&#9733; Favorites</h2>'+renderFavList()+'</div>';
+    html += '<div class="section"><h2>Favorites</h2>'+renderFavList()+'</div>';
   }
   return html;
 }
@@ -1266,7 +1263,7 @@ function goFav(key){
 function renderQuickRef(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
   html += '<div class="section">';
-  html += '<h2>&#128203; Quick Reference <button class="btn small no-print" style="margin-left:auto" id="print-btn">&#128424; Print</button></h2>';
+  html += '<h2>Quick Reference <button class="btn small no-print" style="margin-left:auto" id="print-btn">Print</button></h2>';
   html += '<p>The ~10 most critical facts, condensed for a single screen or printed page.</p>';
   html += '<div class="qr-grid">';
   QUICK_REF.forEach(function(item, i){
@@ -1278,14 +1275,14 @@ function renderQuickRef(){
 
 function renderBrowse(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#128218; Browse &amp; Learn</h2><p>Calm-context reading, organized by topic.</p>';
+  html += '<div class="section"><h2>Browse &amp; Learn</h2><p>Calm-context reading, organized by topic.</p>';
   CATEGORY_GROUPS.forEach(function(g){
     html += '<h3>'+g.label+'</h3><div class="grid">';
     g.ids.forEach(function(id){
       var c = catById(id);
       if(!c) return;
       html += '<div class="card">'+favBtn("cat:"+c.id, c.name)+
-        '<button class="card-link" data-go="cat:'+c.id+'"><span class="ic">'+c.ic+'</span><h3>'+c.name+'</h3><p>'+catBlurb(c.id)+'</p></button></div>';
+        '<button class="card-link" data-go="cat:'+c.id+'"><h3>'+c.name+'</h3><p>'+catBlurb(c.id)+'</p></button></div>';
     });
     html += '</div>';
   });
@@ -1296,8 +1293,8 @@ function renderBrowse(){
 /* ---- First Aid category ---- */
 function renderFirstAidCat(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#9877; First Aid</h2>';
-  html += '<button class="big-emergency" data-go="triage:entry:start">&#9888; START TRIAGE<small>Tap-through decision flow</small></button>';
+  html += '<div class="section"><h2>First Aid</h2>';
+  html += '<button class="big-emergency" data-go="triage:entry:start">START TRIAGE<small>Tap-through decision flow</small></button>';
   html += '<div class="legend-row">'+
     '<span class="legend-chip"><span class="dot mild"></span> Mild - manage yourself</span>'+
     '<span class="legend-chip"><span class="dot moderate"></span> Moderate - prompt care</span>'+
@@ -1306,7 +1303,7 @@ function renderFirstAidCat(){
   html += '<h3>Jump straight to a situation</h3><div class="entry-grid">';
   TRIAGE_FLOWS.entry.start.items.forEach(function(item){
     var flow = item.go.split(":")[0];
-    html += '<button class="entry-btn" data-go="triage:'+flow+':start"><span class="ic">'+item.ic+'</span><span>'+esc(item.label)+'</span></button>';
+    html += '<button class="entry-btn" data-go="triage:'+flow+':start"><span>'+esc(item.label)+'</span></button>';
   });
   html += '</div></div>';
 
@@ -1327,12 +1324,12 @@ function renderTriage(flowId, nodeId){
   if(!node){ html += '<p>Not found.</p></div>'; return html; }
 
   if(node.type === "menu"){
-    html += '<h2>&#9888; '+esc(node.title)+'</h2><p style="color:var(--ink-dim)">Tap the situation that matches. Each leads to a short set of yes/no questions.</p>';
+    html += '<h2>'+esc(node.title)+'</h2><p style="color:var(--ink-dim)">Tap the situation that matches. Each leads to a short set of yes/no questions.</p>';
     html += '<div class="entry-grid">';
     node.items.forEach(function(item){
       var fkey = "triage:"+item.go.split(":")[0];
       html += '<div style="position:relative">'+favBtn(fkey, item.label)+
-        '<button class="entry-btn" style="width:100%" data-go="triage:'+esc(item.go)+'"><span class="ic">'+item.ic+'</span><span>'+esc(item.label)+'</span></button></div>';
+        '<button class="entry-btn" style="width:100%; padding-right:3rem" data-go="triage:'+esc(item.go)+'"><span>'+esc(item.label)+'</span></button></div>';
     });
     html += '</div>';
   } else if(node.type === "q"){
@@ -1352,11 +1349,11 @@ function renderTriage(flowId, nodeId){
     html += '</div>';
     html += renderNotDo(node.notdo);
     if(node.severity === "severe"){
-      html += '<div class="locate-row"><button class="btn small" data-go="cat:connect">&#128205; Find nearest hospital / facility</button></div>';
+      html += '<div class="locate-row"><button class="btn small" data-go="cat:connect">Find nearest hospital / facility</button></div>';
     }
     html += '<div class="secondary-row" style="margin-top:1rem">';
-    html += '<button class="btn" data-go="triage:'+flowId+':start">&#8635; Start this flow over</button>';
-    html += '<button class="btn" data-go="triage:entry:start">&#9776; Choose different situation</button>';
+    html += '<button class="btn" data-go="triage:'+flowId+':start">Start this flow over</button>';
+    html += '<button class="btn" data-go="triage:entry:start">Choose different situation</button>';
     html += '</div>';
   }
   html += '</div>';
@@ -1366,7 +1363,7 @@ function renderTriage(flowId, nodeId){
 /* ---- Water & Food ---- */
 function renderWater(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#128167; Water &amp; Food</h2>';
+  html += '<div class="section"><h2>Water &amp; Food</h2>';
   html += '<h3>Water purification calculator</h3>';
   html += '<div class="calc-row">'+
     '<div class="field"><label for="wf-vol">Water volume ('+unitLabelVol()+')</label><input id="wf-vol" type="number" min="0" step="0.1" value="1"></div>'+
@@ -1428,7 +1425,7 @@ function computeCalories(){
 /* ---- Shelter ---- */
 function renderShelter(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#9974; Shelter</h2>';
+  html += '<div class="section"><h2>Shelter</h2>';
   html += '<p>Insulating yourself from the ground matters as much as blocking wind - most body heat is lost downward into cold ground.</p>';
   html += '<h3>Siting your shelter</h3><ul><li>Avoid low ground and dry creek beds (flash flood risk).</li><li>Check overhead for dead branches ("widow makers").</li><li>Stay near, but not in, a water source.</li><li>Face the entrance away from prevailing wind.</li></ul>';
   html += '</div>';
@@ -1444,7 +1441,7 @@ function renderShelter(){
 /* ---- Fire ---- */
 function renderFire(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#128293; Fire</h2>';
+  html += '<div class="section"><h2>Fire</h2>';
   html += '<h3>Starting methods</h3><table class="ref-table"><tr><th>Method</th><th>Difficulty</th><th>Reliability</th></tr>'+
     FIRE_METHODS.map(function(m){return '<tr><td>'+esc(m.name)+'</td><td>'+esc(m.difficulty)+'</td><td>'+esc(m.reliability)+'</td></tr>';}).join("")+
     '</table>';
@@ -1462,7 +1459,7 @@ function renderFire(){
 /* ---- Navigation ---- */
 function renderNav(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#129517; Navigation</h2>';
+  html += '<div class="section"><h2>Navigation</h2>';
   html += '<h3>Shadow-stick method</h3><p>Push a straight stick upright into open ground.</p>';
   html += '<div class="svg-viewer">'+shadowStickSvg()+'</div>';
   html += renderSteps(["Mark the tip of the stick's shadow (this is roughly the west mark).","Wait 15-20 minutes without moving the stick.","Mark the new shadow tip (roughly the east mark).","Draw a line between the two marks: it runs approximately west to east.","A line perpendicular to it, crossing between the marks, points roughly north-south."]);
@@ -1476,7 +1473,7 @@ function renderNav(){
 /* ---- Signaling ---- */
 function renderSignal(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#128225; Signaling</h2>';
+  html += '<div class="section"><h2>Signaling</h2>';
   html += '<h3>SOS - the universal distress signal</h3><p style="font-size:1.4rem; font-weight:800; letter-spacing:.05em">&middot;&middot;&middot; &ndash;&ndash;&ndash; &middot;&middot;&middot;</p><p>3 short signals, 3 long, 3 short - repeat. Works with a whistle, flashlight, mirror flashes, or shouted/radio calls.</p>';
   html += '<h3>Signal mirror</h3><p>Hold the mirror close to your eye. Extend your other hand and make a V with two fingers, framing the target (aircraft, boat, ridge). Angle the mirror so the reflected sunlight spot passes through the V toward the target, then sweep slowly across the horizon. Effective for miles in direct sun.</p>';
   html += '<h3>Whistle</h3><p>3 sharp blasts is a universally recognized distress call - far less effort than shouting and carries much farther.</p>';
@@ -1487,11 +1484,11 @@ function renderSignal(){
   html += '<h3>General tips</h3><ul><li>Straight lines, right angles, and bright colors rarely occur in nature - they draw the eye.</li><li>Movement and contrast attract attention faster than a static object.</li><li>Sound and light travel farther at night and in calm, still air.</li></ul>';
   html += '</div>';
 
-  html += '<div class="section"><h2>&#128241; Screen Strobe / SOS Flashlight</h2>';
+  html += '<div class="section"><h2>Screen Strobe / SOS Flashlight</h2>';
   html += '<p>Uses your screen as a signal light. Works fully offline - no permissions, no network. Set your screen brightness to maximum first for the best range.</p>';
   html += '<div class="strobe-controls">'+
-    '<button class="btn primary" data-strobe="strobe">&#128163; Steady Strobe</button>'+
-    '<button class="btn primary" data-strobe="sos">&#128225; SOS Pattern</button>'+
+    '<button class="btn primary" data-strobe="strobe">Steady Strobe</button>'+
+    '<button class="btn primary" data-strobe="sos">SOS Pattern</button>'+
   '</div>';
   html += renderWarning("Before you use this", ["Flashes rapidly - avoid this feature if you are photosensitive or have epilepsy.","A large STOP button stays on screen the whole time to end it instantly."]);
   html += '</div>';
@@ -1501,7 +1498,7 @@ function renderSignal(){
 /* ---- Weather ---- */
 function renderWeather(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#9928; Weather</h2>';
+  html += '<div class="section"><h2>Weather</h2>';
   html += '<h3>Lightning - the 30-30 rule</h3><p>If the gap between seeing lightning and hearing thunder is less than 30 seconds, take shelter. Wait 30 minutes after the last thunder before going back outside. Avoid open fields, isolated tall trees, water, and metal objects. Caught in the open, crouch low on the balls of your feet - don\'t lie flat.</p>';
   html += '<h3>Extreme heat</h3><p>Drink water before you feel thirsty. Seek shade during peak midday hours. Wear light, loose clothing. Watch companions for heat exhaustion/heat stroke signs (see First Aid).</p>';
   html += '<h3>Extreme cold / wind chill</h3><p>Layer clothing and cover extremities - most heat is lost from the head, hands, and feet. Watch for frostbite: numbness and white or waxy-looking skin. Stay dry; wet clothing loses insulating value fast.</p>';
@@ -1515,7 +1512,7 @@ function renderWeather(){
 /* ---- Wildlife ---- */
 function renderWildlife(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#128062; Wildlife</h2>';
+  html += '<div class="section"><h2>Wildlife</h2>';
   html += '<h3>Bear encounters</h3><p>Never run - it can trigger a chase instinct. Speak in a low, calm voice and back away slowly, giving the bear an escape route. Make yourself look larger and use bear spray if charged. If a brown/grizzly bear makes contact, play dead: lie flat, protect your neck and head. If a black bear attacks, fight back aggressively, targeting the face and muzzle. Store food well away from your camp using a hang or canister.</p>';
   html += '<h3>Snakes</h3><p>Give snakes a wide berth and watch where you step and reach, especially around rocks and brush. Most bites happen when a snake is handled or provoked - leave them alone. If bitten, use the First Aid snake bite flow.</p>';
   html += '<h3>Mountain lion / cougar</h3><p>Don\'t run. Make noise, appear as large as possible, and keep children close and picked up. If attacked, fight back hard, targeting the eyes and face.</p>';
@@ -1528,7 +1525,7 @@ function renderWildlife(){
 /* ---- Vehicle ---- */
 function renderVehicle(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#128663; Vehicle Emergencies</h2>';
+  html += '<div class="section"><h2>Vehicle Emergencies</h2>';
   html += '<h3>Stranded in snow</h3><p>Stay with the vehicle - it\'s far easier for rescuers to find than a person on foot. Run the engine about 10 minutes each hour for heat, cracking a window for ventilation. Make sure the exhaust pipe isn\'t blocked by snow (carbon monoxide risk). Stay visible: tie bright cloth to the antenna, use the dome light at night. Keep moving your arms and legs to maintain circulation.</p>';
   html += '<h3>Breakdown on the road</h3><p>Pull as far off the roadway as possible and turn on hazard lights. Place flares or reflective triangles behind the vehicle if available. If it\'s safer, exit away from traffic to a location off the road; if you stay inside, keep your seatbelt on.</p>';
   html += '<h3>Stuck in mud or sand</h3><p>Don\'t spin the wheels - it digs you in deeper. Clear debris/sand from around the tires, use traction aids like boards or floor mats, and for sand, slightly deflating tires can help. Rock the vehicle gently forward and back if safe to do so.</p>';
@@ -1542,7 +1539,7 @@ function renderVehicle(){
 /* ---- Long-Term Survival ---- */
 function renderLongTerm(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#127806; Long-Term Survival</h2>';
+  html += '<div class="section"><h2>Long-Term Survival</h2>';
   html += '<p>For extended, infrastructure-down scenarios rather than a single emergency: growing and preserving food, staying healthy without hospitals, and building resilience over months, not hours.</p>';
   html += '<div class="jump-row">'+
     '<a class="jump-chip" href="#lt-farming">Farming</a>'+
@@ -1554,7 +1551,7 @@ function renderLongTerm(){
     '<a class="jump-chip" href="#lt-community">Community</a>'+
   '</div></div>';
 
-  html += '<div class="section" id="lt-farming"><h2>&#127793; Farming &amp; Food Production</h2>';
+  html += '<div class="section" id="lt-farming"><h2>Farming &amp; Food Production</h2>';
   html += '<h3>Start with reliable staples</h3><p>Corn, beans, and squash are traditionally grown together as the "Three Sisters": the corn stalks support climbing bean vines, beans fix nitrogen into the soil for the other two, and squash leaves shade out weeds and hold in moisture.</p>';
   html += '<ul><li><b>Potatoes</b> - calorie-dense and store well through winter in a cool, dark space.</li><li><b>Beans</b> - a reliable protein source that also improves the soil they grow in.</li><li><b>Squash</b> - many varieties store for months without refrigeration.</li><li><b>Leafy greens</b> - fast-growing (30-60 days), useful for quick nutrition between larger harvests.</li></ul>';
   html += '<h3>Seed saving</h3><p>Only open-pollinated or heirloom seeds reliably breed true year after year - most hybrid seeds do not. Beans, peas, tomatoes, peppers, and lettuce are the easiest crops to save seed from, since they are self-pollinating and rarely cross with other varieties. Dry seeds completely before storing them in a cool, dark, dry container; well-dried seeds can remain viable for several years.</p>';
@@ -1562,7 +1559,7 @@ function renderLongTerm(){
   html += '<h3>Basic livestock</h3><p>Chickens and rabbits are the two most practical animals to start with: both breed quickly, need modest space, and convert scraps and forage into food. Chickens provide eggs without needing to be slaughtered, but require a secure, predator-proof coop. Rabbits are quiet, breed fast, and convert grass efficiently into meat, but require dedicated care through slaughter. Keep any livestock housing predator-proof and well ventilated.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="lt-plants"><h2>&#127807; Edible &amp; Poisonous Plants</h2>';
+  html += '<div class="section" id="lt-plants"><h2>Edible &amp; Poisonous Plants</h2>';
   html += '<p>Misidentifying a wild plant can be fatal. Never eat anything from a plant you cannot positively identify, and cross-check more than one source before relying on any wild plant as food.</p>';
   html += '<h3>Common, widespread edibles</h3><table class="ref-table"><tr><th>Plant</th><th>Notes</th></tr>'+
     '<tr><td>Dandelion</td><td>Leaves, flowers, and roots are all edible; leaves grow more bitter as the plant matures.</td></tr>'+
@@ -1576,7 +1573,7 @@ function renderLongTerm(){
   html += '<h3>If you can\'t identify a plant</h3><p>Don\'t eat it. Some of the most dangerous plants and mushrooms - including death cap mushrooms and water hemlock - cause no warning taste, smell, or reaction until serious, often irreversible harm is already done, so field self-testing is not a reliable way to tell a plant is safe. A person can survive roughly three weeks without food, which is almost always enough margin to stick to sources you can positively identify from more than one reliable reference, prioritize known-safe food and water, and wait for rescue or resupply instead.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="lt-preservation"><h2>&#128230; Food Preservation &amp; Long-Term Water</h2>';
+  html += '<div class="section" id="lt-preservation"><h2>Food Preservation &amp; Long-Term Water</h2>';
   html += '<h3>Drying</h3><p>The oldest and most reliable preservation method - it removes the moisture pathogens need to grow. Thin-slice meat or vegetables and dry using sun, air, or gentle heat until leathery and brittle, then store fully dried food in a sealed, dry container.</p>';
   html += '<h3>Smoking</h3><p>Cold smoking adds flavor and some short-term preservation at low temperatures without fully cooking the food. Hot smoking cooks the meat while adding smoke flavor and extends storage somewhat longer. Neither replaces proper curing or refrigeration for long-term safety.</p>';
   html += '<h3>Salt curing and brining</h3><p>Salt draws out moisture and creates an environment hostile to most bacteria. A basic dry cure works salt thoroughly into meat, then leaves it in a cool location for days depending on thickness. Brining (salt dissolved in water) works similarly for smaller cuts.</p>';
@@ -1586,7 +1583,7 @@ function renderLongTerm(){
   html += '<h3>Long-term water</h3><p>Rainwater catchment from a roof into a covered, food-grade container is one of the most reliable long-term water sources; divert the first flush of runoff, which carries the most roof debris, away from storage. A simple biosand or ceramic filter can make cloudy water usable for washing, and combined with boiling or chemical treatment, safer to drink. Rotate stored drinking water every six to twelve months and keep containers out of direct sunlight.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="lt-health"><h2>&#129532; Sanitation, Hygiene &amp; Extended Medicine</h2>';
+  html += '<div class="section" id="lt-health"><h2>Sanitation, Hygiene &amp; Extended Medicine</h2>';
   html += renderWarning("Sanitation is a priority, not an afterthought", ["Poor sanitation has historically caused more deaths after a disaster than violence or starvation - treat it accordingly."]);
   html += '<h3>Latrines</h3><p>A simple cathole - roughly 6-8 in (15-20 cm) deep, at least 200 ft (60 m) from any water source - works for a short stay. For longer-term use, a deeper pit latrine with a simple cover and seat reduces smell and flies; add a layer of ash or dry soil after each use to speed breakdown and control odor.</p>';
   html += '<h3>Handwashing without plumbing</h3><p>A "tippy-tap" - a hanging, tilted container with a small hole that releases a trickle of water when tipped by a foot pedal or string - uses very little water for effective handwashing. Ash can serve as a rough soap substitute in a true emergency. Wash hands after using the latrine, before handling food or water, and after handling raw meat.</p>';
@@ -1597,7 +1594,7 @@ function renderLongTerm(){
   html += '<p>A few widely documented supportive uses: crushed plantain leaf as a poultice for minor skin irritation or insect stings, garlic for its mild antimicrobial properties in food, and chamomile or mint as a calming tea. None of these treat serious infection, injury, or illness.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="lt-barter"><h2>&#128260; Barter &amp; Scavenging</h2>';
+  html += '<div class="section" id="lt-barter"><h2>Barter &amp; Scavenging</h2>';
   html += '<h3>What holds trade value</h3><p>Small, practical, consumable goods tend to hold the most trade value: batteries, over-the-counter medication and first aid supplies, hygiene products, hand tools, seeds, fuel, and clean water containers. Skills - the ability to fix things, treat injuries, or grow food - are often worth more than any physical good.</p>';
   html += '<h3>Scavenging safely</h3><ul>'+
     '<li>Avoid entering a structure alone if possible, and tell someone where you are going.</li>'+
@@ -1607,13 +1604,13 @@ function renderLongTerm(){
     '<li>Take only what is needed and can be carried - overloading slows you down when it matters most.</li>'+
   '</ul></div>';
 
-  html += '<div class="section" id="lt-power"><h2>&#128295; Off-Grid Power &amp; Tool Maintenance</h2>';
+  html += '<div class="section" id="lt-power"><h2>Off-Grid Power &amp; Tool Maintenance</h2>';
   html += '<h3>Basic solar and battery power</h3><p>A small solar panel paired with a battery bank can keep essentials running - a radio, lights, and small medical devices - though it will not power large appliances. Prioritize charging what actually matters (communication, light, medical needs) over convenience items, and keep panels clean and angled toward the sun for the best output.</p>';
   html += '<h3>Hand-crank and battery basics</h3><p>Hand-crank radios and flashlights remove batteries as a point of failure entirely. Store spare batteries in a cool, dry place, and rotate stock so nothing sits unused for years.</p>';
   html += '<h3>Tool maintenance</h3><p>A well-maintained hand tool will outlast several cheap replacements. Keep cutting edges sharp - a dull blade is more dangerous, not less, since it requires more force to use. Wipe metal tools dry and lightly oil them to prevent rust, especially in humid conditions. Learning basic repair - resharpening, re-handling, patching - matters more long-term than any single tool owned.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="lt-community"><h2>&#129309; Community Resilience</h2>';
+  html += '<div class="section" id="lt-community"><h2>Community Resilience</h2>';
   html += '<h3>Low profile</h3><p>Avoid signaling that supplies are available when others may not have them - lit windows at night, visible food stores, or loose talk about what is stocked can draw unwanted attention. This is not about secrecy from trusted neighbors, but about not broadcasting vulnerability to strangers.</p>';
   html += '<h3>Mutual aid</h3><p>A small, trusted group pooling skills and labor is consistently more resilient than any individual or household alone - one person who can treat injuries, one who can fix things, and one who can grow food cover far more ground together than any one of them could alone. Build these relationships before they are needed.</p>';
   html += '<h3>Conflict de-escalation</h3><p>The safest outcome in almost any tense encounter is the one that ends without confrontation. Stay calm, keep hands visible, give people an easy way to back down without losing face, and prioritize disengaging and creating distance over standing your ground. Avoiding a conflict entirely is always the better outcome than winning one.</p>';
@@ -1625,7 +1622,7 @@ function renderLongTerm(){
 /* ---- Rebuild (restarting from zero) ---- */
 function renderRebuild(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#127959; Rebuild From Zero</h2>';
+  html += '<div class="section"><h2>Rebuild From Zero</h2>';
   html += '<p>When help is not coming back for years, not weeks. This is the bootstrap order: the knowledge that turns a surviving group into a working community. It builds on <button type="button" class="linklike" data-go="cat:longterm">Long-Term Survival</button>. Read it now, while you have time, and <button type="button" class="linklike" data-go="printall">print the full guide</button> so it outlives this device.</p>';
   html += '<div class="jump-row">'+
     '<a class="jump-chip" href="#rb-order">Priorities</a>'+
@@ -1638,7 +1635,7 @@ function renderRebuild(){
     '<a class="jump-chip" href="#rb-knowledge">Knowledge</a>'+
   '</div></div>';
 
-  html += '<div class="section" id="rb-order"><h2>&#129517; Order of Operations</h2>';
+  html += '<div class="section" id="rb-order"><h2>Order of Operations</h2>';
   html += '<p>The most common failure is working on the wrong problem. Solve these in order; each layer depends on the one before it.</p>';
   html += '<table class="ref-table"><tr><th>When</th><th>Focus</th></tr>'+
     '<tr><td>First days</td><td>Safety, treat injuries, safe water, shelter and warmth. Account for every person.</td></tr>'+
@@ -1650,7 +1647,7 @@ function renderRebuild(){
   html += '<h3>Scavenge before you make</h3><p>For the first several years, the ruins of the old world are a better source of metal, glass, cloth, rope, tools, and chemicals than anything you can produce. A single car holds steel, copper wire, a battery, an alternator, glass, and rubber. Making things from raw materials is the fallback when salvage runs out, and practicing it early keeps the skill alive for when it does.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="rb-health"><h2>&#129534; Public Health: The Biggest Lifesaver</h2>';
+  html += '<div class="section" id="rb-health"><h2>Public Health: The Biggest Lifesaver</h2>';
   html += '<p>Before modern medicine, most deaths came from infection, contaminated water, and diarrhea. A few ideas prevent most of them, no hospital needed.</p>';
   html += '<h3>Germ theory, applied</h3><ul>'+
     '<li>Invisible microbes cause infection. They spread by dirty hands, feces-contaminated water, coughs, and insects.</li>'+
@@ -1666,7 +1663,7 @@ function renderRebuild(){
   html += renderWarning("Limits", ["None of this replaces antibiotics, surgery, or insulin. Scavenge and carefully store any real medicine, and keep a written record of what each one is for, its dose, and its expiry date.","Most tablet medicines lose potency slowly past their expiry date rather than turning toxic, but liquid medicines, insulin, and some antibiotics degrade faster. Store everything cool, dark, and dry."]);
   html += '</div>';
 
-  html += '<div class="section" id="rb-food"><h2>&#127806; Staple Food at Scale</h2>';
+  html += '<div class="section" id="rb-food"><h2>Staple Food at Scale</h2>';
   html += '<p>Gardens feed families. Fields feed communities. Calories come from grains, legumes, and tubers, not from leafy greens.</p>';
   html += '<h3>The staples</h3><ul>'+
     '<li><b>Grains</b> (corn, wheat, oats, barley, rice) store dry for years and are the backbone of every historical civilization.</li>'+
@@ -1680,7 +1677,7 @@ function renderRebuild(){
   html += renderWarning("Hidden deficiencies", ["Scurvy (bleeding gums, poor healing) appears after about 1-3 months without vitamin C. Fresh vegetables, fruit, sprouted seeds or grains, and pine-needle tea all provide it.","Iodine deficiency causes goiter and harms child development. Iodized salt stores indefinitely, and seafood and seaweed supply iodine naturally."]);
   html += '</div>';
 
-  html += '<div class="section" id="rb-chem"><h2>&#9879; Basic Chemistry From Wood, Ash &amp; Stone</h2>';
+  html += '<div class="section" id="rb-chem"><h2>Basic Chemistry From Wood, Ash &amp; Stone</h2>';
   html += '<h3>Charcoal</h3><p>Charcoal burns much hotter and cleaner than wood, and a forge, a kiln hot enough for good pottery, or metal smelting all depend on it. Stack hardwood tightly, cover it with earth or sod leaving small vents, light it, and let it smolder with very little air for a day or more until the smoke turns thin and bluish. Then seal every vent and let it cool completely before opening. The goal is to cook the wood, not burn it.</p>';
   html += '<h3>Lye from wood ash</h3><p>Pour rainwater slowly through hardwood ash packed in a container with a straw or cloth filter at the bottom, and collect the brown liquid that drips out. That liquid is lye (potassium hydroxide solution). It is strong enough for soap when a fresh egg floats in it with a coin-sized patch showing. Pass the liquid through the ash again to make it stronger.</p>';
   html += '<h3>Soap</h3><p>Fat plus lye makes soap. Render animal fat (tallow or lard) clean, then slowly stir it into warm lye and keep stirring or boiling until it thickens like pudding. Wood-ash lye usually gives soft soap. Add salt near the end to get firmer soap. Let it cure several weeks before using it on skin.</p>';
@@ -1689,14 +1686,14 @@ function renderRebuild(){
   html += renderWarning("Caustic hazards", ["Lye and quicklime cause severe chemical burns and blindness. Wear eye protection and gloves, add them to water slowly (never water into them), and keep them away from children.","Flush any skin or eye contact with plenty of water for 15+ minutes. Quicklime reacting with water can boil and spatter or ignite nearby materials."]);
   html += '</div>';
 
-  html += '<div class="section" id="rb-materials"><h2>&#129521; Materials: Pottery, Brick, Fiber, Leather</h2>';
+  html += '<div class="section" id="rb-materials"><h2>Materials: Pottery, Brick, Fiber, Leather</h2>';
   html += '<h3>Pottery</h3><p>Find clay by looking for sticky, smooth soil in stream banks that holds a coil without cracking when you bend it. Mix in about 20-30% sand or crushed old pottery ("temper") so it doesn\'t crack in the fire. Shape it by coiling ropes of clay, and let it dry slowly in shade for days until bone dry. Warm the pieces gradually beside a fire, then bury them in a large hot fire or a simple pit kiln. Open-fired earthenware stays porous but can cook and store food. A proper kiln fired with charcoal makes stronger, more watertight ware.</p>';
   html += '<h3>Brick and building</h3><p>Adobe (mud brick) is clay soil + sand + straw, pressed into wooden molds and sun-dried for weeks. It works well in dry climates. Fired brick lasts much longer in wet climates. Keep walls dry with a stone foundation below and a wide roof overhang above. Lime mortar binds stone and brick.</p>';
   html += '<h3>Cordage and textiles</h3><p>Rope comes from any long, strong fiber: inner tree bark, nettle, hemp, flax, yucca, or grass. Twist two strands the same direction, then wrap them around each other the opposite direction (a "reverse wrap"), and the tension locks them together. For cloth, spin wool or plant fiber into thread with a drop spindle, then weave it on a simple frame loom by passing crosswise threads (weft) over and under lengthwise threads (warp).</p>';
   html += '<h3>Leather</h3><p>Scrape all flesh and fat from the hide, then remove the hair by soaking the hide in wood-ash or lime water. Tan it either by soaking for weeks in a strong brew of oak or other high-tannin bark, or by working in the animal\'s own mashed brain, then smoking it. Untanned hide rots when wet and turns stiff when dry.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="rb-metal"><h2>&#9874; Metal</h2>';
+  html += '<div class="section" id="rb-metal"><h2>Metal</h2>';
   html += '<p>Cities are mines. Leaf springs, rebar, files, saw blades, and car axles are all ready-made steel. Salvage-and-reforge will serve for a generation or longer before anyone needs to smelt ore.</p>';
   html += '<h3>A basic forge</h3><p>A charcoal fire in a hearth of stone or clay, with forced air blown in through a pipe from below or the side, gets hot enough to work steel. A bellows, a hair dryer on a battery, or a hand-crank blower all work. Use a heavy flat steel block (a section of railroad rail works) as an anvil. Heat steel to a bright orange and hammer it into shape, reheating whenever it fades to dull red. Hammering steel below dull red cracks it.</p>';
   html += '<h3>Hardening and tempering</h3><p>High-carbon steel (files, springs, blades) can be hardened. Heat it until a magnet no longer sticks, then plunge it into oil or water. After that it is hard but brittle. To temper it, polish a spot, reheat gently, and watch the colors run: <b>straw yellow</b> for cutting edges, <b>bronze to purple</b> for tools that take impact, <b>blue</b> for springs. Quench again as soon as the color you want arrives. Mild steel (rebar, sheet metal) barely hardens at all.</p>';
@@ -1704,14 +1701,14 @@ function renderRebuild(){
   html += renderWarning("Forge safety", ["Galvanized (zinc-coated, dull gray crystalline) metal gives off toxic fumes when heated. Strip the coating first or don't use it.","Work in the open air: charcoal fires make carbon monoxide.","Wet or cold tools and molds make molten metal explode. Preheat everything that will touch it."]);
   html += '</div>';
 
-  html += '<div class="section" id="rb-power"><h2>&#9881; Power &amp; Machines</h2>';
+  html += '<div class="section" id="rb-power"><h2>Power &amp; Machines</h2>';
   html += '<h3>Simple machines</h3><p>Every mechanism is built from six ideas: <b>lever, wheel and axle, pulley, inclined plane, wedge, screw</b>. Each trades distance for force. A lever with the load 1 unit from the pivot and your hand 5 units away lifts 5 times the weight. A block and tackle with 4 supporting rope strands lifts 4 times what you pull, minus friction. Ramps, rollers, and levers are how people moved stone blocks weighing tons.</p>';
   html += '<h3>Water and wind</h3><p>Moving water is the most reliable pre-industrial power source. An undershot wheel only needs a flowing stream. An overshot wheel, fed from a channel above it, is far more efficient where the water drops. Power from a wheel can run grinding stones, saws, pumps, or a generator. Wind is less steady but works anywhere with open exposure.</p>';
   html += '<h3>Electricity from salvage</h3><p>Moving a magnet near a coil of wire produces electricity, which is how every generator works. Car alternators, DC motors from treadmills or power tools, and permanent-magnet motors can all run as generators if you spin them fast enough with a water wheel, wind rotor, or bicycle. Car and deep-cycle lead-acid batteries store the power. 12-volt LED lighting and radios run directly from them, and a charge controller keeps overcharging from ruining the batteries. Salvaged solar panels keep producing for decades.</p>';
   html += renderWarning("Electrical safety", ["Batteries can deliver huge currents: a wrench across the terminals can weld, burn, or explode. Remove rings and cover terminals.","Charging lead-acid batteries gives off hydrogen. Charge them in ventilated space away from sparks and flame.","Household mains voltage (120/230V) kills. Stay with low-voltage DC unless you truly know the work."]);
   html += '</div>';
 
-  html += '<div class="section" id="rb-knowledge"><h2>&#128214; Knowledge: The Thing Worth Saving</h2>';
+  html += '<div class="section" id="rb-knowledge"><h2>Knowledge: The Thing Worth Saving</h2>';
   html += '<p>Tools wear out and people die. Knowledge only survives if it is written down and taught.</p>';
   html += '<h3>Write everything down</h3><p>Keep a community logbook: planting dates, harvests, weather, births, deaths, what worked, what failed. Collect every book you can find on medicine, farming, engineering, and chemistry, and store them dry and off the ground. Paper lasts centuries when kept dry. Phones and drives don\'t.</p>';
   html += '<h3>Teach every child to read, write, and do arithmetic</h3><p>Literacy is the tool that copies every other skill. Even an hour a day keeps it alive. Teach the method as well as the facts: guess, test it, observe honestly, and change your mind when the evidence says so. That habit is what rebuilt technology the first time.</p>';
@@ -1726,7 +1723,7 @@ function renderRebuild(){
 /* ---- Natural Disasters ---- */
 function renderDisasters(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#127755; Natural Disasters</h2>';
+  html += '<div class="section"><h2>Natural Disasters</h2>';
   html += '<p>Large-scale geological and environmental events. For storm-specific hazards like lightning, flooding, and high wind, see the Weather category; for being stranded in a vehicle during a storm, see Vehicle Emergencies.</p>';
   html += '<div class="jump-row">'+
     '<a class="jump-chip" href="#nd-earthquake">Earthquakes</a>'+
@@ -1736,33 +1733,33 @@ function renderDisasters(){
     '<a class="jump-chip" href="#nd-landslide">Landslides</a>'+
   '</div></div>';
 
-  html += '<div class="section" id="nd-earthquake"><h2>&#128165; Earthquakes</h2>';
+  html += '<div class="section" id="nd-earthquake"><h2>Earthquakes</h2>';
   html += '<h3>During the shaking</h3>';
   html += renderSteps(["Drop to the ground before it drops you.","Take Cover under a sturdy table or desk if one is nearby.","Hold On to it, and protect your head and neck until the shaking stops.","If in bed, stay there and cover your head with a pillow rather than run for a doorway.","If outdoors, move to an open area away from buildings, trees, and power lines.","If driving, pull over away from overpasses, bridges, and power lines, and stay inside the vehicle until shaking stops."]);
   html += '<h3>After the shaking stops</h3><p>Expect aftershocks. Check for gas leaks by smell or a hissing sound - if suspected, shut off the gas at the main valve and leave the area without using switches, lighters, or anything that could spark. Check for structural damage before re-entering a building, and be cautious around damaged stairs, chimneys, and overhead fixtures.</p>';
   html += renderWarning("What NOT to do", ["Do not run outside during the shaking - falling debris near exits and walls is a leading cause of injury.","Standing in a doorway is an outdated myth - modern doorways are not stronger than the rest of the structure. Get under sturdy furniture instead.","Do not use elevators after an earthquake."]);
   html += '</div>';
 
-  html += '<div class="section" id="nd-wildfire"><h2>&#128293; Wildfires</h2>';
+  html += '<div class="section" id="nd-wildfire"><h2>Wildfires</h2>';
   html += '<h3>Before fire season</h3><p>Know at least two evacuation routes from home in advance, sign up for local emergency alerts, and keep a vehicle fueled and ready during high-risk periods. Create defensible space by clearing dead brush and vegetation roughly 30 ft (9 m) from structures.</p>';
   html += '<h3>If evacuation is ordered</h3><p>Leave immediately rather than waiting to see how close the fire gets. Close all windows and doors, remove flammable curtains, and shut off gas at the meter before leaving if time allows.</p>';
   html += '<h3>If trapped with no escape route</h3>';
   html += renderSteps(["In a vehicle: stay inside, close windows and vents, turn headlights on, get down below window level, and cover yourself with a blanket or jacket as a last resort.","On foot: move to a cleared area away from vegetation, downhill from the fire if possible.","If caught in the open with fire approaching, lie face down in a low spot and cover exposed skin with wet cloth if available."]);
   html += '</div>';
 
-  html += '<div class="section" id="nd-tsunami"><h2>&#127754; Tsunamis</h2>';
+  html += '<div class="section" id="nd-tsunami"><h2>Tsunamis</h2>';
   html += '<p>Natural warning signs matter more than waiting for an official alert, since a tsunami can arrive within minutes of a nearby earthquake.</p>';
   html += renderWarning("Move to high ground immediately if", ["You feel a strong or long-lasting earthquake near the coast.","The ocean suddenly and unusually recedes, exposing the sea floor.","You hear a loud, unusual roaring sound from the ocean."]);
   html += '<p>Move inland or to high ground - as a rough guide, at least 100 ft (30 m) of elevation or one to two miles (1.5-3 km) inland. If caught in the water, grab onto floating debris and try to reach higher structure. Do not return to the coast until officials confirm it is safe - tsunamis often arrive as a series of waves over several hours, and later waves can be larger than the first.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="nd-volcano"><h2>&#127755; Volcanic Ashfall</h2>';
+  html += '<div class="section" id="nd-volcano"><h2>Volcanic Ashfall</h2>';
   html += '<p>Even far from an eruption itself, falling ash is the hazard most people actually encounter.</p>';
   html += '<h3>Ashfall</h3><p>Stay indoors with windows and doors sealed. Wear an N95 respirator or similar mask outdoors, and swap it for a fresh one if breathing becomes difficult. Avoid driving - ash reduces visibility and can damage engines. Clear ash from flat roofs carefully, since accumulated ash is heavy and heavier still once wet. Cover electronics and outdoor equipment.</p>';
   html += '<h3>Lava and pyroclastic flow</h3><p>Evacuate immediately per official orders. These move far too fast to outrun once close, so the safe window is before the danger zone is declared, not after.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="nd-landslide"><h2>&#9968; Landslides &amp; Mudslides</h2>';
+  html += '<div class="section" id="nd-landslide"><h2>Landslides &amp; Mudslides</h2>';
   html += '<h3>Warning signs</h3><ul>'+
     '<li>Cracking sounds from trees, or cracks opening in the ground or pavement.</li>'+
     '<li>A sudden increase or decrease in stream or creek water levels, especially if it turns muddy.</li>'+
@@ -1777,7 +1774,7 @@ function renderDisasters(){
 /* ---- Home Survival ---- */
 function renderHomeSurvival(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#127968; Home Survival</h2>';
+  html += '<div class="section"><h2>Home Survival</h2>';
   html += '<p>Preparing the place you are most likely to actually be when something goes wrong.</p>';
   html += '<div class="jump-row">'+
     '<a class="jump-chip" href="#hs-kit">Emergency Kit</a>'+
@@ -1788,7 +1785,7 @@ function renderHomeSurvival(){
     '<a class="jump-chip" href="#hs-postcheck">Post-Disaster Check</a>'+
   '</div></div>';
 
-  html += '<div class="section" id="hs-kit"><h2>&#127890; Emergency Kit</h2>';
+  html += '<div class="section" id="hs-kit"><h2>Emergency Kit</h2>';
   html += '<p>Build a kit that covers at least 3 days for everyone in the household, stored somewhere accessible you can grab quickly.</p>';
   html += '<ul>'+
     '<li>Water - 1 gallon (4 L) per person per day, minimum 3 days.</li>'+
@@ -1802,14 +1799,14 @@ function renderHomeSurvival(){
     '<li>Whistle, dust masks, local paper map, basic sanitation supplies.</li>'+
   '</ul></div>';
 
-  html += '<div class="section" id="hs-utilities"><h2>&#128295; Utility Shutoffs</h2>';
+  html += '<div class="section" id="hs-utilities"><h2>Utility Shutoffs</h2>';
   html += '<p>Know the locations before an emergency, not during one.</p>';
   html += '<h3>Gas</h3><p>Only shut off the gas if you smell it, hear hissing, or are told to by officials. Use a wrench kept near the valve to turn it a quarter turn until it is perpendicular to the pipe. Once off, do not turn it back on yourself - leave that to the utility company, since relighting it incorrectly can create an explosion risk.</p>';
   html += '<h3>Water</h3><p>Locate the main shutoff valve, usually near the water meter, so a broken pipe or plumbing failure can be stopped before it floods the home.</p>';
   html += '<h3>Electricity</h3><p>Know the location of the main breaker for a full power cutoff - important before flood water reaches outlets or wiring, or before working on anything electrical.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="hs-fire"><h2>&#128293; Home Fire Safety</h2>';
+  html += '<div class="section" id="hs-fire"><h2>Home Fire Safety</h2>';
   html += '<ul>'+
     '<li>Test smoke detectors monthly, replace batteries yearly, and replace the units themselves every 10 years.</li>'+
     '<li>Fire extinguisher use - PASS: Pull the pin, Aim at the base of the fire, Squeeze the handle, Sweep side to side.</li>'+
@@ -1817,17 +1814,17 @@ function renderHomeSurvival(){
     '<li>Close bedroom doors while sleeping - a closed door measurably slows fire and smoke spread.</li>'+
   '</ul></div>';
 
-  html += '<div class="section" id="hs-generator"><h2>&#9889; Generator &amp; Carbon Monoxide Safety</h2>';
+  html += '<div class="section" id="hs-generator"><h2>Generator &amp; Carbon Monoxide Safety</h2>';
   html += renderWarning("Never run a generator", ["Indoors, in a garage, or in any enclosed space - even with doors open.","Near windows, doors, or vents where exhaust can be drawn inside.","Closer than about 20 ft (6 m) from the house."]);
   html += '<p>Install carbon monoxide detectors near sleeping areas. Symptoms of CO poisoning include headache, dizziness, nausea, and confusion - if suspected, get to fresh air immediately and seek medical help.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="hs-shelter"><h2>&#128737; Shelter in Place or Evacuate</h2>';
+  html += '<div class="section" id="hs-shelter"><h2>Shelter in Place or Evacuate</h2>';
   html += '<p>The right call depends on the hazard. A short-duration airborne hazard, such as a nearby chemical spill, often favors sealing a room and sheltering in place. A flood, wildfire, or structural risk usually favors leaving early rather than waiting. Always follow official guidance when it is available.</p>';
   html += '<p>Set up a family communication plan in advance: an out-of-area contact everyone can reach if local lines are down, and an agreed meeting point if the household gets separated.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="hs-postcheck"><h2>&#128269; Post-Disaster Home Check</h2>';
+  html += '<div class="section" id="hs-postcheck"><h2>Post-Disaster Home Check</h2>';
   html += '<p>Before re-entering a home after an earthquake, flood, storm, or fire:</p>';
   html += renderSteps(["Look for structural damage - cracks, leaning walls, or a sagging roofline - before going inside.","Smell for gas and listen for hissing; if detected, do not enter and do not use any switches.","Watch for downed power lines nearby - stay well away and report them rather than moving them.","Avoid standing water near anything electrical.","Photograph damage for insurance before starting cleanup.","Wear sturdy shoes and gloves while inspecting or cleaning up."]);
   html += '</div>';
@@ -1837,7 +1834,7 @@ function renderHomeSurvival(){
 /* ---- Pandemic & Illness ---- */
 function renderPandemic(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#128567; Pandemic &amp; Illness Preparedness</h2>';
+  html += '<div class="section"><h2>Pandemic &amp; Illness Preparedness</h2>';
   html += '<p>For a widespread outbreak or an extended illness at home, separate from single-injury First Aid.</p>';
   html += '<div class="jump-row">'+
     '<a class="jump-chip" href="#pd-stock">Stockpiling</a>'+
@@ -1847,7 +1844,7 @@ function renderPandemic(){
     '<a class="jump-chip" href="#pd-mental">Isolation &amp; Mental Health</a>'+
   '</div></div>';
 
-  html += '<div class="section" id="pd-stock"><h2>&#128230; Stockpiling for Illness</h2>';
+  html += '<div class="section" id="pd-stock"><h2>Stockpiling for Illness</h2>';
   html += '<p>On top of the standard emergency kit (see Home Survival), keep at least 2 extra weeks of the following on hand:</p>';
   html += '<ul>'+
     '<li>Thermometer, fever and pain reducers, and an electrolyte or rehydration solution.</li>'+
@@ -1858,20 +1855,20 @@ function renderPandemic(){
     '<li>An extra supply of any regular prescription medications.</li>'+
   '</ul></div>';
 
-  html += '<div class="section" id="pd-infection"><h2>&#129440; Infection Control at Home</h2>';
+  html += '<div class="section" id="pd-infection"><h2>Infection Control at Home</h2>';
   html += renderSteps(["Set up a separate sick room if possible, with a separate bathroom if available.","Use dedicated dishes, cups, and linens for the sick person until they recover.","Wash hands frequently and disinfect high-touch surfaces (doorknobs, light switches, phones) daily.","Improve ventilation where possible - open windows or run a fan to increase air circulation.","Wear a mask when caring for a sick household member, and have the sick person mask if moving through shared spaces."]);
   html += '</div>';
 
-  html += '<div class="section" id="pd-isolation"><h2>&#128683; Isolation &amp; Quarantine Basics</h2>';
+  html += '<div class="section" id="pd-isolation"><h2>Isolation &amp; Quarantine Basics</h2>';
   html += '<p><b>Isolation</b> means separating someone who is already sick from healthy household members. <b>Quarantine</b> means separating someone who was exposed but is not yet sick, to see whether illness develops. As a general rule, stay home when sick rather than going to work, school, or public spaces, and follow local public health guidance for how long to isolate or quarantine for a specific illness.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="pd-care"><h2>&#128680; When To Seek Care</h2>';
+  html += '<div class="section" id="pd-care"><h2>When To Seek Care</h2>';
   html += renderWarning("Seek urgent medical care for", ["Difficulty breathing or shortness of breath at rest.","Persistent chest pain or pressure.","New confusion or difficulty waking.","Bluish lips or face.","Inability to keep fluids down.","Symptoms that seem to improve, then suddenly worsen again."]);
   html += '<p>Milder symptoms - low fever, cough, fatigue, aches - are generally manageable at home with rest, fluids, and over-the-counter medication.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="pd-mental"><h2>&#128172; Isolation &amp; Mental Health</h2>';
+  html += '<div class="section" id="pd-mental"><h2>Isolation &amp; Mental Health</h2>';
   html += '<p>Extended isolation takes a real toll. Keep a daily routine, stay connected with others by phone or video even when physically apart, limit continuous news consumption, and keep moving physically if health allows, even just stretching or walking indoors.</p>';
   html += '</div>';
   return html;
@@ -1880,7 +1877,7 @@ function renderPandemic(){
 /* ---- Civil Unrest & Public Safety ---- */
 function renderUnrest(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#128274; Civil Unrest &amp; Public Safety</h2>';
+  html += '<div class="section"><h2>Civil Unrest &amp; Public Safety</h2>';
   html += '<p>Focused on awareness and avoidance. For interpersonal conflict de-escalation, see Long-Term Survival &gt; Community Resilience.</p>';
   html += '<div class="jump-row">'+
     '<a class="jump-chip" href="#cu-awareness">Situational Awareness</a>'+
@@ -1889,7 +1886,7 @@ function renderUnrest(){
     '<a class="jump-chip" href="#cu-active">Active Threats</a>'+
   '</div></div>';
 
-  html += '<div class="section" id="cu-awareness"><h2>&#128065; Situational Awareness</h2>';
+  html += '<div class="section" id="cu-awareness"><h2>Situational Awareness</h2>';
   html += '<ul>'+
     '<li>Follow reliable local news or official channels rather than unverified social media during a developing situation.</li>'+
     '<li>Avoid crowds and known flashpoints where possible, and steer clear of areas with a heavy, tense police or security presence.</li>'+
@@ -1897,15 +1894,15 @@ function renderUnrest(){
     '<li>Trust your instincts - leaving early because something feels wrong costs little; leaving too late can cost a great deal.</li>'+
   '</ul></div>';
 
-  html += '<div class="section" id="cu-home"><h2>&#128273; Securing Your Home</h2>';
+  html += '<div class="section" id="cu-home"><h2>Securing Your Home</h2>';
   html += '<p>Reinforce and lock doors and windows. Keep a low profile - avoid visibly displaying valuables, supplies, or anything that suggests the household is well stocked. Identify an interior room away from windows as a fallback gathering point. Keep your emergency kit and important documents where they can be grabbed quickly if you need to leave.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="cu-comms"><h2>&#128241; Communication When Networks Are Down</h2>';
+  html += '<div class="section" id="cu-comms"><h2>Communication When Networks Are Down</h2>';
   html += '<p>Cell networks can become congested or intentionally limited during large-scale unrest. Agree on a family plan in advance: an out-of-area contact everyone can reach, and a physical meeting point if local communication fails (see Home Survival &gt; Shelter in Place or Evacuate). Text messages often get through when voice calls fail, since they need far less bandwidth. Handheld FRS/GMRS radios are a useful backup for short-range family communication that does not depend on cell networks at all.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="cu-active"><h2>&#128680; Active Threats: Run, Hide, Fight</h2>';
+  html += '<div class="section" id="cu-active"><h2>Active Threats: Run, Hide, Fight</h2>';
   html += '<p>Standard public safety guidance for an active violent threat, in order of preference:</p>';
   html += renderSteps(["Run - if there is a safe escape route, leave the area, leave your belongings behind, and keep your hands visible.","Hide - if you cannot safely leave, get out of the threat's view, lock or barricade the door, stay low, and silence your phone.","Fight - only as an absolute last resort, if your life is in imminent danger and there is no other option, act with full commitment.","Once safe or once help arrives, keep your hands visible and follow the instructions of responding officers."]);
   html += '</div>';
@@ -1915,7 +1912,7 @@ function renderUnrest(){
 /* ---- Power Outages ---- */
 function renderOutages(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#128268; Power Outages</h2>';
+  html += '<div class="section"><h2>Power Outages</h2>';
   html += '<p>Short outages are mostly an inconvenience; the risks show up around food safety, heating, and medical equipment. For generator-specific carbon monoxide safety, see Home Survival.</p>';
   html += '<div class="jump-row">'+
     '<a class="jump-chip" href="#po-food">Food Safety</a>'+
@@ -1924,20 +1921,20 @@ function renderOutages(){
     '<a class="jump-chip" href="#po-general">General Steps</a>'+
   '</div></div>';
 
-  html += '<div class="section" id="po-food"><h2>&#129482; Food Safety</h2>';
+  html += '<div class="section" id="po-food"><h2>Food Safety</h2>';
   html += '<p>An unopened refrigerator keeps food safely cold for about 4 hours. A full freezer holds its temperature for about 48 hours unopened (24 hours if only half full). Use an appliance thermometer if available - when in doubt, discard perishable food that has been above 40&deg;F (4&deg;C) for more than 2 hours.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="po-heat"><h2>&#128367; Safe Heat &amp; Light</h2>';
+  html += '<div class="section" id="po-heat"><h2>Safe Heat &amp; Light</h2>';
   html += renderWarning("Never use indoors", ["A charcoal or gas grill, or any outdoor cooking equipment, as an indoor heat source - carbon monoxide risk.","A generator inside the house or garage, even with doors open."]);
   html += '<p>Battery-powered or hand-crank lanterns are safer than open flame. If candles are the only option, never leave them unattended and keep them well clear of anything flammable.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="po-medical"><h2>&#128137; Medical Equipment &amp; Refrigerated Medication</h2>';
+  html += '<div class="section" id="po-medical"><h2>Medical Equipment &amp; Refrigerated Medication</h2>';
   html += '<p>Know in advance how your specific medication tolerates being unrefrigerated - many, including insulin, can handle brief periods at room temperature, but check the guidance for your prescription. A cooler with ice packs can bridge a short outage. For powered medical devices (oxygen concentrators, CPAP machines), have a backup plan: a battery backup, a generator, or a known alternate location such as a relative\'s home or a hospital for an extended outage.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="po-general"><h2>&#128161; General Outage Steps</h2><ul>'+
+  html += '<div class="section" id="po-general"><h2>General Outage Steps</h2><ul>'+
     '<li>Unplug sensitive electronics to protect them from a power surge when service is restored.</li>'+
     '<li>Keep one corded phone on hand - it does not need separate power the way most cordless phones do.</li>'+
     '<li>Leave one light switched on so you know when power returns.</li>'+
@@ -1949,7 +1946,7 @@ function renderOutages(){
 /* ---- Infants, Elderly & Pets ---- */
 function renderSpecialNeeds(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#128118; Infants, Elderly &amp; Pets</h2>';
+  html += '<div class="section"><h2>Infants, Elderly &amp; Pets</h2>';
   html += '<p>The parts of a preparedness plan that are easy to forget until they are needed.</p>';
   html += '<div class="jump-row">'+
     '<a class="jump-chip" href="#sn-infants">Infants &amp; Children</a>'+
@@ -1958,19 +1955,19 @@ function renderSpecialNeeds(){
     '<a class="jump-chip" href="#sn-disability">Other Disabilities</a>'+
   '</div></div>';
 
-  html += '<div class="section" id="sn-infants"><h2>&#128118; Infants &amp; Young Children</h2>';
+  html += '<div class="section" id="sn-infants"><h2>Infants &amp; Young Children</h2>';
   html += '<p>Stock extra formula, diapers, and wipes beyond the standard kit duration, along with any medications a child needs regularly. For formula-fed infants under 6 months, avoid mixing formula with plain untreated water unless following specific package or medical guidance. Pack a comfort item, and keep explanations simple and calm for what is happening, matched to the child\'s age.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="sn-elderly"><h2>&#129491; Elderly &amp; Mobility Needs</h2>';
+  html += '<div class="section" id="sn-elderly"><h2>Elderly &amp; Mobility Needs</h2>';
   html += '<p>Keep an extra supply of all prescription medications along with a written list of dosages, conditions, and allergies. Keep mobility aids - power wheelchairs, scooters, walkers - charged and accessible, along with spare hearing aid batteries and a backup pair of glasses. A written list of physicians and their contact information is worth having on paper, not just a phone. For anyone living alone, consider a medical alert method that does not depend on a working phone line.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="sn-pets"><h2>&#128062; Pets</h2>';
+  html += '<div class="section" id="sn-pets"><h2>Pets</h2>';
   html += '<p>Stock pet food and water for a comparable duration to the household supply, and keep a carrier or leash ready to go. Keep ID tags current and microchip information up to date. Bring copies of vaccination records - many emergency shelters require them, and some emergency shelters do not accept pets at all, so it is worth knowing which ones near you do before an emergency happens.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="sn-disability"><h2>&#9855; Other Disabilities</h2>';
+  html += '<div class="section" id="sn-disability"><h2>Other Disabilities</h2>';
   html += '<p>Keep essential equipment - mobility aids, communication devices - charged and within reach. Make sure at least one trusted contact outside the household is aware of specific needs and how to help. A service animal should have the same preparation as any pet, plus its working gear kept together and ready.</p>';
   html += '</div>';
   return html;
@@ -1998,7 +1995,7 @@ var EMERGENCY_ORGS = [
 ];
 function renderConnect(){
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#128246; Connect &amp; Alerts</h2>';
+  html += '<div class="section"><h2>Connect &amp; Alerts</h2>';
   html += '<p>Most of this guide works with zero signal by design. The tools below are the exception - they only run when you tap them, and they need an internet connection and (for most of them) permission to use your device location. Nothing is sent anywhere unless you tap one of these buttons.</p>';
   html += '<div class="jump-row">'+
     '<a class="jump-chip" href="#cn-weather">Live Weather</a>'+
@@ -2010,24 +2007,24 @@ function renderConnect(){
 
   html += '<div class="section" id="cn-weather"><h2><span class="badge live">Live</span> Weather &amp; Alerts</h2>';
   html += '<p>Current conditions plus any active US National Weather Service alerts for your location.</p>';
-  html += '<button class="btn primary" id="btn-weather">&#127780; Check Current Weather</button>';
+  html += '<button class="btn primary" id="btn-weather">Check Current Weather</button>';
   html += liveBox("live-weather");
   html += '</div>';
 
   html += '<div class="section" id="cn-facilities"><h2><span class="badge live">Live</span> Nearby Emergency Facilities</h2>';
   html += '<p>Finds nearby hospitals, police, fire stations, and pharmacies using OpenStreetMap data, sorted by distance, with directions.</p>';
-  html += '<button class="btn primary" id="btn-facilities">&#128205; Find Nearby Facilities</button>';
+  html += '<button class="btn primary" id="btn-facilities">Find Nearby Facilities</button>';
   html += liveBox("live-facilities");
   html += '</div>';
 
   html += '<div class="section" id="cn-quakes"><h2><span class="badge live">Live</span> Earthquakes &amp; Air Quality</h2>';
   html += '<p>Recent significant earthquakes worldwide (USGS) and current air quality at your location - useful during wildfire smoke.</p>';
-  html += '<div class="secondary-row"><button class="btn primary" id="btn-quakes">&#127757; Check Recent Earthquakes</button><button class="btn primary" id="btn-aqi">&#127786; Check Air Quality</button></div>';
+  html += '<div class="secondary-row"><button class="btn primary" id="btn-quakes">Check Recent Earthquakes</button><button class="btn primary" id="btn-aqi">Check Air Quality</button></div>';
   html += '<h3>Earthquakes</h3>'+liveBox("live-quakes");
   html += '<h3>Air quality</h3>'+liveBox("live-aqi");
   html += '</div>';
 
-  html += '<div class="section" id="cn-numbers"><h2>&#9742; Emergency Numbers by Region</h2>';
+  html += '<div class="section" id="cn-numbers"><h2>Emergency Numbers by Region</h2>';
   html += '<p>Works fully offline - this is a static reference, not a live lookup.</p>';
   html += '<table class="ref-table"><tr><th>Region</th><th>Number</th></tr>'+
     EMERGENCY_NUMBERS.map(function(e){ return '<tr><td>'+e.region+'</td><td class="mono">'+e.num+'</td></tr>'; }).join("")+
@@ -2035,7 +2032,7 @@ function renderConnect(){
   html += '<p style="margin-top:.6rem">On many mobile phones, dialing <b>112</b> reaches local emergency services as a built-in carrier failsafe, even in regions where it is not the primary number. This list is not exhaustive and numbers can change - verify locally when you have signal.</p>';
   html += '</div>';
 
-  html += '<div class="section" id="cn-orgs"><h2>&#128735; Relief Organizations</h2>';
+  html += '<div class="section" id="cn-orgs"><h2>Relief Organizations</h2>';
   html += '<p>Works fully offline. Widely known, stable contact points worth having before you need them.</p>';
   html += '<div class="qr-grid">'+
     EMERGENCY_ORGS.map(function(o){ return '<div class="qr-card"><h4>'+o.name+'</h4><p class="mono">'+o.contact+'</p><p>'+o.note+'</p></div>'; }).join("")+
@@ -2048,12 +2045,12 @@ function shuffle(arr){ var a=arr.slice(); for(var i=a.length-1;i>0;i--){ var j=M
 function renderQuiz(){
   if(!state.quiz.order){ state.quiz.order = shuffle(QUIZ_QUESTIONS.map(function(_,i){return i;})); state.quiz.idx=0; state.quiz.score=0; state.quiz.answered=0; state.quiz.done=false; }
   var html = '<div class="breadcrumb"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#10067; Knowledge Check</h2>';
+  html += '<div class="section"><h2>Knowledge Check</h2>';
   if(state.quiz.done){
     html += '<div class="result-card '+(state.quiz.score>=8?"mild":state.quiz.score>=5?"moderate":"severe")+'">';
     html += '<h3>Score: '+state.quiz.score+' / '+QUIZ_QUESTIONS.length+'</h3>';
     html += '<p>This score lives only in memory for this session - nothing is saved.</p></div>';
-    html += '<button class="btn primary" id="quiz-retry">&#8635; Retake quiz</button>';
+    html += '<button class="btn primary" id="quiz-retry">Retake quiz</button>';
   } else {
     var qi = state.quiz.order[state.quiz.idx];
     var q = QUIZ_QUESTIONS[qi];
@@ -2089,10 +2086,10 @@ function renderTriageFlowFlat(flowId){
 }
 function renderPrintAll(){
   var html = '<div class="breadcrumb no-print"><button data-go="home">&larr; Home</button></div>';
-  html += '<div class="section"><h2>&#128424; Full Guide <button class="btn small no-print" style="margin-left:auto" id="print-btn">&#128424; Print / Save PDF</button></h2>';
+  html += '<div class="section"><h2>Full Guide <button class="btn small no-print" style="margin-left:auto" id="print-btn">Print / Save PDF</button></h2>';
   html += '<p>Every section on one page. Phones die, batteries run out, and screens break, but a printed copy in a waterproof bag keeps working. Print it, or save it as a PDF and keep copies on other devices.</p></div>';
   html += renderQuickRef().replace(/<div class="breadcrumb">[\s\S]*?<\/div>/, "");
-  html += '<div class="section"><h2>&#9877; Emergency Triage (all flows)</h2><p>Each flow below starts at its first question. Follow the arrow for the answer that fits.</p></div>';
+  html += '<div class="section"><h2>Emergency Triage (all flows)</h2><p>Each flow below starts at its first question. Follow the arrow for the answer that fits.</p></div>';
   Object.keys(TRIAGE_FLOWS).forEach(function(fid){ if(fid !== "entry") html += renderTriageFlowFlat(fid); });
   CATEGORIES.forEach(function(c){
     if(c.id === "connect" || c.id === "firstaid") return;
@@ -2129,18 +2126,18 @@ function renderSidebar(){
   var sb = document.getElementById("sidebar");
   var r = state.route;
   var html = '<button id="sidebar-close" class="icon-btn" style="margin-bottom:.5rem" aria-label="Close menu">&times; Close</button>';
-  html += '<button class="nav-btn '+(r.view==="home"?"active":"")+'" data-go="home"><span class="ic">&#127968;</span>Home</button>';
-  html += '<button class="nav-btn '+(r.view==="quickref"?"active":"")+'" data-go="quickref"><span class="ic">&#128203;</span>Quick Reference</button>';
-  html += '<button class="nav-btn '+(r.view==="browse"?"active":"")+'" data-go="browse"><span class="ic">&#128218;</span>Browse &amp; Learn</button>';
-  html += '<button class="nav-btn '+(r.view==="quiz"?"active":"")+'" data-go="quiz"><span class="ic">&#10067;</span>Knowledge Check</button>';
-  html += '<button class="nav-btn '+(r.view==="printall"?"active":"")+'" data-go="printall"><span class="ic">&#128424;</span>Print Full Guide</button>';
+  html += '<button class="nav-btn '+(r.view==="home"?"active":"")+'" data-go="home">Home</button>';
+  html += '<button class="nav-btn '+(r.view==="quickref"?"active":"")+'" data-go="quickref">Quick Reference</button>';
+  html += '<button class="nav-btn '+(r.view==="browse"?"active":"")+'" data-go="browse">Browse &amp; Learn</button>';
+  html += '<button class="nav-btn '+(r.view==="quiz"?"active":"")+'" data-go="quiz">Knowledge Check</button>';
+  html += '<button class="nav-btn '+(r.view==="printall"?"active":"")+'" data-go="printall">Print Full Guide</button>';
   CATEGORY_GROUPS.forEach(function(g){
     html += '<div class="nav-group-label">'+g.label+'</div>';
     g.ids.forEach(function(id){
       var c = catById(id);
       if(!c) return;
       var active = (r.view==="category" && r.cat===c.id) || (r.view==="triage" && c.id==="firstaid");
-      html += '<button class="nav-btn '+(active?"active":"")+'" data-go="cat:'+c.id+'"><span class="ic">'+c.ic+'</span>'+c.name+'</button>';
+      html += '<button class="nav-btn '+(active?"active":"")+'" data-go="cat:'+c.id+'">'+c.name+'</button>';
     });
   });
   html += '<div class="nav-group-label">Settings</div>';
